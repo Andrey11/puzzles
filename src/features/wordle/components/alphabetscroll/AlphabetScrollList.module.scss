@@ -1,0 +1,101 @@
+.Alphabet {
+
+  &FoundWord {
+    background-color: green;
+  }
+  
+  &ScrollWrapper {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    max-height: calc(var(--vh, 1vh) * 80);
+    height: 100%;
+    flex: 1;
+    justify-content: center;
+    overflow: hidden;
+    gap: 16px;
+  }
+
+  &ScrollList {
+    border-top: 1px solid #d4e7ff;
+    padding: 0;
+    flex: 2 1 100%;
+    display: flex;
+    flex-direction: column;
+    // height: 100%;
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+    &::-webkit-scrollbar {
+      display: none; /* Safari and Chrome */
+    }
+    overflow-y: auto;
+  }
+
+  &ListTitleRow {
+    font-weight: 700;
+    font-size: 22px;
+    // background-color: rgba(#2684FF, 0.2);
+    background-color: #d4e7ff;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    position: sticky;
+    top: -1px;
+    z-index: 2;
+  }
+
+  &ScrollTrack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    justify-content: center;
+
+    &Letter {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+      font-weight: 600;
+      font-size: medium;
+      
+      &Active {
+      // &:focus {
+        background-color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+        border-radius: 50px;
+        color: white;
+        scale: 1.05;
+      }
+      // &:active,
+      // &:hover {
+      //   color: inherit;
+      //   background-color: inherit;
+      // }
+    }
+
+  }
+
+}
+
+dl > div {
+  background: #fff;
+  // padding: 24px 0 0 0;
+}
+
+dt {
+  background: #b8c1c8;
+  margin: 0;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+dd {
+  margin: 0 !important;
+  // white-space: nowrap;
+}

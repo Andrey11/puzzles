@@ -1,0 +1,31 @@
+@import "./scss/custom.module.scss";
+
+:root {
+  --mdc-theme-puzzle-miss: #c2b9b9;
+  --mdc-theme-puzzle-exact-match: #5fc405;
+  --mdc-theme-puzzle-exists: #ffb003;
+  --mdc-theme-puzzle-primary: #091309;
+  --mdc-theme-puzzle-secondary: #0c63e4;
+  --mdc-theme-puzzle-secondary-rgb: 12, 99, 228;
+}
+
+body {
+  margin: 0;
+  font-family: 'Dosis', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  font-weight: 500;
+  color: var(--mdc-theme-puzzle-primary, #091309);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#root {
+  min-height: calc(var(--vh, 1vh) * 100);
+  width: 100%;
+}

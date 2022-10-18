@@ -1,0 +1,51 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(var(--vh, 1vh) * 100);
+  max-height: calc(var(--vh, 1vh) * 100);
+  height: 100%;
+  width: 100%;
+}
+.AppBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: -webkit-fill-available;
+  align-items: center;
+}
+.AppFooter {
+  display: flex;
+  align-items: center;
+  font-size: smaller;
+}
+
+.AppCardContainer {
+  margin: 16px;
+}
+
+.ProgressBarContainer {
+  display: flex;
+  flex: 1 1;
+  min-width: 1vw;
+  min-height: 100vh;
+  width: 100%;
+  align-items: center;
+  div {
+    width: inherit;
+  }
+}
+
+.PuzzleWordle {
+  display: flex;
+  flex-direction: column;
+  width: -webkit-fill-available;
+  margin: 16px 24px;
+  max-width: 800px;
+}
+
+@media only screen and (max-width: 360px) {
+  .PuzzleWordle {
+    margin: 4px 2px;
+  }
+}

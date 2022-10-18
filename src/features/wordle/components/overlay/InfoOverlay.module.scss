@@ -1,0 +1,32 @@
+// $overlay-border-color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+$secondary-color: var(--mdc-theme-puzzle-secondary);
+$overlay-border-color-rgb: var(--mdc-theme-puzzle-secondary-rgb);
+$overlay-border-rgba: rgba($overlay-border-color-rgb, 0.7);
+
+.StatsInfoOverlay[class*="popover"] {
+  font-family: 'Dosis', sans-serif;
+  font-weight: 500;
+  border-color: $overlay-border-rgba;
+  color: $secondary-color;
+
+  [class*="popover-arrow"] {
+    color: $secondary-color;
+    &::before {
+      border-bottom-color: gba($overlay-border-color-rgb, 0.9);
+      border-top-color: gba($overlay-border-color-rgb, 0.9);
+    }
+  }
+
+  & [class="popover-header"] {
+    background-color: #e7f1ff;
+    font-weight: 400;
+    margin: 2px;
+    border-bottom-color: $overlay-border-rgba;
+  }
+}
+
+div.InfoTrigger {
+  display: inline-block;
+  color: $secondary-color;
+  cursor: pointer;
+}

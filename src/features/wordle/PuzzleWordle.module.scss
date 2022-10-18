@@ -1,0 +1,42 @@
+.PuzzleScene {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Dosis', sans-serif;
+  font-weight: 500;
+  color: var(--mdc-theme-puzzle-primary, #091309);
+  max-width: 800px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  // overflow: hidden;
+  min-height: calc(var(--vh, 1vh) * 50);
+  height: 80%;
+  max-height: calc(var(--vh, 1vh) * 100);
+  flex: 1 1 100%;
+
+
+  input,
+  textarea {
+    font-family: inherit;
+    border: thin solid #c8bfbf;
+    background-color: transparent;
+    color: var(--mdc-theme-puzzle-primary, #091309);
+  }
+}
+
+span.HeaderLabel {
+  font-weight: 500;
+  svg {
+    vertical-align: text-bottom;
+  }
+}
+
+.RelativePosition {
+  position: relative;
+}
+
+@media only screen and (max-width: 360px) {
+  .PuzzleScene {
+    padding: 4px 2px;
+  }
+}

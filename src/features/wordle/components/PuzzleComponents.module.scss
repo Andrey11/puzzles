@@ -1,0 +1,33 @@
+.MatchTypeRadioGroup {
+  display: flex;
+  flex-direction: row;
+  font-family: 'Dosis', sans-serif;
+  font-weight: 500;
+  width: 100%;
+  justify-content: center;
+ 
+  input,
+  textarea {
+    font-family: inherit;
+    border: thin solid #c8bfbf;
+    background-color: transparent;
+    color: black;
+  }
+
+  svg {
+    vertical-align: text-bottom;
+  }
+
+  & > div {
+    display: contents;
+  }
+
+  & > div > label {
+    font-weight: 500;
+  }
+}
+
+.GuessRowContainer {
+  display: flex;
+  gap: 5px;
+}

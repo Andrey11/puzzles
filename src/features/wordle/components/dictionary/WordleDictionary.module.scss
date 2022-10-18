@@ -1,0 +1,166 @@
+.PuzzleDictionary {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(var(--vh, 1vh) * 100 - 100%);
+  height: 80vh;
+  height: calc(var(--vh, 1vh) * 80);
+  width: 100%;
+  max-width: 800px;
+  flex: 1;
+  gap: 16px;
+  // position: fixed;
+  // justify-content: flex-start;
+  // align-items: stretch;
+  // right: 0;
+  // left: 0;
+  // top: 50%;
+  // left: 50%;
+  // transform: translate(-50%, -50%);
+
+  // padding-top: 75px;
+  // padding-left: 24px;
+  // padding-right: 24px;
+  
+  &ScrollListWrapper {
+    // left: 24px;
+    // right: 16px;
+    // position: fixed;
+    padding: 0;
+    position: relative;
+    display: flex;
+    // flex: 1;
+  }
+}
+
+.WordSearchRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 1px; /* accomodate overlay due to overflow hidden is set on a parent */
+
+  &Icon {
+    color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+  }
+}
+
+.WordsContainer {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  overflow-y: auto;
+  flex: 1 1 100%;
+}
+
+.WordErrorTooltip {
+  font-family: 'Dosis', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: medium;
+
+  > [class*='tooltip-inner'] {
+    background-color: #c50000;
+    color: white;
+  }
+
+  > [class*='tooltip-arrow']::before {
+    border-right-color: #c50000 !important;
+  }
+}
+
+.WordDefinition {
+  margin-bottom: 0;
+
+  &:last-child {
+    border-bottom: 1px solid rgba(#2684ff, 0.2);
+  }
+  &Name {
+    text-indent: 16px;
+    font-weight: 500;
+    font-size: 22px;
+    border-top: 1px solid rgba(#2684ff, 0.2);
+    height: 45px;
+    line-height: 45px;
+    cursor: pointer;
+
+    &[aria-expanded='true'] {
+      text-indent: 0;
+      font-weight: 600;
+      color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+    }
+
+    &Error {
+      cursor: not-allowed;
+      font-weight: 400;
+      opacity: 0.8;
+      text-decoration: line-through;
+    }
+  }
+  &Expanded {
+    padding: 2px 4px;
+    background-color: rgba(#2684ff, 0.04);
+    border-radius: 5px;
+    border: 1px solid rgba(#2684ff, 0.2);
+    margin: -1px 0 8px;
+  }
+
+  &Anchor {
+    display: block;
+    position: relative;
+    top: -45px;
+    visibility: hidden;
+  }
+}
+
+.PhoneticCollection {
+  display: flex;
+  gap: 24px;
+  margin: 4px 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.Phonetics {
+  svg {
+    color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+  }
+}
+
+.PhoneticSpelling {
+  color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+  padding-left: 8px;
+  font-weight: 500;
+}
+
+.PartOfSpeach {
+  font-weight: 400;
+  font-size: 14px;
+
+  hr {
+    margin: 4px 0 8px 0;
+    background-color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+  }
+
+  ol {
+    padding-left: 1rem;
+    li {
+      padding-left: 0.5rem;
+      padding-bottom: 0.25rem;
+    }
+  }
+
+  &Type {
+    color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+    font-size: 16px;
+    font-weight: 400;
+    font-style: italic;
+  }
+}
+
+.LicenseSection {
+  font-weight: 300;
+  font-size: 12px;
+  text-align: center;
+  svg {
+    vertical-align: text-bottom;
+  }
+}
