@@ -91,6 +91,7 @@ export interface ILettersInWords {
 export interface IWordleRow {
   letters: Array<string>;
   colors: Array<string>;
+  disabled?: boolean;
 }
 
 export interface IWordleDictionary {

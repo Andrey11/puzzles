@@ -3,7 +3,7 @@ import useDeviceDetect from '../../../../app/hooks/useDeviceDetect';
 
 import styles from './PuzzleWordleCell.module.scss';
 
-export interface IPuzzleDetailsCell {
+export interface IWordleLetterCell {
   cellId: string;
   letter: string;
   color: string;
@@ -12,31 +12,34 @@ export interface IPuzzleDetailsCell {
   onDeleteKeyPressed?: () => void;
   selected?: boolean;
   showSelected?: boolean;
+  disabled?: boolean;
 }
 
 type StyleMapType = {
   green: string;
   orange: string;
   grey: string;
+  transparent: string;
 };
 
-const PuzzleWordleCell: React.FunctionComponent<IPuzzleDetailsCell> = ({
+const PuzzleWordleCell: React.FunctionComponent<IWordleLetterCell> = ({
   cellId, letter, color, 
   onLetterChange = () => {},
   onCellSelected = () => {},
   onDeleteKeyPressed = () => {},
-  selected, showSelected,
-}: IPuzzleDetailsCell) => {
+  selected, showSelected, disabled,
+}: IWordleLetterCell) => {
   const styleMap: StyleMapType = {
     green: styles.ExactMatch,
     orange: styles.Match,
     grey: styles.Miss,
+    transparent: ''
   };
 
   const cellRef = useRef<HTMLInputElement>(null);
   const { isMobile } = useDeviceDetect();
 
-  const clsName = color !== '' ? styleMap[color as keyof StyleMapType] : '';
+  const clsName = styleMap[color as keyof StyleMapType] || '';
   const selectedCls = (!!showSelected && !!selected) ? styles.Selected : '';
 
   useEffect(() => {
@@ -53,6 +56,7 @@ const PuzzleWordleCell: React.FunctionComponent<IPuzzleDetailsCell> = ({
       onSelect={() => onCellSelected(parseInt(cellId))}
       type="text"
       readOnly={isMobile}
+      disabled={disabled}
       minLength={1}
       maxLength={1}
       pattern="[A-Z]{1}" 

@@ -1,5 +1,10 @@
 .AppCardContainer {
   margin: 16px;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
 }
 
 .Card {

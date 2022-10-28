@@ -1,0 +1,17 @@
+.NotificationComponent {
+  position: absolute;
+  height: 45px;
+  z-index: 0;
+  left: 50% !important;
+  top: 55px !important;
+  opacity: 1;
+  width: auto;
+  padding: 8px 24px;
+  background-color: var(--mdc-theme-puzzle-error-notification, #091309);
+  color: var(--mdc-theme-puzzle-error-on-notification, #091309);
+  font-weight: 700;
+  border-radius: 5px;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  line-height: 28px;
+}

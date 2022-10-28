@@ -1,0 +1,46 @@
+button.EnterButton,
+button.DeleteButton {
+  width: 86px;
+  line-height: 0;
+  padding: 0;
+}
+
+@media only screen and (max-width: 425px) {
+  button.EnterButton,
+  button.DeleteButton {
+    &:active,
+    &:hover,
+    &:focus,
+    &:focus-visible {
+      background-color: inherit;
+      color: var(--bs-btn-color);
+    }
+  }
+}
+
+label.LetterButton {
+  outline: none;
+  font-weight: 700;
+  width: 90px;
+}
+
+label.LetterButton {
+  width: 40px;
+  font-weight: 700;
+  &:active,
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+/* Workaround for toggle style for letter buttons not in a word */
+.LetterButton[class*="btn-outline-secondary"] {
+  &:active,
+  &:hover,
+  &:focus {
+    color: #6c757d;
+    background-color: transparent;
+  }
+}

@@ -5,6 +5,7 @@ import { CCircle } from "react-bootstrap-icons";
 import { Route, Routes } from "react-router-dom";
 import styles from "./App.module.scss";
 import ProgressBar from "react-bootstrap/ProgressBar";
+import PuzzleWordleVersus from "./features/wordle/components/wordleversus/PuzzleWordleVersus";
 
 const PuzzleWordle = React.lazy(() => import("./features/wordle/PuzzleWordle"));
 const Puzzles = React.lazy(() => import("./features/puzzles/Puzzles"));
@@ -34,6 +35,16 @@ const App: React.FC = () => {
                 <div className={styles.PuzzleWordle}>
                   <Suspense fallback={progressBar}>
                     <PuzzleWordle />
+                  </Suspense>
+                </div>
+              }
+            />
+            <Route
+              path="/wordleversus"
+              element={
+                <div className={styles.PuzzleWordle}>
+                  <Suspense fallback={progressBar}>
+                    <PuzzleWordleVersus />
                   </Suspense>
                 </div>
               }

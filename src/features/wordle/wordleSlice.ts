@@ -96,6 +96,9 @@ export const getStatus = (state: RootState) => state.puzzle.wordle.status;
 export const getDictionary = (state: RootState) =>
   state.puzzle.wordle.dictionary;
 
+export const isValidWord = (state: RootState, word: string): boolean =>
+  getDictionary(state).words.indexOf(word) !== -1;
+
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
 export const createDictionary =

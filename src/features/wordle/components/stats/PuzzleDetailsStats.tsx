@@ -24,7 +24,7 @@ import {
 } from '../../PuzzleWordle.types';
 
 import { allAvailableWords } from '../../PuzzleWords';
-import MatchTypeRadioGroup from '../MatchTypeRadioGroup';
+import MatchTypeRadioGroup from '../radiogroup/MatchTypeRadioGroup';
 import PuzzleWordleCell from '../cell/PuzzleWordleCell';
 import MatchedWordsDialog from './dialog/MatchedWordsDialog';
 import useAddEventListener from '../../../../app/hooks/useAddEventListener';

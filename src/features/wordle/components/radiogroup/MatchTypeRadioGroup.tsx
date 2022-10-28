@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { IMatchType, IRadioGroupProps } from '../PuzzleWordle.types';
+import { IMatchType, IRadioGroupProps } from '../../PuzzleWordle.types';
 
-import styles from './PuzzleComponents.module.scss';
+import styles from './MatchTypeRadioGroup.module.scss';
 
 const MatchTypeRadioGroup: React.FunctionComponent<IRadioGroupProps> = ({
   onChange,

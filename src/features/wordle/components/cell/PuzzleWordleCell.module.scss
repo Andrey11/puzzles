@@ -8,6 +8,15 @@
     font-weight: 700;
     text-transform: uppercase;
   }
+  
+  font-family: inherit;
+  background-color: transparent;
+  color: var(--mdc-theme-puzzle-primary, #091309);
+  border: thin solid var(--mdc-theme-puzzle-empty-cell-border, #c8bfbf);
+  &:not([value=""]) {
+    border: thin solid var(--mdc-theme-puzzle-cell-border, #645a5a);
+    border-radius: 1px;
+  }
 
   &.Selected {
     box-sizing: border-box;
@@ -26,6 +35,8 @@
   }
   &.Miss {
     background-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
-    border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
+    border-style: solid;
+    border-width: thin; 
+    border-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
   }
 }

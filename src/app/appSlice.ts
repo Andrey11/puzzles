@@ -16,10 +16,19 @@ const wordleCardProps: IPuzzleCardProps = {
   puzzleImageUrl: "images/logos/wordle-logo-1.png",
 };
 
+const wordleVersusCardProps: IPuzzleCardProps = {
+  puzzleName: PuzzleType.WORDLE_VERSUS,
+  codeUrl: "https://github.com/Andrey11/puzzles",
+  navigateUrl: "/wordleversus",
+  puzzleDescription:
+    "Wordle versus is based on a popular NYT Wordle app. Challenge a friendly {R} to a game of wordle, or a series of games. Can you beat the wordle bot at his own game? ",
+  puzzleImageUrl: "images/logos/wordle-versus-logo-2.png",
+};
+
 const initialState: IAppState = {
   activePuzzle: PuzzleType.NONE,
   status: "idle",
-  puzzleCardProps: [wordleCardProps],
+  puzzleCardProps: [wordleCardProps, wordleVersusCardProps],
 };
 
 export const appSlice = createSlice({

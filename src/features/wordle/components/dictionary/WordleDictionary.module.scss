@@ -1,3 +1,4 @@
+
 .PuzzleDictionary {
   display: flex;
   flex-direction: column;
@@ -8,23 +9,8 @@
   max-width: 800px;
   flex: 1;
   gap: 16px;
-  // position: fixed;
-  // justify-content: flex-start;
-  // align-items: stretch;
-  // right: 0;
-  // left: 0;
-  // top: 50%;
-  // left: 50%;
-  // transform: translate(-50%, -50%);
 
-  // padding-top: 75px;
-  // padding-left: 24px;
-  // padding-right: 24px;
-  
   &ScrollListWrapper {
-    // left: 24px;
-    // right: 16px;
-    // position: fixed;
     padding: 0;
     position: relative;
     display: flex;
