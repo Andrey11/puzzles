@@ -1,14 +1,13 @@
-import React, { useEffect } from "react";
-import Card from "react-bootstrap/Card";
+import React, { useEffect, useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import styles from "./Puzzles.module.scss";
-import { IPuzzleCardProps, PuzzleType } from "../../app/App.types";
+import { IPuzzleCardProps, PUZZLES } from "../../app/App.types";
 import { setActivePuzzle } from "../../app/appSlice";
 import { useAppDispatch } from "../../app/hooks/hooks";
-import { CodeSquare, Heart, HeartFill, Robot } from "react-bootstrap-icons";
-import { useState } from "react";
 import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import { CodeSquare, Heart, HeartFill, Robot } from "react-bootstrap-icons";
 
+import styles from "./PuzzleCard.module.scss";
 
 const PuzzleCard: React.FC<IPuzzleCardProps> = ({
   codeUrl,
@@ -22,7 +21,7 @@ const PuzzleCard: React.FC<IPuzzleCardProps> = ({
   const [isLiked, setLiked] = useState<boolean>(false);
   
   useEffect(() => {
-    dispatch(setActivePuzzle(PuzzleType.NONE));
+    dispatch(setActivePuzzle(PUZZLES.NONE));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

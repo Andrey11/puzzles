@@ -1,42 +1,65 @@
-.Cell {
-  input,
-  textarea {
-    width: 50px;
-    height: 50px;
-    text-align: center;
-    font-size: 32px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  
+$flip-degree: 180deg;
+
+div.Cell {
+  width: 50px;
+  height: 50px;
   font-family: inherit;
-  background-color: transparent;
   color: var(--mdc-theme-puzzle-primary, #091309);
-  border: thin solid var(--mdc-theme-puzzle-empty-cell-border, #c8bfbf);
-  &:not([value=""]) {
-    border: thin solid var(--mdc-theme-puzzle-cell-border, #645a5a);
-    border-radius: 1px;
-  }
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  perspective: 2000px;
+  border-color: var(--mdc-theme-puzzle-cell-border, #645a5a);
 
   &.Selected {
     box-sizing: border-box;
-    // box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.55);
-    outline: rgba(#2684FF, 0.75) auto 1px;
-    border-radius: 3px;
+    > input {
+      outline: var(--mdc-theme-puzzle-cell-outline, #2684ff) auto 1px;
+      border-radius: 3px;
+      border-color: none;
+    }
   }
 
   &.Match {
     background-color: var(--mdc-theme-puzzle-exists, #ffb003);
-    border: thin solid var(--mdc-theme-puzzle-exists, #ffb003);
+    border-color: var(--mdc-theme-puzzle-exists, #ffb003);
   }
   &.ExactMatch {
     background-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
-    border: thin solid var(--mdc-theme-puzzle-exact-match, #5fc405);
+    border-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
   }
   &.Miss {
     background-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
-    border-style: solid;
-    border-width: thin; 
     border-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
+  }
+
+  // Trigger flip animation when color classes are added
+  &.Match,
+  &.ExactMatch,
+  &.Miss {
+    transform: rotateY($flip-degree);
+    > input {
+      transform: rotateY($flip-degree);
+      transition-delay: inherit;
+    }
+  }
+
+  > input {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: transparent;
+    font-family: inherit;
+    color: inherit;
+    border-width: thin;
+    border-style: solid;
+    border-color: inherit;
+  }
+  
+  input.showEmptyStyle {
+    // make border ligher when cell is empty
+    &:is([value=""]) {
+      border-color: var(--mdc-theme-puzzle-empty-cell-border, #c8bfbf);
+    }
   }
 }

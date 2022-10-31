@@ -1,13 +1,13 @@
-export enum PuzzleType {
-  WORDLE = 'wordle',
+export enum PUZZLES {
   NONE = 'none',
+  WORDLE = 'wordle',
   WORDLE_VERSUS = 'wordleversus',
 };
 
 export declare type AppStatus = 'idle' | 'loading' | 'failed';
 
 export interface IPuzzleCardProps {
-  puzzleName: PuzzleType.WORDLE | PuzzleType.WORDLE_VERSUS;
+  puzzleName: PUZZLES.WORDLE | PUZZLES.WORDLE_VERSUS;
   codeUrl: string;
   navigateUrl: string;
   puzzleImageUrl: string;
@@ -15,7 +15,7 @@ export interface IPuzzleCardProps {
 }
 
 export interface IAppState {
-  activePuzzle: PuzzleType;
+  activePuzzle: PUZZLES;
   status: AppStatus;
   puzzleCardProps: Array<IPuzzleCardProps>;
 }

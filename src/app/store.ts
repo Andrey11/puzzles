@@ -4,12 +4,20 @@ import wordleReducer from '../features/wordle/wordleSlice';
 import dictionaryReducer from '../features/wordle/components/dictionary/dictionarySlice';
 import wordleVersusReducer from '../features/wordle/components/wordleversus/wordleVersusSlice';
 import wordleKeyboardReducer from '../components/keyboard/puzzlesKeyboardSlice';
+import wordleRowGroupReducer from '../features/wordle/components/rowgroup/rowGroupSlice';
+import wordleVersusGameReducer from '../features/wordle/components/wordleversus/wordleVersusGameSlice';
+
+const uiReducers = combineReducers({
+  keyboard: wordleKeyboardReducer,
+  rowGroup: wordleRowGroupReducer,
+  dictionary: dictionaryReducer,
+})
 
 const wordleReducers = combineReducers({
   wordle: wordleReducer,
-  dictionaryPanel: dictionaryReducer,
   wordleversus: wordleVersusReducer,
-  keyboard: wordleKeyboardReducer,
+  wordleVersusGame: wordleVersusGameReducer,
+  ui: uiReducers,
 })
 
 export const store = configureStore({

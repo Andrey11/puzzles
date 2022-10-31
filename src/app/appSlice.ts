@@ -4,11 +4,11 @@ import {
   AppStatus,
   IAppState,
   IPuzzleCardProps,
-  PuzzleType,
+  PUZZLES,
 } from "./App.types";
 
 const wordleCardProps: IPuzzleCardProps = {
-  puzzleName: PuzzleType.WORDLE,
+  puzzleName: PUZZLES.WORDLE,
   codeUrl: "https://github.com/Andrey11/puzzles",
   navigateUrl: "/wordle",
   puzzleDescription:
@@ -17,7 +17,7 @@ const wordleCardProps: IPuzzleCardProps = {
 };
 
 const wordleVersusCardProps: IPuzzleCardProps = {
-  puzzleName: PuzzleType.WORDLE_VERSUS,
+  puzzleName: PUZZLES.WORDLE_VERSUS,
   codeUrl: "https://github.com/Andrey11/puzzles",
   navigateUrl: "/wordleversus",
   puzzleDescription:
@@ -26,7 +26,7 @@ const wordleVersusCardProps: IPuzzleCardProps = {
 };
 
 const initialState: IAppState = {
-  activePuzzle: PuzzleType.NONE,
+  activePuzzle: PUZZLES.NONE,
   status: "idle",
   puzzleCardProps: [wordleCardProps, wordleVersusCardProps],
 };
@@ -36,7 +36,7 @@ export const appSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setActivePuzzle: (state, action: PayloadAction<PuzzleType>) => {
+    setActivePuzzle: (state, action: PayloadAction<PUZZLES>) => {
       state.activePuzzle = action.payload;
     },
     setStatus: (state, action: PayloadAction<AppStatus>) => {

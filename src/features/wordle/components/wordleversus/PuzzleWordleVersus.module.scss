@@ -128,15 +128,15 @@
   padding-top: 24px;
 }
 
-span.CellLetter {
-  border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
-  margin: 3px;
-  width: 25px;
-  height: 25px;
-  display: inline-block;
-  text-align: center;
-  font-weight: 600;
-}
+// span.CellLetter {
+//   border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
+//   margin: 3px;
+//   width: 25px;
+//   height: 25px;
+//   display: inline-block;
+//   text-align: center;
+//   font-weight: 600;
+// }
 
 span.MissLetter {
   border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
@@ -236,7 +236,7 @@ button.DeleteButton {
   position: relative;
 }
 
-.GuessContainer {
+.GuessRowsDisplay {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -244,12 +244,13 @@ button.DeleteButton {
   font-family: inherit;
   background-color: transparent;
   color: var(--mdc-theme-puzzle-primary, #091309);
+  position: relative;
 }
 
-.ButtonOneRow {
-  display: flex;
-  justify-content: space-between;
-}
+// .ButtonOneRow {
+//   display: flex;
+//   justify-content: space-between;
+// }
 
 .ScoreDisplay {
   background-color: var(--mdc-theme-puzzle-background, #f2f1f1);

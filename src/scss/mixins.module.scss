@@ -1,0 +1,52 @@
+/**
+ * Creates an incremental transition delay for each child <div> elevment
+ * first element  
+ */
+@mixin createTransitionDelays($startIndex, $endIndex, $delayByMs) {
+  @for $i from $startIndex through $endIndex {
+    div:nth-child(#{$i}n) {
+      transition-delay: #{$i * $delayByMs - 50}ms;
+    }
+  }
+}
+
+@mixin shake-animation($time, $iterationCount) {
+  animation: shake $time;
+  animation-iteration-count: $iterationCount;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(1px, 0px) rotate(0deg);
+  }
+  10% {
+    transform: translate(-1px, 0px) rotate(0deg);
+  }
+  20% {
+    transform: translate(-3px, 0px) rotate(0deg);
+  }
+  30% {
+    transform: translate(1px, 0px) rotate(0deg);
+  }
+  40% {
+    transform: translate(3px, 0px) rotate(0deg);
+  }
+  50% {
+    transform: translate(-1px, 0px) rotate(-0deg);
+  }
+  60% {
+    transform: translate(-3px, 0px) rotate(0deg);
+  }
+  70% {
+    transform: translate(3px, 0px) rotate(-0deg);
+  }
+  80% {
+    transform: translate(-1px, 0px) rotate(0deg);
+  }
+  90% {
+    transform: translate(1px, 0px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1px, 0px) rotate(-0deg);
+  }
+}

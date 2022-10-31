@@ -1,3 +1,9 @@
+@import '../../../../scss/mixins.module.scss';
+
+.cellCls {
+  text-decoration: none;
+}
+
 .ComponentWrapper {
   position: relative;
 
@@ -5,48 +11,13 @@
     display: flex;
     gap: 5px;
     z-index: 2;
+
+    @include createTransitionDelays(1, 5, 50);
   }
 
   &.InvalidWord {
     .GuessRowContainer {
-      animation: shake 0.4s;
-      animation-iteration-count: 3;
+      @include shake-animation(0.4s, 3);
     }
-  }
-}
-
-@keyframes shake {
-  0% {
-    transform: translate(1px, 0px) rotate(0deg);
-  }
-  10% {
-    transform: translate(-1px, 0px) rotate(0deg);
-  }
-  20% {
-    transform: translate(-3px, 0px) rotate(0deg);
-  }
-  30% {
-    transform: translate(1px, 0px) rotate(0deg);
-  }
-  40% {
-    transform: translate(3px, 0px) rotate(0deg);
-  }
-  50% {
-    transform: translate(-1px, 0px) rotate(-0deg);
-  }
-  60% {
-    transform: translate(-3px, 0px) rotate(0deg);
-  }
-  70% {
-    transform: translate(3px, 0px) rotate(-0deg);
-  }
-  80% {
-    transform: translate(-1px, 0px) rotate(0deg);
-  }
-  90% {
-    transform: translate(1px, 0px) rotate(0deg);
-  }
-  100% {
-    transform: translate(1px, 0px) rotate(-0deg);
   }
 }

@@ -1,19 +1,16 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useAppDispatch, useAppSelector } from "../../../../app/hooks/hooks";
+import { useAppDispatch } from "../../../../app/hooks/hooks";
 import { RootState } from "../../../../app/store";
 import WordleRow from "../row/WordleRow";
 import {
-  getCurrentUserGuess,
   getUserGuess,
   setAnimateInvalidWord,
-  showInvalidWordAnimation,
 } from "../wordleversus/wordleVersusSlice";
+import { ROW_IDS } from "./RowGroup.types";
 
 const RowGroup: React.FunctionComponent = () => {
   const dispatch = useAppDispatch();
-  const currentGuessNum = useAppSelector(getCurrentUserGuess);
-  const animateInvalidWord = useAppSelector(showInvalidWordAnimation);
 
   const guess1 = useSelector((state: RootState) => getUserGuess(state, 1));
   const guess2 = useSelector((state: RootState) => getUserGuess(state, 2));
@@ -25,33 +22,33 @@ const RowGroup: React.FunctionComponent = () => {
   return (
     <>
       <WordleRow
+        rowId={ROW_IDS.ROW_1}
         guess={guess1}
-        playInvalidWordAnimation={currentGuessNum === 1 && animateInvalidWord}
         onInvalidWordAnimationEnd={() => dispatch(setAnimateInvalidWord(false))}
       />
       <WordleRow
+        rowId={ROW_IDS.ROW_2}
         guess={guess2}
-        playInvalidWordAnimation={currentGuessNum === 2 && animateInvalidWord}
         onInvalidWordAnimationEnd={() => dispatch(setAnimateInvalidWord(false))}
       />
       <WordleRow
+        rowId={ROW_IDS.ROW_3}
         guess={guess3}
-        playInvalidWordAnimation={currentGuessNum === 3 && animateInvalidWord}
         onInvalidWordAnimationEnd={() => dispatch(setAnimateInvalidWord(false))}
       />
       <WordleRow
+        rowId={ROW_IDS.ROW_4}
         guess={guess4}
-        playInvalidWordAnimation={currentGuessNum === 4 && animateInvalidWord}
         onInvalidWordAnimationEnd={() => dispatch(setAnimateInvalidWord(false))}
       />
       <WordleRow
+        rowId={ROW_IDS.ROW_5}
         guess={guess5}
-        playInvalidWordAnimation={currentGuessNum === 5 && animateInvalidWord}
         onInvalidWordAnimationEnd={() => dispatch(setAnimateInvalidWord(false))}
       />
       <WordleRow
+        rowId={ROW_IDS.ROW_6}
         guess={guess6}
-        playInvalidWordAnimation={currentGuessNum === 6 && animateInvalidWord}
         onInvalidWordAnimationEnd={() => dispatch(setAnimateInvalidWord(false))}
       />
     </>

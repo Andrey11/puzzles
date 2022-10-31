@@ -4,18 +4,13 @@ import {
   KeyboardLetter,
   KeyboardLetterColor,
 } from "../../../../components/keyboard/PuzzlesKeyboard.types";
-import {
-  resetKeyboard,
-  setLetterColor,
-} from "../../../../components/keyboard/puzzlesKeyboardSlice";
-import { resetRowGroup, setCell, setCellColor } from "../rowgroup/rowGroupSlice";
+import { setLetterColor } from "../../../../components/keyboard/puzzlesKeyboardSlice";
 
 import {
   IScoreModel,
   IWordleVersusState,
   IWordleVersusUserRound,
 } from "../wordleversus/PuzzleWordleVersus.types";
-import { resetGame } from "./wordleVersusGameSlice";
 
 const generateColorsForUserGuess = (guess: Array<string>) => {
   return guess.map((letter) => {
@@ -82,7 +77,6 @@ export const onSubmitUserGuess = (): AppThunk => (dispatch, getState) => {
           }
         }
         dispatch(setLetterColor({ letter, color }));
-        dispatch(setCellColor(userGuessNumber, index + 1, color ));
       });
 
       dispatch(
@@ -125,29 +119,24 @@ export const submitUserGuess =
 export const addLetter =
   (ltr: string): AppThunk =>
   (dispatch, getState) => {
-    
     const wordleVersusState = getState().puzzle.wordleversus;
-    const { isWon, isLost } = wordleVersusState.userRound;
     const { letters, colors } = wordleVersusState.userRound.guessWord;
 
-    if (letters.length < 5 && !isWon && !isLost) {
+    if (letters.length < 5) {
       dispatch(
         addGuessWord({
           currentUserGuess: wordleVersusState.userRound.currentUserGuess,
           guessWord: { colors: colors, letters: [...letters, ltr] },
         })
       );
-
-      dispatch(setCell(ltr));
     }
   };
 
 export const deleteLetter = (): AppThunk => (dispatch, getState) => {
   const wordleVersusState = getState().puzzle.wordleversus;
   const { letters, colors } = wordleVersusState.userRound.guessWord;
-  const { isWon, isLost } = wordleVersusState.userRound;
+  const { isWon, isLost} = wordleVersusState.userRound;
   if (letters.length > 0 && !isWon && !isLost) {
-    dispatch(setCell(''));
     dispatch(
       addGuessWord({
         currentUserGuess: wordleVersusState.userRound.currentUserGuess,
@@ -158,14 +147,6 @@ export const deleteLetter = (): AppThunk => (dispatch, getState) => {
       })
     );
   }
-};
-
-export const resetPuzzleState = (): AppThunk => (dispatch, _getState) => {
-  // const wordleVersusState = getState().puzzle.wordleversus;
-  // const keyboardState = getState().puzzle.keyboard;
-  dispatch(resetKeyboard());
-  dispatch(resetGame());
-  dispatch(resetRowGroup());
 };
 
 const initialState: IWordleVersusState = {
@@ -190,7 +171,7 @@ const initialState: IWordleVersusState = {
 
 type ActionToPrev = PayloadAction<IWordleVersusUserRound>;
 
-export const wordleVersusSlice = createSlice({
+export const wordleSolverSlice = createSlice({
   name: "wordleversus",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
@@ -247,7 +228,7 @@ export const {
   setAnimateInvalidWord,
   setLostRound,
   setWonRound,
-} = wordleVersusSlice.actions;
+} = wordleSolverSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -274,7 +255,7 @@ export const showInvalidWordAnimation = (state: RootState): boolean =>
 export const isUserWonRound = (state: RootState): boolean =>
   state.puzzle.wordleversus.userRound.isWon === true;
 export const isUserLostRound = (state: RootState): boolean =>
-  state.puzzle.wordleversus.userRound.isLost === true;
+  state.puzzle.wordleversus.userRound.isLost === true;  
 
 export const getUserGuess = (state: RootState, guessNumber: number) => {
   const userRound = getUserGuessWord(state);
@@ -291,4 +272,4 @@ export const getUserGuess = (state: RootState, guessNumber: number) => {
   };
 };
 
-export default wordleVersusSlice.reducer;
+export default wordleSolverSlice.reducer;

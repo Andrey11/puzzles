@@ -10,9 +10,16 @@
   --mdc-theme-puzzle-secondary-rgb: 12, 99, 228;
   --mdc-theme-puzzle-error-notification: #091309;
   --mdc-theme-puzzle-error-on-notification: #f2f1f1;
+  --mdc-theme-puzzle-win-notification: #5fc405;
+  --mdc-theme-puzzle-win-on-notification: #f2f1f1;
+  --mdc-theme-puzzle-loss-notification: #ffb003;
+  --mdc-theme-puzzle-loss-on-notification: #f2f1f1;
   --mdc-theme-puzzle-empty-cell-border: #c8bfbf;
   --mdc-theme-puzzle-cell-border: #645a5a;
+  --mdc-theme-puzzle-cell-outline: #2684ff;
 }
+
+
 
 body {
   margin: 0;

@@ -1,7 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { SelectInstance } from "react-select";
-
-import { Robot } from "react-bootstrap-icons";
+import React, { useEffect, useRef, useState } from "react";
+// import { SelectInstance } from "react-select";
 
 import {
   getExactMatches,
@@ -19,7 +17,6 @@ import {
 
 import styles from "./PuzzleWordleVersus.module.scss";
 
-import WordSelector from "../dropdown/WordSelector";
 import { allAvailableWords } from "../../PuzzleWords";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks/hooks";
 import {
@@ -27,37 +24,28 @@ import {
   getDictionary,
   isDictionaryLoaded,
 } from "../../wordleSlice";
-import { PuzzleType } from "../../../../app/App.types";
+import { PUZZLES } from "../../../../app/App.types";
 import { setActivePuzzle } from "../../../../app/appSlice";
 import {
   addLetter,
   deleteLetter,
   getBotWordle,
-  isUserTurn,
+  getUserGuessWord,
   onSubmitUserGuess,
+  resetPuzzleState,
   setGuessWordValid,
 } from "./wordleVersusSlice";
 import NotificationOverlay from "../notification/NotificationOverlay";
 import RowGroup from "../rowgroup/RowGroup";
 import PuzzlesKeyboard from "../../../../components/keyboard/PuzzlesKeyboard";
+import UserWordSelector from "./UserWordSelector";
+import { getCurrentGame } from "./wordleVersusGameSlice";
 
 type IPuzzleWordleVersusProps = {
   games?: number;
 };
 
-const NON_BREAKING_SPACE: JSX.Element = <>&nbsp;</>;
-
-// const initialPuzzleRowModel: IWordleRow = {
-//   letters: ["", "", "", "", ""],
-//   colors: [
-//     "transparent",
-//     "transparent",
-//     "transparent",
-//     "transparent",
-//     "transparent",
-//   ],
-//   disabled: true,
-// };
+// const NON_BREAKING_SPACE: JSX.Element = <>&nbsp;</>;
 
 const START_WORD = "OCEAN";
 
@@ -79,36 +67,23 @@ const initialSolutionModel = (): ISolutionModel => {
 const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
   games = 1,
 }: IPuzzleWordleVersusProps) => {
-  const selectRef = useRef<SelectInstance | null>();
+  // const selectRef = useRef<SelectInstance | null>();
   // const startingWordRef = useRef<SelectInstance | null>();
   const wordRunnerRef = useRef<number>(0);
-  const targetRef = useRef(null);
-  const guessRowTargetRef = useRef(null);
+  // const targetRef = useRef(null);
+  const guessRowTargetRef: React.RefObject<any> = useRef(null);
 
-  const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
   const dictionary: IWordleDictionary = useAppSelector(getDictionary);
+  const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
   const dispatch = useAppDispatch();
-
-  // const { isMobile } = useDeviceDetect();
-
-  // const [dictionaryLetters, setDictionaryLetters] = useState<Array<number>>([]);
-
-  // const [guess1, setGuess1] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess2, setGuess2] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess3, setGuess3] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess4, setGuess4] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess5, setGuess5] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess6, setGuess6] = useState<IWordleRow>(initialPuzzleRowModel);
 
   const [selectedWord, setSelectedWord] = useState<string>("");
   const [startingWord, setStartingWord] = useState<string>("");
   const [statTracker, setStatTracker] = useState<Array<IStat>>([]);
   const [loaded, setLoaded] = useState<boolean>(dictionaryLoaded);
 
-  // const currentGuessNumber = useAppSelector(getCurrentUserGuess);
-  const userGuessTurn = useAppSelector(isUserTurn);
   const botWord = useAppSelector(getBotWordle);
-  // const animateInvalidWord = useAppSelector(showInvalidWordAnimation);
+  const { isWon, isLost, isUserGame } = useAppSelector(getCurrentGame);
 
   const [guessingInProgress, setGuessingInProgress] = useState<boolean>(false);
 
@@ -117,14 +92,13 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       console.log("[PuzzleWordleVersus] initialized");
       setLoaded(true);
       dispatch(createDictionary(allAvailableWords));
-      dispatch(setActivePuzzle(PuzzleType.WORDLE_VERSUS));
+      dispatch(setActivePuzzle(PUZZLES.WORDLE_VERSUS));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded]);
 
   useEffect(() => {
     if (dictionaryLoaded && dictionary.words.length > 0) {
-      // setDictionaryLetters(dictionary.letters as unknown as Array<number>);
       setStartingWord(START_WORD);
     }
   }, [dictionaryLoaded, dictionary]);
@@ -132,16 +106,28 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
   useEffect(() => {
     if (selectedWord !== "") {
       solveWordlePuzzle(selectedWord);
+      if (selectedWord === 'amazing-shold-not-get-here, remove me soon') {
+        setSelectedWord('test');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedWord]);
 
   useEffect(() => {
-    if (userGuessTurn) {
+    if (isUserGame) {
       console.log(`User turn, botWordle = ${botWord}`);
+    } else {
+      console.log(`Robot turn, userWord = ${selectedWord}`);
     }
-  }, [userGuessTurn, botWord]);
+  }, [isUserGame, botWord, selectedWord]);
+
+  useEffect(() => {
+    if (isWon || isLost) {
+      // dispatch(setUserTurn(false));
+      // dispatch(resetPuzzleState());
+    }
+  }, [isWon, isLost, dispatch]);
 
   const puzzleSolver = async (startPuzzleSolution: IPuzzleSolution) => {
     let puzzleSolution: IPuzzleSolution = startPuzzleSolution;
@@ -257,13 +243,13 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
     return solutionPromise;
   };
 
-  const selectableWords = useMemo(() => {
-    return dictionary.words.map((word: string) => ({
-      value: word,
-      label: word,
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dictionaryLoaded]);
+  // const selectableWords = useMemo(() => {
+  //   return dictionary.words.map((word: string) => ({
+  //     value: word,
+  //     label: word,
+  //   }));
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [dictionaryLoaded]);
 
   const displayStatus = (
     guessNum: number,
@@ -478,15 +464,15 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
     });
   };
 
-  const clearAllGuessRows = () => {
-    // TODO: Reset all guesses
-    // setGuess1({ ...initialPuzzleRowModel });
-    // setGuess2({ ...initialPuzzleRowModel });
-    // setGuess3({ ...initialPuzzleRowModel });
-    // setGuess4({ ...initialPuzzleRowModel });
-    // setGuess5({ ...initialPuzzleRowModel });
-    // setGuess6({ ...initialPuzzleRowModel });
-  };
+  // const clearAllGuessRows = () => {
+  //   // TODO: Reset all guesses
+  //   // setGuess1({ ...initialPuzzleRowModel });
+  //   // setGuess2({ ...initialPuzzleRowModel });
+  //   // setGuess3({ ...initialPuzzleRowModel });
+  //   // setGuess4({ ...initialPuzzleRowModel });
+  //   // setGuess5({ ...initialPuzzleRowModel });
+  //   // setGuess6({ ...initialPuzzleRowModel });
+  // };
 
   // const clearPuzzle = () => {
   //   clearAllGuessRows();
@@ -514,149 +500,45 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
     dispatch(deleteLetter());
   };
 
-  const onWordSelected = (selectedWord: string) => {
-    clearAllGuessRows();
-    setGuessingInProgress(selectedWord !== "");
-    if (startingWord !== "") {
-      displayStatus(
-        1,
-        [
-          "transparent",
-          "transparent",
-          "transparent",
-          "transparent",
-          "transparent",
-        ],
-        startingWord
-      );
-    }
+  // const onWordSelected = (selectedWord: string) => {
+  //   clearAllGuessRows();
+  //   setGuessingInProgress(selectedWord !== "");
+  //   if (startingWord !== "") {
+  //     displayStatus(
+  //       1,
+  //       [
+  //         "transparent",
+  //         "transparent",
+  //         "transparent",
+  //         "transparent",
+  //         "transparent",
+  //       ],
+  //       startingWord
+  //     );
+  //   }
 
-    setSelectedWord(selectedWord);
-  };
+  //   setSelectedWord(selectedWord);
+  // };
 
   const handleLetterChange = (letter: string) => {
     console.log(`Letter change: ${letter} ${guessingInProgress}`);
     dispatch(addLetter(letter));
   };
 
-  // const deleteButton = (
-  //   <Button
-  //     key="delete-btn"
-  //     variant="outline-danger"
-  //     active={false}
-  //     onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-  //       event.stopPropagation();
-  //       if (!isMobile) {
-  //         event.currentTarget.blur();
-  //         onDeletePressed();
-  //         console.log("Click Delete event");
-  //       }
-  //     }}
-  //     onTouchEnd={(event: React.TouchEvent<HTMLButtonElement>) => {
-  //       event.stopPropagation();
-  //       if (isMobile) {
-  //         event.currentTarget.blur();
-  //         onDeletePressed();
-  //       }
-  //     }}
-  //     className={styles.DeleteButton}
-  //   >
-  //     <Backspace size={18} />
-  //   </Button>
-  // );
-
-  // const enterButton = (
-  //   <Button
-  //     key="enter-btn"
-  //     variant="outline-success"
-  //     active={false}
-  //     value={1}
-  //     onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-  //       event.stopPropagation();
-  //       if (!isMobile) {
-  //         event.currentTarget.blur();
-  //         onEnterPressed();
-  //         console.log("Click Enter event");
-  //       }
-  //     }}
-  //     onTouchEnd={(event: React.TouchEvent<HTMLButtonElement>) => {
-  //       event.stopPropagation();
-  //       if (isMobile) {
-  //         event.currentTarget.blur();
-  //         onEnterPressed();
-  //         console.log("Touch Enter event");
-  //       }
-  //     }}
-  //     className={styles.EnterButton}
-  //   >
-  //     <BoxArrowRight size={18} />
-  //   </Button>
-  // );
-
-  // const renderLetterButtons = () => {
-  //   if (!dictionaryLetters || !dictionary) {
-  //     return null;
-  //   }
-
-  //   const stateVariant = "outline-secondary";
-  //   const selectedMissingLetterVariant = "secondary";
-
-  //   const letterElements: Array<JSX.Element> = dictionaryLetters.map(
-  //     (liw: any, index: number) => {
-  //       const letter: string = getLetterByIndexCode(index);
-  //       const letterId = `letter_${letter}`;
-  //       const isSelectedMissingLetter = false;
-  //       const currentVariant = isSelectedMissingLetter
-  //         ? selectedMissingLetterVariant
-  //         : stateVariant;
-  //       return (
-  //         <section key={`key_${letterId}`}>
-  //           <ToggleButton
-  //             className={styles.LetterButton}
-  //             checked={isSelectedMissingLetter}
-  //             variant={currentVariant}
-  //             active={false}
-  //             onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-  //               event.stopPropagation();
-  //               if (!isMobile) {
-  //                 event.currentTarget.blur();
-  //                 handleLetterChange(letter);
-  //                 console.log("Click event");
-  //               }
-  //             }}
-  //             onTouchEnd={(event: React.TouchEvent<HTMLButtonElement>) => {
-  //               event.stopPropagation();
-  //               if (isMobile) {
-  //                 event.currentTarget.blur();
-  //                 handleLetterChange(letter);
-  //                 console.log("Touch event");
-  //               }
-  //             }}
-  //             value={letter}
-  //           >
-  //             {letter}
-  //           </ToggleButton>
-  //         </section>
-  //       );
-  //     }
-  //   );
-
-  //   const allLetters = letterElements.slice(0, letterElements.length - 2);
-  //   allLetters.push(enterButton);
-  //   allLetters.push(<div key="letter_spacer1" className={styles.Spacer}></div>);
-  //   allLetters.push(...letterElements.slice(letterElements.length - 2));
-  //   allLetters.push(<div key="letter_spacer2" className={styles.Spacer}></div>);
-  //   allLetters.push(deleteButton);
-
-  //   return allLetters;
-  // };
-
   return (
     <div className={`${styles.WordleVersusContainer}`}>
-      <section className={styles.ScoreDisplay}>GAME SCORE</section>
-      <section>
+      <section itemID="wordleVsScoreDisplay" className={styles.ScoreDisplay}>
+        GAME SCORE
+      </section>
+      <section itemID="wordleVsWODSelectorDisplay">
+        {dictionaryLoaded && <UserWordSelector />}
+      </section>
+      {dictionaryLoaded && isUserGame && (
+        <div>Solve wordle bot's word {botWord}</div>
+      )}
+      <section itemID="wordleVsGameDisplay">
         <div className={styles.ControlContainer}>
-          {dictionaryLoaded && !userGuessTurn && (
+          {/* {dictionaryLoaded && !isUserGame && (
             <WordSelector
               refContainer={targetRef}
               refSelector={selectRef}
@@ -672,21 +554,15 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
                 </span>
               }
             />
-          )}
-          {dictionaryLoaded && userGuessTurn && (
-            <div>Solve wordle bot's word {botWord}</div>
-          )}
-          <div
-            ref={guessRowTargetRef}
-            className={`${styles.RelativePosition} ${styles.GuessContainer}`}
-          >
+          )} */}
+
+          <div ref={guessRowTargetRef} className={styles.GuessRowsDisplay}>
             <RowGroup />
           </div>
         </div>
       </section>
-      <section>
+      <section itemID="wordleVsKeyboardDisplay">
         <div className={styles.StatsContainer}>
-          {/* {dictionaryLoaded && renderLetterButtons()} */}
           <PuzzlesKeyboard
             onKeyPressed={handleLetterChange}
             onDeletePressed={onDeletePressed}
@@ -694,6 +570,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
           />
         </div>
       </section>
+
       <NotificationOverlay targetRef={guessRowTargetRef} />
 
       {/* <Button id="clear-btn" variant="secondary" size="lg" onClick={clearPuzzle}>

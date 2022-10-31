@@ -4,14 +4,35 @@
   z-index: 0;
   left: 50% !important;
   top: 55px !important;
-  opacity: 1;
+  opacity: 0;
   width: auto;
   padding: 8px 24px;
-  background-color: var(--mdc-theme-puzzle-error-notification, #091309);
-  color: var(--mdc-theme-puzzle-error-on-notification, #091309);
   font-weight: 700;
   border-radius: 5px;
   text-align: center;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) !important;
   line-height: 28px;
 }
+
+.InvalidWord {
+  opacity: 1;
+  background-color: var(--mdc-theme-puzzle-error-notification, #091309);
+  color: var(--mdc-theme-puzzle-error-on-notification, #091309);
+}
+
+.UserWonRound {
+  opacity: 1;
+  background-color: var(--mdc-theme-puzzle-win-notification, #5fc405);
+  color: var(--mdc-theme-puzzle-win-on-notification, #f2f1f1);
+}
+
+.UserLostRound {
+  opacity: 1;
+  background-color: var(--mdc-theme-puzzle-loss-notification, #ffb003);
+  color: var(--mdc-theme-puzzle-loss-on-notification, #f2f1f1);
+}
+
+
+  
+  
+  

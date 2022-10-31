@@ -21,7 +21,7 @@ import {
   ISolutionModel,
 } from "../../PuzzleWordle.types";
 
-import styles from "./PuzzleWordleSolver.module.scss";
+import styles from "./WordleSolver.module.scss";
 
 import WordSelector from "../dropdown/WordSelector";
 import { useOverlay } from "../overlay/InfoOverlay";
@@ -29,6 +29,7 @@ import WordleRow from "../row/WordleRow";
 import { allAvailableWords } from "../../PuzzleWords";
 import { useAppSelector } from "../../../../app/hooks/hooks";
 import { getDictionary, isDictionaryLoaded } from "../../wordleSlice";
+import { ROW_IDS } from "../rowgroup/RowGroup.types";
 
 type IPuzzleWordleSolverProps = {
   analyzeSolutionHandler?: (solution: IAnalyzerData) => void;
@@ -65,7 +66,7 @@ const initialSolutionModel = (): ISolutionModel => {
   };
 };
 
-const PuzzleWordleSolver: React.FunctionComponent<
+const WordleSolver: React.FunctionComponent<
   IPuzzleWordleSolverProps
 > = ({ analyzeSolutionHandler = () => {} }: IPuzzleWordleSolverProps) => {
   const selectRef = useRef<SelectInstance | null>();
@@ -657,12 +658,12 @@ const PuzzleWordleSolver: React.FunctionComponent<
           className={`${styles.RelativePosition} ${styles.GuessContainer}`}
         >
           <div className={styles.EditFirstWordPopup}>{SelectFirstWord}</div>
-          <WordleRow guess={guess1} />
-          <WordleRow guess={guess2} />
-          <WordleRow guess={guess3} />
-          <WordleRow guess={guess4} />
-          <WordleRow guess={guess5} />
-          <WordleRow guess={guess6} />
+          <WordleRow rowId={ROW_IDS.ROW_1} guess={guess1} rowNumber={1}/>
+          <WordleRow rowId={ROW_IDS.ROW_2} guess={guess2} rowNumber={2}/>
+          <WordleRow rowId={ROW_IDS.ROW_3} guess={guess3} rowNumber={3}/>
+          <WordleRow rowId={ROW_IDS.ROW_4} guess={guess4} rowNumber={4}/>
+          <WordleRow rowId={ROW_IDS.ROW_5} guess={guess5} rowNumber={5}/>
+          <WordleRow rowId={ROW_IDS.ROW_6} guess={guess6} rowNumber={6}/>
         </div>
         <Button
           ref={(ref: any) => (calculateBtnRef.current = ref)}
@@ -690,4 +691,4 @@ const PuzzleWordleSolver: React.FunctionComponent<
   );
 };
 
-export default PuzzleWordleSolver;
+export default WordleSolver;

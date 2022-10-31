@@ -1,0 +1,50 @@
+.AppCardContainer {
+  margin: 16px;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.Card {
+  &Wrapper {
+    img {
+      cursor: pointer;
+    }
+  }
+  &BodyWrapper {
+    border-top: 1px solid #0000002d;
+  }
+
+  &TextStyle {
+    font-size: smaller;
+  }
+
+  &Footer {
+    background-color: transparent;
+    margin: 0 0 8px 0;
+    border: none;
+    font-size: larger;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    svg {
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    section.IconsWrapper {
+      font-size: larger;
+      display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+      line-height: 10px;
+      align-items: center;
+    }
+  }
+}

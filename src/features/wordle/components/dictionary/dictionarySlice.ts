@@ -7,9 +7,9 @@ const initialState: IWordleDictionaryState = {
 };
 
 export const dictionarySlice = createSlice({
-  name: "dictionaryPanel",
+  name: "dictionary",
   initialState,
-  // The `reducers` field lets us define reducers and generate associated actions
+
   reducers: {
     setActiveLetter: (state, action: PayloadAction<string>) => {
       state.activeLetter = action.payload;
@@ -20,6 +20,6 @@ export const dictionarySlice = createSlice({
 export const { setActiveLetter } = dictionarySlice.actions;
 
 export const getActiveLetter = (state: RootState) =>
-  state.puzzle.dictionaryPanel.activeLetter;
+  state.puzzle.ui.dictionary.activeLetter;
 
 export default dictionarySlice.reducer;

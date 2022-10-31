@@ -7,7 +7,7 @@ import { Robot, Book, BookHalf, Diagram3 } from 'react-bootstrap-icons';
 import { allAvailableWords } from './PuzzleWords';
 import { IAnalyzerData, WordleScreen } from './PuzzleWordle.types';
 import PuzzleDetailsStats from './components/stats/PuzzleDetailsStats';
-import PuzzleDetailsSolver from './components/solver/PuzzleWordleSolver';
+import PuzzleDetailsSolver from './components/solver/WordleSolver';
 
 // import useDeviceDetect from '../../app/hooks/useDeviceDetect';
 
@@ -16,7 +16,7 @@ import PuzzleDictionary from './components/dictionary/WordleDictionary';
 import { createDictionary, getActiveScreen, isDictionaryLoaded, setActiveScreen } from './wordleSlice';
 import { useAppDispatch, useAppSelector } from '../../app/hooks/hooks';
 import { setActivePuzzle } from '../../app/appSlice';
-import { PuzzleType } from '../../app/App.types';
+import { PUZZLES } from '../../app/App.types';
 
 const NON_BREAKING_SPACE: JSX.Element = <>&nbsp;</>;
 
@@ -42,7 +42,7 @@ const PuzzleWordle: React.FunctionComponent = () => {
       console.log('[PuzzleDetailsScene] initialized');
       setLoaded(true);
       dispatch(createDictionary(allAvailableWords));
-      dispatch(setActivePuzzle(PuzzleType.WORDLE));
+      dispatch(setActivePuzzle(PUZZLES.WORDLE));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded]);
