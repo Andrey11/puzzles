@@ -30,9 +30,7 @@ import {
   addLetter,
   deleteLetter,
   getBotWordle,
-  getUserGuessWord,
   onSubmitUserGuess,
-  resetPuzzleState,
   setGuessWordValid,
 } from "./wordleVersusSlice";
 import NotificationOverlay from "../notification/NotificationOverlay";
@@ -40,6 +38,9 @@ import RowGroup from "../rowgroup/RowGroup";
 import PuzzlesKeyboard from "../../../../components/keyboard/PuzzlesKeyboard";
 import UserWordSelector from "./UserWordSelector";
 import { getCurrentGame } from "./wordleVersusGameSlice";
+import { useDialog } from "../modal/Dialog";
+import WordSelector from "../dropdown/WordSelector";
+import { PencilSquare } from "react-bootstrap-icons";
 
 type IPuzzleWordleVersusProps = {
   games?: number;
@@ -70,7 +71,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
   // const selectRef = useRef<SelectInstance | null>();
   // const startingWordRef = useRef<SelectInstance | null>();
   const wordRunnerRef = useRef<number>(0);
-  // const targetRef = useRef(null);
+  const bodyContainerRef = useRef(null);
   const guessRowTargetRef: React.RefObject<any> = useRef(null);
 
   const dictionary: IWordleDictionary = useAppSelector(getDictionary);
@@ -525,42 +526,35 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
     dispatch(addLetter(letter));
   };
 
+  const { DialogComponent: SelectWordForRobot, setDialogVisible } = useDialog({
+    title: "Enter word as first guess",
+    body: (
+      <UserWordSelector />
+    ),
+    infoTrigger: <PencilSquare size={18} />,
+  });
+
   return (
-    <div className={`${styles.WordleVersusContainer}`}>
+    <div ref={bodyContainerRef} className={`${styles.WordleVersusContainer}`}>
       <section itemID="wordleVsScoreDisplay" className={styles.ScoreDisplay}>
         GAME SCORE
       </section>
+      
       <section itemID="wordleVsWODSelectorDisplay">
-        {dictionaryLoaded && <UserWordSelector />}
+        {dictionaryLoaded && SelectWordForRobot}
       </section>
+      
       {dictionaryLoaded && isUserGame && (
         <div>Solve wordle bot's word {botWord}</div>
       )}
       <section itemID="wordleVsGameDisplay">
         <div className={styles.ControlContainer}>
-          {/* {dictionaryLoaded && !isUserGame && (
-            <WordSelector
-              refContainer={targetRef}
-              refSelector={selectRef}
-              words={selectableWords}
-              onWordSelected={onWordSelected}
-              placeholder={
-                <span className={styles.PlaceholderMessage}>
-                  Enter wordle for{NON_BREAKING_SPACE}
-                  <span>
-                    <Robot size={24} />
-                  </span>
-                  {NON_BREAKING_SPACE} to solve
-                </span>
-              }
-            />
-          )} */}
-
           <div ref={guessRowTargetRef} className={styles.GuessRowsDisplay}>
             <RowGroup />
           </div>
         </div>
       </section>
+      
       <section itemID="wordleVsKeyboardDisplay">
         <div className={styles.StatsContainer}>
           <PuzzlesKeyboard
@@ -572,10 +566,6 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       </section>
 
       <NotificationOverlay targetRef={guessRowTargetRef} />
-
-      {/* <Button id="clear-btn" variant="secondary" size="lg" onClick={clearPuzzle}>
-        CLEAR
-      </Button> */}
     </div>
   );
 };
