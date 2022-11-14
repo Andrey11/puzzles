@@ -1,13 +1,13 @@
 @import "./scss/custom.module.scss";
 
 :root {
+  --mdc-theme-puzzle-primary: #091309;
+  --mdc-theme-puzzle-secondary: #0c63e4;
+  --mdc-theme-puzzle-secondary-rgb: 12, 99, 228;
   --mdc-theme-puzzle-background: #f2f1f1;
   --mdc-theme-puzzle-miss: #c2b9b9;
   --mdc-theme-puzzle-exact-match: #5fc405;
   --mdc-theme-puzzle-exists: #ffb003;
-  --mdc-theme-puzzle-primary: #091309;
-  --mdc-theme-puzzle-secondary: #0c63e4;
-  --mdc-theme-puzzle-secondary-rgb: 12, 99, 228;
   --mdc-theme-puzzle-error-notification: #091309;
   --mdc-theme-puzzle-error-on-notification: #f2f1f1;
   --mdc-theme-puzzle-win-notification: #5fc405;
@@ -17,6 +17,7 @@
   --mdc-theme-puzzle-empty-cell-border: #c8bfbf;
   --mdc-theme-puzzle-cell-border: #645a5a;
   --mdc-theme-puzzle-cell-outline: #2684ff;
+  --mdc-theme-puzzle-game-turn-highlight: #5fc405;
 }
 
 

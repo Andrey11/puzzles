@@ -11,6 +11,7 @@ type SelectableOption = {
 type WordSelectorProps = {
   words: Array<SelectableOption>;
   onWordSelected: (word: string) => void;
+  onFocus?: () => void;
   placeholder?: React.ReactNode;
   refContainer?: MutableRefObject<HTMLDivElement> | MutableRefObject<null>;
   refSelector?: React.MutableRefObject<SelectInstance | null | undefined>;
@@ -20,6 +21,7 @@ type WordSelectorProps = {
 const WordSelector: React.FunctionComponent<WordSelectorProps> = ({
   words,
   onWordSelected,
+  onFocus = () => {},
   placeholder,
   refContainer,
   refSelector,
@@ -44,6 +46,7 @@ const WordSelector: React.FunctionComponent<WordSelectorProps> = ({
             refSelector.current = ref;
           }
         }}
+        onFocus={onFocus}
         components={{ DropdownIndicator:() => null, IndicatorSeparator:() => null }}
         menuIsOpen={menuOpen}
         filterOption={filterOptions}

@@ -5,13 +5,15 @@ import {
   LOG_CLS_INFO,
   LOG_CLS_SUCCESS,
 } from "../../PuzzleWordle-helpers";
-import { IWordleDictionary, Letters } from "../../PuzzleWordle.types";
+import { Letters } from "../../PuzzleWordle.types";
 
 import WordleDictionaryWord from "../dictionary/WordleDictionaryWord";
 
 import styles from "./AlphabetScrollList.module.scss";
+// import { useAppSelector } from "../../../../app/hooks/hooks";
+// import { isScreenDictionaryActive } from "../../wordlesolver/wordleSlice";
 import { useAppSelector } from "../../../../app/hooks/hooks";
-import { getDictionary, isScreenDictionaryActive } from "../../wordleSlice";
+import { getDictionary } from "../dictionary/wordleDictionarySlice";
 
 type IAlphabetScrollWordsByLetterProps = {
   letter: string;
@@ -21,9 +23,9 @@ type IAlphabetScrollWordsByLetterProps = {
 const AlphabetScrollWordsByLetter: React.FunctionComponent<
   IAlphabetScrollWordsByLetterProps
 > = ({ letter, isActiveLetter }: IAlphabetScrollWordsByLetterProps) => {
-  const dictionary: IWordleDictionary = useAppSelector(getDictionary);
+  const dictionary = useAppSelector(getDictionary);
   const wordsStartingWithLetter = dictionary.wordsBy[letter as Letters];
-  const isActiveScreen = useAppSelector(isScreenDictionaryActive);
+  const isActiveScreen = true; // useAppSelector(isScreenDictionaryActive);
   const [wordElements, setWordElements] = useState<Array<JSX.Element>>();
 
   useEffect(() => {

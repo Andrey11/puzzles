@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import {
   LOG_CLS_DESKTOP,
   LOG_CLS_EVENT,
   LOG_CLS_INFO,
   LOG_CLS_MOBILE,
-} from "../../features/wordle/PuzzleWordle-helpers";
+} from '../../features/wordle/PuzzleWordle-helpers';
 import {
   DeviceWidthSize,
   DEVICE_WIDTH_L,
@@ -13,67 +13,65 @@ import {
   DEVICE_WIDTH_XL,
   DEVICE_WIDTH_XS,
   DEVICE_WIDTH_XXS,
-} from "../../features/wordle/PuzzleWordle.types";
-import useAddEventListener from "./useAddEventListener";
+} from '../../features/wordle/PuzzleWordle.types';
+import useAddEventListener from './useAddEventListener';
+
+export const getDeviceWidthSize = (w: number): DeviceWidthSize => {
+  if (w <= 320) {
+    return DEVICE_WIDTH_XXS;
+  } else if (w <= 375) {
+    return DEVICE_WIDTH_XS;
+  } else if (w <= 425) {
+    return DEVICE_WIDTH_S;
+  } else if (w < 768) {
+    return DEVICE_WIDTH_M;
+  } else if (w <= 1024) {
+    return DEVICE_WIDTH_L;
+  }
+
+  return DEVICE_WIDTH_XL;
+};
 
 function useDeviceDetect() {
   const timerRef = useRef<number>(Date.now());
-  const [isMobile, setMobile] = useState<boolean>();
-  const [deviceWidth, setDeviceWidth] =
-    useState<DeviceWidthSize>(DEVICE_WIDTH_XL);
+
+  const userAgent = window.navigator.userAgent;
+  const mobile = Boolean(
+    userAgent.match(
+      /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+    )
+  );
+  const widthSize = getDeviceWidthSize(
+    window.document.body.getBoundingClientRect().width
+  );
+
+  const [isMobile, setMobile] = useState<boolean>(mobile);
+  const [deviceWidth, setDeviceWidth] = useState<DeviceWidthSize>(widthSize);
+  const [prevWidth, setPrevWidth] = useState<DeviceWidthSize>(widthSize);
 
   useEffect(() => {
-    const userAgent = window.navigator.userAgent;
-    const mobile = Boolean(
-      userAgent.match(
-        /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
-      )
-    );
-    const widthSize = getDeviceWidthSize(
-      window.document.body.getBoundingClientRect().width
-    );
-    setDeviceWidth(widthSize);
-    setMobile(mobile);
-  }, []);
+    if (deviceWidth && deviceWidth !== prevWidth) {
+      setPrevWidth(deviceWidth);
+      const userAgent =
+        typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
+      const mobile = Boolean(
+        userAgent.match(
+          /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
+        )
+      );
 
-  useEffect(() => {
-    const userAgent =
-      typeof window.navigator === "undefined" ? "" : navigator.userAgent;
-    const mobile = Boolean(
-      userAgent.match(
-        /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
-      )
-    );
-    const widthSize = getDeviceWidthSize(
-      window.document.body.getBoundingClientRect().width
-    );
-    setMobile(mobile);
-    const stat = mobile
-      ? { text: "Mobile", style: LOG_CLS_MOBILE }
-      : { text: "Desktop", style: LOG_CLS_DESKTOP };
-    console.log(
-      `%cResize Event %c${stat.text} %c${widthSize}`,
-      LOG_CLS_EVENT,
-      stat.style,
-      LOG_CLS_INFO
-    );
-  }, [deviceWidth]);
-
-  const getDeviceWidthSize = (w: number): DeviceWidthSize => {
-    if (w <= 320) {
-      return DEVICE_WIDTH_XXS;
-    } else if (w <= 375) {
-      return DEVICE_WIDTH_XS;
-    } else if (w <= 425) {
-      return DEVICE_WIDTH_S;
-    } else if (w < 768) {
-      return DEVICE_WIDTH_M;
-    } else if (w <= 1024) {
-      return DEVICE_WIDTH_L;
+      setMobile(mobile);
+      const stat = mobile
+        ? { text: 'Mobile', style: LOG_CLS_MOBILE }
+        : { text: 'Desktop', style: LOG_CLS_DESKTOP };
+      console.log(
+        `%cResize Event %c${stat.text} %c${deviceWidth}`,
+        LOG_CLS_EVENT,
+        stat.style,
+        LOG_CLS_INFO
+      );
     }
-
-    return DEVICE_WIDTH_XL;
-  };
+  }, [deviceWidth, prevWidth]);
 
   const onResizeEvent = (event: Event) => {
     // const vh = window.innerHeight * 0.01;
@@ -102,10 +100,19 @@ function useDeviceDetect() {
         setMobile(mobile);
         setDeviceWidth(widthSize);
       }
+      const stat = mobile
+        ? { text: 'Mobile', style: LOG_CLS_MOBILE }
+        : { text: 'Desktop', style: LOG_CLS_DESKTOP };
+      console.log(
+        `%cResize Event %c${stat.text} %c${deviceWidth}`,
+        LOG_CLS_EVENT,
+        stat.style,
+        LOG_CLS_INFO
+      );
     }
   };
 
-  useAddEventListener("resize", onResizeEvent);
+  useAddEventListener('resize', onResizeEvent);
 
   const isDeviceWidth = (dw: string): boolean => deviceWidth === dw;
   const isDeviceWidthXXS = (): boolean => isDeviceWidth(DEVICE_WIDTH_XXS);

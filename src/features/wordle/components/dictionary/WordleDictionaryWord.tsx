@@ -100,7 +100,7 @@ const WordleDictionaryWord: React.FunctionComponent<IWordleDictionaryWordProps> 
         <OverlayTrigger
           key="right"
           container={wordRef.current}
-          placement="right"
+          placement="auto"
           overlay={<Tooltip className={styles.WordErrorTooltip}>Unable to find the definition</Tooltip>}
         >
           <span>{word}</span>

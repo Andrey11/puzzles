@@ -2,32 +2,41 @@ import React, { useEffect, useRef, useState } from 'react';
 // import Accordion from 'react-bootstrap/Accordion';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
-import { Robot, Book, BookHalf, Diagram3 } from 'react-bootstrap-icons';
-
-import { allAvailableWords } from './PuzzleWords';
-import { IAnalyzerData, WordleScreen } from './PuzzleWordle.types';
-import PuzzleDetailsStats from './components/stats/PuzzleDetailsStats';
-import PuzzleDetailsSolver from './components/solver/WordleSolver';
+import { Robot, Diagram3 } from 'react-bootstrap-icons';
+import { IAnalyzerData, WordleScreen } from '../PuzzleWordle.types';
+import PuzzleDetailsStats from '../components/stats/PuzzleDetailsStats';
+import PuzzleDetailsSolver from '../components/solver/WordleSolver';
 
 // import useDeviceDetect from '../../app/hooks/useDeviceDetect';
 
-import styles from './PuzzleWordle.module.scss';
-import PuzzleDictionary from './components/dictionary/WordleDictionary';
-import { createDictionary, getActiveScreen, isDictionaryLoaded, setActiveScreen } from './wordleSlice';
-import { useAppDispatch, useAppSelector } from '../../app/hooks/hooks';
-import { setActivePuzzle } from '../../app/appSlice';
-import { PUZZLES } from '../../app/App.types';
+import styles from './PuzzleWordleSolver.module.scss';
+import { getActiveScreen, setActiveScreen } from './wordleSlice';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks/hooks';
+import { getActivePuzzle, setActivePuzzle } from '../../../app/appSlice';
+import { PUZZLES } from '../../../app/App.types';
+
+import { createDictionary, getDictionaryStatus, isDictionaryLoaded } from '../components/dictionary/wordleDictionarySlice';
+import { getLogStyles } from '../PuzzleWordle-helpers';
 
 const NON_BREAKING_SPACE: JSX.Element = <>&nbsp;</>;
 
-const PuzzleWordle: React.FunctionComponent = () => {
+const WordleSolverLog = getLogStyles({
+  cmpName: 'PuzzleWordleSolver',
+  cmpNameCls: 'color: #399e25; font-weight: bold;',
+});
+
+const PuzzleWordleSolver: React.FunctionComponent = () => {
   const bodyContainerRef = useRef(null);
 
   const dispatch = useAppDispatch();
   const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
+  const dictionaryStatus = useAppSelector(getDictionaryStatus);
+  // const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
   const activeScreen = useAppSelector(getActiveScreen);
+  const activePuzzle = useAppSelector(getActivePuzzle);
 
-  const [loaded, setLoaded] = useState<boolean>(dictionaryLoaded);
+  const [isInit, setIsInit] = useState<boolean>(false);
+  // const [loaded, setLoaded] = useState<boolean>(dictionaryLoaded);
   // const [dictionaryWords, setDictionaryWords] = useState<IPuzzleDictionary>(initialDictionary);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,14 +47,23 @@ const PuzzleWordle: React.FunctionComponent = () => {
   // const { isMobile, isDeviceWidthXL } = useDeviceDetect();
 
   useEffect(() => {
-    if (!loaded) {
-      console.log('[PuzzleDetailsScene] initialized');
-      setLoaded(true);
-      dispatch(createDictionary(allAvailableWords));
+    if (!isInit) {
+      setIsInit(true);
+      // console.log(...WordleSolverLog.logSuccess('initializing'));
+    } else if (isInit && activePuzzle !== PUZZLES.WORDLE) {
       dispatch(setActivePuzzle(PUZZLES.WORDLE));
+      console.log(...WordleSolverLog.logAction('activating wordle solver'));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded]);
+  }, [isInit, activePuzzle, dispatch]);
+
+  useEffect(() => {
+    if (!dictionaryLoaded && dictionaryStatus !== 'loaded' && isInit) {
+      dispatch(createDictionary());
+      console.log(...WordleSolverLog.logAction('creating wordle dictionary'));
+    } else if (dictionaryLoaded && dictionaryStatus === 'loaded' && isInit) {
+      console.log(...WordleSolverLog.logSuccess('wordle dictionary loaded'));
+    }
+  }, [dictionaryLoaded, dictionaryStatus, dispatch, isInit]);
 
   const analyzerHandler = (analyzerData: IAnalyzerData) => {
     setAnalyzerData(analyzerData);
@@ -61,12 +79,12 @@ const PuzzleWordle: React.FunctionComponent = () => {
     </span>
   );
 
-  const renderDictionaryHeading = () => (
-    <span className={styles.HeaderLabel}>
-      Dictionary {NON_BREAKING_SPACE}
-      {activeScreen === WordleScreen.DICTIONARY ? <BookHalf size={18} /> : <Book size={18} />}
-    </span>
-  );
+  // const renderDictionaryHeading = () => (
+  //   <span className={styles.HeaderLabel}>
+  //     Dictionary {NON_BREAKING_SPACE}
+  //     {activeScreen === WordleScreen.DICTIONARY ? <BookHalf size={18} /> : <Book size={18} />}
+  //   </span>
+  // );
 
   const renderStatsHeading = () => (
     <span className={styles.HeaderLabel}>
@@ -128,9 +146,9 @@ const PuzzleWordle: React.FunctionComponent = () => {
         <Tab eventKey={WordleScreen.ANALYZER} title={renderStatsHeading()}>
           {renderPuzzleStats()}
         </Tab>
-        <Tab eventKey={WordleScreen.DICTIONARY} title={renderDictionaryHeading()}>
+        {/* <Tab eventKey={WordleScreen.DICTIONARY} title={renderDictionaryHeading()}>
           <PuzzleDictionary />
-        </Tab>
+        </Tab> */}
       </Tabs>
     );
   };
@@ -146,4 +164,4 @@ const PuzzleWordle: React.FunctionComponent = () => {
   return <div className={styles.PuzzleScene}>{renderTabDisplayContainer()}</div>;
 };
 
-export default PuzzleWordle;
+export default PuzzleWordleSolver;

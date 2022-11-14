@@ -12,7 +12,7 @@ export declare type MatchType =
   | "none"
   | string;
 
-export declare type WordleStatus = "idle" | "loading" | "failed";
+export declare type WordleStatus = "idle" | "loading" | "failed" | "loaded";
 
 export enum WordleScreen {
   SOLVER = "0",
@@ -27,8 +27,6 @@ export interface IWordleDictionaryState {
 }
 
 export interface IWordleState {
-  dictionaryLoaded: boolean;
-  dictionary: IWordleDictionary;
   activeScreen: WordleScreen;
   status: WordleStatus;
 }
@@ -63,21 +61,27 @@ export interface ISolutionModel {
   usedWords: Array<string>;
 }
 
-export interface IPuzzleSolution {
-  currentWordIndex: number;
-  availableWordIndexes: Array<number>;
-  attempts: number;
-  matchedLetters: Array<string>;
-  existsMatchLetter: Array<ILetterModel>;
-  exactMatchLetter: Array<ILetterModel>;
-  nonExistentLetters: Array<string>;
-  nonExistentLetterAtIndex: Array<ILetterModel>;
-  usedWordIndexes: Array<number>;
-  usedWords: Array<string>;
+export interface IWordleSolution extends ISolutionModel {
   isFound: boolean;
   isCompleted: boolean;
   displayColors: Array<string>;
   statInfoTracker: string;
+  wod?: string;
+}
+
+export interface ConsoleLogStyle {
+  cmpName: string;
+  cmpNameCls: string;
+  msgCls: string;
+  dataCls: string;
+  actionCls: string;
+  successCls: string;
+  failCls: string;
+  logMsg: (msg: string, msgStyle: string) => Array<string>;
+  logSuccess: (msg: string) => Array<string>;
+  logAction: (msg: string) => Array<string>;
+  logData: (msg: string) => Array<string>;
+  logFail: (msg: string) => Array<string>;
 }
 
 /**

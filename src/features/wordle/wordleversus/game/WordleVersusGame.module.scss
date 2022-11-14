@@ -1,0 +1,38 @@
+
+.KeyboardContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  max-width: 270px;
+
+  input {
+    width: 25px;
+    height: 25px;
+  }
+  label {
+    vertical-align: top;
+  }
+}
+
+
+.GuessRowsDisplayWrapper {
+  position: relative;
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  flex-direction: column;
+  font-size: 22px;
+}
+
+.GuessRowsDisplay {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-family: inherit;
+  background-color: transparent;
+  color: var(--mdc-theme-puzzle-primary, #091309);
+}

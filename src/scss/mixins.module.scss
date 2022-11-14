@@ -1,4 +1,25 @@
 /**
+ * Adds max-height to $heightVH, and height to 100%.
+ */
+@mixin addHeightVH($heightVH) {
+  max-height: calc(var(--vh, 1vh) * #{$heightVH});
+  height: 100%;
+}
+
+/**
+ * Returns tooltip arrow color overwrite style
+ * @position - arrow position (top, bottom, left, right)
+ * @color - tooltip arrow color
+ */
+@mixin tooltipArrowColor($position, $color) {
+  &[data-popper-placement^=#{$position}] {
+    > [class*='tooltip-arrow']::before {
+      border-#{$position}-color: #{$color} !important;
+    }
+  }
+}
+
+/**
  * Creates an incremental transition delay for each child <div> elevment
  * first element  
  */
@@ -12,6 +33,11 @@
 
 @mixin shake-animation($time, $iterationCount) {
   animation: shake $time;
+  animation-iteration-count: $iterationCount;
+}
+
+@mixin scale-animation($time, $iterationCount) {
+  animation: scaleCellOnInput $time;
   animation-iteration-count: $iterationCount;
 }
 
@@ -48,5 +74,41 @@
   }
   100% {
     transform: translate(1px, 0px) rotate(-0deg);
+  }
+}
+
+@keyframes scaleCellOnInput {
+  0% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.05);
+  }
+  20% {
+    transform: scale(1.05);
+  }
+  30% {
+    transform: scale(1.1);
+  }
+  40% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  80% {
+    transform: scale(1.05);
+  }
+  90% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
   }
 }

@@ -13,8 +13,6 @@ interface PuzzlesKeyboardProps {
   onEnterPressed: () => void;
 }
 
-
-
 const PuzzlesKeyboard: React.FC<PuzzlesKeyboardProps> = ({
   onKeyPressed,
   onDeletePressed,

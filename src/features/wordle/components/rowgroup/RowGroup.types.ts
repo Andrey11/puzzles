@@ -33,6 +33,8 @@ export interface IWordleRowCellUI {
   letter: string;
   color: CELL_COLORS;
   disabled?: boolean;
+  prevCellId?: CELL_IDS | null;
+  nextCellId?: CELL_IDS | null;
 }
 
 export interface IWordleRowUI {
@@ -40,11 +42,13 @@ export interface IWordleRowUI {
   cells: Record<CellKey, IWordleRowCellUI>;
   disabled?: boolean;
   showInvalidWordAnimation?: boolean | false;
+  prevRowId?: ROW_IDS | null;
+  nextRowId?: ROW_IDS | null;
 
   /** @deprecated */
-  letters: Array<string>;
+  letters?: Array<string>;
   /** @deprecated */
-  colors: Array<string>;
+  colors?: Array<string>;
 }
 
 export interface IWordleRowGroupUI {

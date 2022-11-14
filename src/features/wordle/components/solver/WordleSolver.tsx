@@ -15,8 +15,7 @@ import {
   IAnalyzerData,
   ILetterModel,
   IWordleRow,
-  IWordleDictionary,
-  IPuzzleSolution,
+  IWordleSolution,
   IStat,
   ISolutionModel,
 } from "../../PuzzleWordle.types";
@@ -25,11 +24,9 @@ import styles from "./WordleSolver.module.scss";
 
 import WordSelector from "../dropdown/WordSelector";
 import { useOverlay } from "../overlay/InfoOverlay";
-import WordleRow from "../row/WordleRow";
 import { allAvailableWords } from "../../PuzzleWords";
 import { useAppSelector } from "../../../../app/hooks/hooks";
-import { getDictionary, isDictionaryLoaded } from "../../wordleSlice";
-import { ROW_IDS } from "../rowgroup/RowGroup.types";
+import { getDictionary, isDictionaryLoaded } from "../dictionary/wordleDictionarySlice";
 
 type IPuzzleWordleSolverProps = {
   analyzeSolutionHandler?: (solution: IAnalyzerData) => void;
@@ -77,8 +74,9 @@ const WordleSolver: React.FunctionComponent<
   const bodyContainerRef = useRef(null);
   const guessRowTargetRef = useRef(null);
 
+  const dictionary = useAppSelector(getDictionary);
   const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
-  const dictionary: IWordleDictionary = useAppSelector(getDictionary);
+
 
   /** Letters not to appear in possible word matches */
   const [guess1, setGuess1] = useState<IWordleRow>(
@@ -109,7 +107,7 @@ const WordleSolver: React.FunctionComponent<
   const [guessingInProgress, setGuessingInProgress] = useState<boolean>(false);
 
   const [analyzerData, setAnalyzerData] = useState<IAnalyzerData>({});
-  const [lastSolution, setLastSolution] = useState<IPuzzleSolution>();
+  const [lastSolution, setLastSolution] = useState<IWordleSolution>();
 
   useEffect(() => {
     if (dictionaryLoaded && dictionary.words.length > 0) {
@@ -148,19 +146,19 @@ const WordleSolver: React.FunctionComponent<
     }
   }, [runnerCount]);
 
-  const puzzleSolver = async (startPuzzleSolution: IPuzzleSolution) => {
-    let puzzleSolution: IPuzzleSolution = startPuzzleSolution;
+  const puzzleSolver = async (startPuzzleSolution: IWordleSolution) => {
+    let puzzleSolution: IWordleSolution = startPuzzleSolution;
 
     while (!puzzleSolution.isCompleted) {
-      const guessResultPromise: Promise<IPuzzleSolution> =
+      const guessResultPromise: Promise<IWordleSolution> =
         makeGuess(startPuzzleSolution);
       await guessResultPromise
         // eslint-disable-next-line no-loop-func
-        .then((lastGuessSolution: IPuzzleSolution) => {
+        .then((lastGuessSolution: IWordleSolution) => {
           puzzleSolution = lastGuessSolution;
         })
         // eslint-disable-next-line no-loop-func
-        .catch((lastGuessSolutionError: IPuzzleSolution) => {
+        .catch((lastGuessSolutionError: IWordleSolution) => {
           puzzleSolution = lastGuessSolutionError;
         })
         // eslint-disable-next-line no-loop-func
@@ -184,16 +182,17 @@ const WordleSolver: React.FunctionComponent<
     return puzzleSolution;
   };
 
-  const solveWordlePuzzle = (wod: string): Promise<IPuzzleSolution> => {
-    const puzzleSolution: IPuzzleSolution = {
+  const solveWordlePuzzle = (wod: string): Promise<IWordleSolution> => {
+    const puzzleSolution: IWordleSolution = {
       ...initialSolutionModel(),
       displayColors: [],
       isFound: false,
       isCompleted: false,
       statInfoTracker: "",
+      wod: '',
     };
 
-    const solutionPromise: Promise<IPuzzleSolution> = new Promise(
+    const solutionPromise: Promise<IWordleSolution> = new Promise(
       async (resolve, reject) => {
         const resultSolution = await puzzleSolver(puzzleSolution);
 
@@ -205,14 +204,14 @@ const WordleSolver: React.FunctionComponent<
       }
     );
 
-    let solverSolution: IPuzzleSolution = puzzleSolution;
+    let solverSolution: IWordleSolution = puzzleSolution;
 
     solutionPromise
-      .then((value: IPuzzleSolution) => {
+      .then((value: IWordleSolution) => {
         // console.log(`${wordRunnerRef.current}\tPASS: ${wod} guesses ${value.usedWords.toString()}`);
         solverSolution = value;
       })
-      .catch((value: IPuzzleSolution) => {
+      .catch((value: IWordleSolution) => {
         // console.log(`${wordRunnerRef.current}\tFAIL: ${wod} guesses ${value.usedWords.toString()}`);
         solverSolution = value;
       })
@@ -291,7 +290,7 @@ const WordleSolver: React.FunctionComponent<
     // console.log(`Guess: ${guessNum}, ${letter}, ${colors}`);
   };
 
-  const getResults = (solution: IPuzzleSolution): IPuzzleSolution => {
+  const getResults = (solution: IWordleSolution): IWordleSolution => {
     const attemptNum = solution.attempts;
     const lastGuess = solution.usedWords[attemptNum - 1];
     let wod = "";
@@ -383,7 +382,7 @@ const WordleSolver: React.FunctionComponent<
     }
   };
 
-  const getNextIndex = (solution: IPuzzleSolution): IPuzzleSolution => {
+  const getNextIndex = (solution: IWordleSolution): IWordleSolution => {
     let currentWordIndexes: Array<number> = [...solution.availableWordIndexes];
     const {
       exactMatchLetter,
@@ -423,7 +422,7 @@ const WordleSolver: React.FunctionComponent<
     return solution;
   };
 
-  const getBestGuess = (solution: IPuzzleSolution): number => {
+  const getBestGuess = (solution: IWordleSolution): number => {
     const totalWords = solution.availableWordIndexes.length;
     if (6 - solution.attempts >= totalWords || totalWords === 1) {
       return 0;
@@ -442,8 +441,8 @@ const WordleSolver: React.FunctionComponent<
   };
 
   const makeGuess = (
-    puzzleSolution: IPuzzleSolution
-  ): Promise<IPuzzleSolution> => {
+    puzzleSolution: IWordleSolution
+  ): Promise<IWordleSolution> => {
     return new Promise((resolve, reject) => {
       // let puzzleSolution: IPuzzleSolution = {
       //   ...initialGuess,
@@ -658,12 +657,12 @@ const WordleSolver: React.FunctionComponent<
           className={`${styles.RelativePosition} ${styles.GuessContainer}`}
         >
           <div className={styles.EditFirstWordPopup}>{SelectFirstWord}</div>
-          <WordleRow rowId={ROW_IDS.ROW_1} guess={guess1} rowNumber={1}/>
+          {/* <WordleRow rowId={ROW_IDS.ROW_1} guess={guess1} rowNumber={1}/>
           <WordleRow rowId={ROW_IDS.ROW_2} guess={guess2} rowNumber={2}/>
           <WordleRow rowId={ROW_IDS.ROW_3} guess={guess3} rowNumber={3}/>
           <WordleRow rowId={ROW_IDS.ROW_4} guess={guess4} rowNumber={4}/>
           <WordleRow rowId={ROW_IDS.ROW_5} guess={guess5} rowNumber={5}/>
-          <WordleRow rowId={ROW_IDS.ROW_6} guess={guess6} rowNumber={6}/>
+          <WordleRow rowId={ROW_IDS.ROW_6} guess={guess6} rowNumber={6}/> */}
         </div>
         <Button
           ref={(ref: any) => (calculateBtnRef.current = ref)}

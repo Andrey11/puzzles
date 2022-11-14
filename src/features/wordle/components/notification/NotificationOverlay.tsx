@@ -1,13 +1,14 @@
-import React, { RefObject, useEffect, useState } from "react";
-import Overlay from "react-bootstrap/Overlay";
-import { useAppSelector } from "../../../../app/hooks/hooks";
+import React, { RefObject, useEffect, useState } from 'react';
+import Overlay from 'react-bootstrap/Overlay';
+import { useAppSelector } from '../../../../app/hooks/hooks';
 import {
-  isUserLostRound,
-  isUserWonRound,
-  showInvalidWordAnimation,
-} from "../wordleversus/wordleVersusSlice";
+  isLostGame,
+  isUserGame,
+  isWonGame,
+} from '../../wordleversus/game/wordleVersusGameSlice';
+import { showInvalidWordAnimation } from '../../wordleversus/wordleVersusSlice';
 
-import styles from "./NotificationOverlay.module.scss";
+import styles from './NotificationOverlay.module.scss';
 
 type NotificationProps = {
   targetRef: RefObject<any>;
@@ -17,8 +18,9 @@ const NotificationOverlay: React.FunctionComponent<NotificationProps> = ({
   targetRef,
 }: NotificationProps) => {
   const showErrorNotification = useAppSelector(showInvalidWordAnimation);
-  const userWonRound = useAppSelector(isUserWonRound);
-  const userLostRound = useAppSelector(isUserLostRound);
+  const userWonRound = useAppSelector(isWonGame);
+  const isUserTurn = useAppSelector(isUserGame);
+  const userLostRound = useAppSelector(isLostGame);
 
   const [showOverlay, setShowOverlay] = useState<boolean>(false);
 
@@ -27,18 +29,20 @@ const NotificationOverlay: React.FunctionComponent<NotificationProps> = ({
     let message = '';
     if (showErrorNotification) {
       statusCls = styles.InvalidWord;
-      message = "Not in word list";
+      message = 'Not in word list';
     } else if (userWonRound) {
       statusCls = styles.UserWonRound;
-      message = "You WON";
+      message = isUserTurn ? 'You WON' : 'Robot solved your word';
     } else if (userLostRound) {
       statusCls = styles.UserLostRound;
-      message = "You LOST";
+      message = isUserTurn ? 'You LOST' : 'Robot failed to solve your word';
     }
 
     return (
-      <div className={`${styles.NotificationComponent} ${statusCls}`}>
-        {message}
+      <div className={`${styles.NotificationWrapper}  ${statusCls}`}>
+        <div className={`${styles.NotificationComponent}`}>
+          {message}
+        </div>
       </div>
     );
   };

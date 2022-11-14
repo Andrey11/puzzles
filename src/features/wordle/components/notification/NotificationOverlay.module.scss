@@ -1,35 +1,51 @@
-.NotificationComponent {
+.NotificationWrapper {
   position: absolute;
-  height: 45px;
   z-index: 0;
   left: 50% !important;
-  top: 55px !important;
+  top: calc(50% - 100px) !important;
   opacity: 0;
-  width: auto;
-  padding: 8px 24px;
+  width: max-content;
   font-weight: 700;
-  border-radius: 5px;
+  border-radius: 24px;
+  background-color: rgba(9, 19, 9, 0.4);
   text-align: center;
   transform: translate(-50%, -50%) !important;
   line-height: 28px;
+  border-color: rgba(9, 19, 9, 0.5);
+  box-shadow:  0px 0px 5px 1px rgb(9 19 9 / 50%);
+  padding: 2px;
 }
 
-.InvalidWord {
-  opacity: 1;
-  background-color: var(--mdc-theme-puzzle-error-notification, #091309);
-  color: var(--mdc-theme-puzzle-error-on-notification, #091309);
+.NotificationComponent {
+  position: relative;
+  border-radius: inherit;
+  padding: 4px 48px;
 }
 
-.UserWonRound {
-  opacity: 1;
-  background-color: var(--mdc-theme-puzzle-win-notification, #5fc405);
-  color: var(--mdc-theme-puzzle-win-on-notification, #f2f1f1);
-}
-
-.UserLostRound {
-  opacity: 1;
-  background-color: var(--mdc-theme-puzzle-loss-notification, #ffb003);
-  color: var(--mdc-theme-puzzle-loss-on-notification, #f2f1f1);
+.NotificationWrapper {
+  &.InvalidWord,
+  &.UserWonRound,
+  &.UserLostRound {
+    opacity: 1;
+  }
+  &.InvalidWord {
+    > .NotificationComponent {
+      background-color: var(--mdc-theme-puzzle-error-notification, #091309);
+      color: var(--mdc-theme-puzzle-error-on-notification, #f2f1f1);
+    }
+  }
+  &.UserWonRound {
+    > .NotificationComponent {
+      background-color: var(--mdc-theme-puzzle-win-notification, #5fc405);
+      color: var(--mdc-theme-puzzle-win-on-notification, #f2f1f1);
+    }
+  }
+  &.UserLostRound {
+    > .NotificationComponent {
+      background-color: var(--mdc-theme-puzzle-loss-notification, #ffb003);
+      color: var(--mdc-theme-puzzle-loss-on-notification, #f2f1f1);
+    }
+  }
 }
 
 

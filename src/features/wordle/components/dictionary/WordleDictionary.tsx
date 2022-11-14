@@ -1,19 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
-
-import { IWordleDictionary } from '../../PuzzleWordle.types';
 import WordSelector from '../dropdown/WordSelector';
+import AlphabetScrollList from '../alphabetscroll/AlphabetScrollList';
 
 import { Search } from 'react-bootstrap-icons';
 
 import styles from './WordleDictionary.module.scss';
-import AlphabetScrollList from '../alphabetscroll/AlphabetScrollList';
 import { useAppSelector } from '../../../../app/hooks/hooks';
-import { isDictionaryLoaded, getDictionary } from '../../wordleSlice';
+import { getDictionary, isDictionaryLoaded } from './wordleDictionarySlice';
 
 const WordleDictionary: React.FunctionComponent = () => {
 
-  const dictionaryLoaded: boolean = useAppSelector(isDictionaryLoaded);
-  const dictionary: IWordleDictionary = useAppSelector(getDictionary);
+  const dictionary = useAppSelector(getDictionary)
+  const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
   
   const [wordSelected, setWordSelected] = useState<string>('');
   const [isReady, setReady] = useState<boolean>(false);

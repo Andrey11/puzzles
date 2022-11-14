@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { IPuzzleCardProps, PUZZLES } from "../../app/App.types";
-import { setActivePuzzle } from "../../app/appSlice";
-import { useAppDispatch } from "../../app/hooks/hooks";
+import { IPuzzleCardProps } from "../../app/App.types";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { CodeSquare, Heart, HeartFill, Robot } from "react-bootstrap-icons";
@@ -16,14 +14,9 @@ const PuzzleCard: React.FC<IPuzzleCardProps> = ({
   puzzleImageUrl,
 }: IPuzzleCardProps) => {
   const navigate: NavigateFunction = useNavigate();
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
   const [isLiked, setLiked] = useState<boolean>(false);
-  
-  useEffect(() => {
-    dispatch(setActivePuzzle(PUZZLES.NONE));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const ViewCodeIcon = () => (
     <a

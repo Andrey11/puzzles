@@ -10,7 +10,7 @@ import { ALPHABET } from "../../PuzzleWords";
 import {
   getActiveLetter,
   setActiveLetter,
-} from "../dictionary/dictionarySlice";
+} from "../dictionary/uiDictionarySlice";
 
 import styles from "./AlphabetScrollList.module.scss";
 import AlphabetScrollWordsByLetter from "./AlphabetScrollWordsByLetter";

@@ -1,38 +1,33 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../app/store";
-import {
-  AppStatus,
-  IAppState,
-  IPuzzleCardProps,
-  PUZZLES,
-} from "./App.types";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../app/store';
+import { AppStatus, IAppState, IPuzzleCardProps, PUZZLES } from './App.types';
 
 const wordleCardProps: IPuzzleCardProps = {
   puzzleName: PUZZLES.WORDLE,
-  codeUrl: "https://github.com/Andrey11/puzzles",
-  navigateUrl: "/wordle",
+  codeUrl: 'https://github.com/Andrey11/puzzles',
+  navigateUrl: 'wordle/solver',
   puzzleDescription:
-    "Wordle solver is based on a popular NYT Wordle app. A friendly {R} will try to solve a wordle you select, and calculate all possible solutions for any wordle scenario.",
-  puzzleImageUrl: "images/logos/wordle-logo-1.png",
+    'Wordle solver is based on a popular NYT Wordle app. A friendly {R} will try to solve a wordle you select, and calculate all possible solutions for any wordle scenario.',
+  puzzleImageUrl: 'images/logos/wordlesolver-logo.png',
 };
 
 const wordleVersusCardProps: IPuzzleCardProps = {
   puzzleName: PUZZLES.WORDLE_VERSUS,
-  codeUrl: "https://github.com/Andrey11/puzzles",
-  navigateUrl: "/wordleversus",
+  codeUrl: 'https://github.com/Andrey11/puzzles',
+  navigateUrl: 'wordle/versus',
   puzzleDescription:
-    "Wordle versus is based on a popular NYT Wordle app. Challenge a friendly {R} to a game of wordle, or a series of games. Can you beat the wordle bot at his own game? ",
-  puzzleImageUrl: "images/logos/wordle-versus-logo-2.png",
+    'Wordle versus is based on a popular NYT Wordle app. Challenge a friendly {R} to a game of wordle, or a series of games. Can you beat the wordle bot at his own game? ',
+  puzzleImageUrl: 'images/logos/wordleversus-logo.png',
 };
 
 const initialState: IAppState = {
   activePuzzle: PUZZLES.NONE,
-  status: "idle",
+  status: 'idle',
   puzzleCardProps: [wordleCardProps, wordleVersusCardProps],
 };
 
 export const appSlice = createSlice({
-  name: "app",
+  name: 'app',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
@@ -60,8 +55,8 @@ export const { setActivePuzzle, setStatus } = appSlice.actions;
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const getActivePuzzle = (state: RootState) => state.app.activePuzzle;
-export const getAppStatus = (state: RootState) => state.app.status;
+export const getActivePuzzle = (state: RootState): PUZZLES => state.app.activePuzzle;
+export const getAppStatus = (state: RootState): AppStatus => state.app.status;
 export const getPuzzleCards = (state: RootState): Array<IPuzzleCardProps> =>
   state.app.puzzleCardProps;
 

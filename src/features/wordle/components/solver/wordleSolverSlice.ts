@@ -1,153 +1,148 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppThunk, RootState } from "../../../../app/store";
-import {
-  KeyboardLetter,
-  KeyboardLetterColor,
-} from "../../../../components/keyboard/PuzzlesKeyboard.types";
-import { setLetterColor } from "../../../../components/keyboard/puzzlesKeyboardSlice";
+import { RootState } from "../../../../app/store";
 
 import {
   IScoreModel,
   IWordleVersusState,
   IWordleVersusUserRound,
-} from "../wordleversus/PuzzleWordleVersus.types";
+} from "../../wordleversus/PuzzleWordleVersus.types";
 
-const generateColorsForUserGuess = (guess: Array<string>) => {
-  return guess.map((letter) => {
-    if (letter === "2") {
-      return "green";
-    } else if (letter === "1") {
-      return "orange";
-    }
-    return "grey";
-  });
-};
+// const generateColorsForUserGuess = (guess: Array<string>) => {
+//   return guess.map((letter) => {
+//     if (letter === "2") {
+//       return "green";
+//     } else if (letter === "1") {
+//       return "orange";
+//     }
+//     return "grey";
+//   });
+// };
 
-const generateMatchesForUserGuess = (
-  wod: Array<string>,
-  guess: Array<string>
-) => {
-  let matches = [...guess];
-  // find exact matches
-  wod.forEach((letter, index) => {
-    if (letter === matches.at(index)) {
-      wod[index] = "";
-      matches[index] = "2";
-    }
-  });
-  // find exists in word matches
-  wod.forEach((letter, index) => {
-    const indexOfLetter = matches.indexOf(letter);
-    if (indexOfLetter !== -1) {
-      wod[index] = "";
-      matches[indexOfLetter] = "1";
-    }
-  });
+// const generateMatchesForUserGuess = (
+//   wod: Array<string>,
+//   guess: Array<string>
+// ) => {
+//   let matches = [...guess];
+//   // find exact matches
+//   wod.forEach((letter, index) => {
+//     if (letter === matches.at(index)) {
+//       wod[index] = "";
+//       matches[index] = "2";
+//     }
+//   });
+//   // find exists in word matches
+//   wod.forEach((letter, index) => {
+//     const indexOfLetter = matches.indexOf(letter);
+//     if (indexOfLetter !== -1) {
+//       wod[index] = "";
+//       matches[indexOfLetter] = "1";
+//     }
+//   });
 
-  return matches;
-};
+//   return matches;
+// };
 
-export const onSubmitUserGuess = (): AppThunk => (dispatch, getState) => {
-  const wordleVersusState = getState().puzzle.wordleversus;
-  const dictionary = getState().puzzle.wordle.dictionary;
-  const userGuessNumber = wordleVersusState.userRound.currentUserGuess;
-  const botWordle = wordleVersusState.botWordle;
-  const { letters } = wordleVersusState.userRound.guessWord;
+// export const onSubmitUserGuess = (): AppThunk => (dispatch, getState) => {
+//   const wordleVersusState = getState().puzzle.wordleversus;
+//   const dictionary = getState().puzzle.wordle.dictionary;
+//   const userGuessNumber = wordleVersusState.userRound.currentUserGuess;
+//   const botWordle = wordleVersusState.botWordle;
+//   const { letters } = wordleVersusState.userRound.guessWord;
 
-  if (userGuessNumber <= 6 && letters.length === 5) {
-    const userSubmittedWord = letters.join("");
-    const isValid = dictionary.words.includes(userSubmittedWord);
-    dispatch(setGuessWordValid(isValid));
+//   if (userGuessNumber <= 6 && letters.length === 5) {
+//     const userSubmittedWord = letters.join("");
+//     const isValid = dictionary.words.includes(userSubmittedWord);
+//     dispatch(setGuessWordValid(isValid));
 
-    if (isValid) {
-      const matches = generateMatchesForUserGuess(botWordle.split(""), letters);
-      const colors = generateColorsForUserGuess(matches);
+//     if (isValid) {
+//       const matches = generateMatchesForUserGuess(botWordle.split(""), letters);
+//       const colors = generateColorsForUserGuess(matches);
 
-      // update keyboard letters
-      letters.forEach((l, index) => {
-        let color = colors[index].toUpperCase() as KeyboardLetterColor;
-        const letter: KeyboardLetter = l as KeyboardLetter;
-        const prevOccurence = letters.indexOf(l);
-        if (prevOccurence > -1 && prevOccurence !== index) {
-          const prevColor = colors[
-            prevOccurence
-          ].toUpperCase() as KeyboardLetterColor;
-          if (prevColor === "GREEN" || color === "GREY") {
-            color = prevColor;
-          }
-        }
-        dispatch(setLetterColor({ letter, color }));
-      });
+//       // update keyboard letters
+//       letters.forEach((l, index) => {
+//         let color = colors[index].toUpperCase() as KeyboardLetterColor;
+//         const letter: KeyboardLetter = l as KeyboardLetter;
+//         const prevOccurence = letters.indexOf(l);
+//         if (prevOccurence > -1 && prevOccurence !== index) {
+//           const prevColor = colors[
+//             prevOccurence
+//           ].toUpperCase() as KeyboardLetterColor;
+//           if (prevColor === "GREEN" || color === "GREY") {
+//             color = prevColor;
+//           }
+//         }
+//         dispatch(setLetterColor({ letter, color }));
+//       });
 
-      dispatch(
-        submitUserGuess({
-          currentUserGuess: userGuessNumber,
-          guessWord: { colors, letters },
-        })
-      );
+//       dispatch(
+//         submitUserGuess({
+//           currentUserGuess: userGuessNumber,
+//           guessWord: { colors, letters },
+//         })
+//       );
 
-      if (botWordle === userSubmittedWord) {
-        dispatch(setWonRound(true));
-      } else if (userGuessNumber === 6) {
-        dispatch(setLostRound(true));
-      }
-    } else {
-      dispatch(setAnimateInvalidWord(true));
-    }
-  }
-};
+//       if (botWordle === userSubmittedWord) {
+//         dispatch(setWonRound(true));
+//       } else if (userGuessNumber === 6) {
+//         dispatch(setLostRound(true));
+//       }
+//     } else {
+//       dispatch(setAnimateInvalidWord(true));
+//     }
+//   }
+// };
 
-export const submitUserGuess =
-  (userRound: IWordleVersusUserRound): AppThunk =>
-  (dispatch, getState) => {
-    const prevUserGuess =
-      getState().puzzle.wordleversus.userRound.currentUserGuess;
+// export const submitUserGuess =
+//   (userRound: IWordleVersusUserRound): AppThunk =>
+//   (dispatch, getState) => {
+//     const prevUserGuess =
+//       getState().puzzle.wordleversus.userRound.currentUserGuess;
 
-    if (prevUserGuess < 6) {
-      dispatch(addUserGuessToPrevious(userRound));
-      dispatch(
-        addGuessWord({
-          currentUserGuess: prevUserGuess + 1,
-          guessWord: { colors: [], letters: [] },
-        })
-      );
-    } else {
-      dispatch(addGuessWord(userRound));
-    }
-  };
+//     if (prevUserGuess < 6) {
+//       dispatch(addUserGuessToPrevious(userRound));
+//       dispatch(
+//         addGuessWord({
+//           currentUserGuess: prevUserGuess + 1,
+//           guessWord: { colors: [], letters: [] },
+//         })
+//       );
+//     } else {
+//       dispatch(addGuessWord(userRound));
+//     }
+//   };
 
-export const addLetter =
-  (ltr: string): AppThunk =>
-  (dispatch, getState) => {
-    const wordleVersusState = getState().puzzle.wordleversus;
-    const { letters, colors } = wordleVersusState.userRound.guessWord;
+// export const addLetter =
+//   (ltr: string): AppThunk =>
+//   (dispatch, getState) => {
+//     const wordleVersusState = getState().puzzle.wordleversus;
+//     const { letters, colors } = wordleVersusState.userRound.guessWord;
 
-    if (letters.length < 5) {
-      dispatch(
-        addGuessWord({
-          currentUserGuess: wordleVersusState.userRound.currentUserGuess,
-          guessWord: { colors: colors, letters: [...letters, ltr] },
-        })
-      );
-    }
-  };
+//     if (letters.length < 5) {
+//       dispatch(
+//         addGuessWord({
+//           currentUserGuess: wordleVersusState.userRound.currentUserGuess,
+//           guessWord: { colors: colors, letters: [...letters, ltr] },
+//         })
+//       );
+//     }
+//   };
 
-export const deleteLetter = (): AppThunk => (dispatch, getState) => {
-  const wordleVersusState = getState().puzzle.wordleversus;
-  const { letters, colors } = wordleVersusState.userRound.guessWord;
-  const { isWon, isLost} = wordleVersusState.userRound;
-  if (letters.length > 0 && !isWon && !isLost) {
-    dispatch(
-      addGuessWord({
-        currentUserGuess: wordleVersusState.userRound.currentUserGuess,
-        guessWord: {
-          colors: colors,
-          letters: [...letters.slice(0, letters.length - 1)],
-        },
-      })
-    );
-  }
-};
+// export const deleteLetter = (): AppThunk => (dispatch, getState) => {
+//   const wordleVersusState = getState().puzzle.wordleversus;
+//   const { letters, colors } = wordleVersusState.userRound.guessWord;
+//   const { isWon, isLost} = wordleVersusState.userRound;
+//   if (letters.length > 0 && !isWon && !isLost) {
+//     dispatch(
+//       addGuessWord({
+//         currentUserGuess: wordleVersusState.userRound.currentUserGuess,
+//         guessWord: {
+//           colors: colors,
+//           letters: [...letters.slice(0, letters.length - 1)],
+//         },
+//       })
+//     );
+//   }
+// };
 
 const initialState: IWordleVersusState = {
   maxGames: 1,
@@ -238,38 +233,5 @@ export const {
 export const getMaxGames = (state: RootState) =>
   state.puzzle.wordleversus.maxGames;
 export const getScore = (state: RootState) => state.puzzle.wordleversus.score;
-export const getUserGuessWord = (state: RootState): IWordleVersusUserRound =>
-  state.puzzle.wordleversus.userRound;
-export const getBotWordle = (state: RootState) =>
-  state.puzzle.wordleversus.botWordle;
-export const getPreviousUserGuesses = (
-  state: RootState
-): Array<IWordleVersusUserRound> =>
-  state.puzzle.wordleversus.previousUserGuesses;
-export const getCurrentUserGuess = (state: RootState): number =>
-  state.puzzle.wordleversus.userRound.currentUserGuess;
-export const isValidGuessWord = (state: RootState): boolean =>
-  state.puzzle.wordleversus.userRound.isValidWord !== false;
-export const showInvalidWordAnimation = (state: RootState): boolean =>
-  state.puzzle.wordleversus.showInvalidWordAnimation === true;
-export const isUserWonRound = (state: RootState): boolean =>
-  state.puzzle.wordleversus.userRound.isWon === true;
-export const isUserLostRound = (state: RootState): boolean =>
-  state.puzzle.wordleversus.userRound.isLost === true;  
-
-export const getUserGuess = (state: RootState, guessNumber: number) => {
-  const userRound = getUserGuessWord(state);
-  if (userRound.currentUserGuess === guessNumber) {
-    return userRound.guessWord;
-  }
-  if (userRound.currentUserGuess > guessNumber) {
-    return getPreviousUserGuesses(state)[guessNumber - 1].guessWord;
-  }
-  return {
-    letters: ["", "", "", "", ""],
-    colors: ["tr", "tr", "tr", "tr", "tr"],
-    disabled: true,
-  };
-};
 
 export default wordleSolverSlice.reducer;

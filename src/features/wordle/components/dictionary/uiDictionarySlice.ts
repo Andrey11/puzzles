@@ -6,7 +6,7 @@ const initialState: IWordleDictionaryState = {
   activeLetter: "A",
 };
 
-export const dictionarySlice = createSlice({
+export const uiDictionarySlice = createSlice({
   name: "dictionary",
   initialState,
 
@@ -17,9 +17,9 @@ export const dictionarySlice = createSlice({
   },
 });
 
-export const { setActiveLetter } = dictionarySlice.actions;
+export const { setActiveLetter } = uiDictionarySlice.actions;
 
 export const getActiveLetter = (state: RootState) =>
   state.puzzle.ui.dictionary.activeLetter;
 
-export default dictionarySlice.reducer;
+export default uiDictionarySlice.reducer;

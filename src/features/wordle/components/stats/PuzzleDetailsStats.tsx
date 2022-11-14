@@ -14,7 +14,6 @@ import {
 } from '../../PuzzleWordle-helpers';
 import {
   IAnalyzerData,
-  IWordleDictionary,
   ISelectedLetter,
   ISelectedLetters,
   MATCH_TYPE_EXACT,
@@ -32,7 +31,7 @@ import useDeviceDetect from '../../../../app/hooks/useDeviceDetect';
 
 import styles from './PuzzleDetailsStats.module.scss';
 import { useAppSelector } from '../../../../app/hooks/hooks';
-import { getDictionary, isDictionaryLoaded } from '../../wordleSlice';
+import { getDictionary, isDictionaryLoaded } from '../dictionary/wordleDictionarySlice';
 
 type IPuzzleDetailStatsProps = {
   analyzeSolution?: IAnalyzerData;
@@ -58,8 +57,8 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
   const statsOverlayRef = useRef(null);
   const overlayRef = useRef(null);
   /** Dictionary redux props */
+  const dictionary = useAppSelector(getDictionary);
   const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
-  const dictionary: IWordleDictionary = useAppSelector(getDictionary);
 
   const [dictionaryLetters, setDictionaryLetters] = useState<Array<number>>([]);
   /** Letters appearing in five available spots */

@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+import React, { useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 type BaseDialogProps = {
   title: React.ReactNode;
   body: React.ReactNode;
   visible: boolean;
+  actionButtonLabel?: string;
   onClose?: () => void;
 };
 
@@ -13,6 +14,7 @@ const Dialog: React.FC<BaseDialogProps> = ({
   title,
   body,
   visible,
+  actionButtonLabel = 'Close',
   onClose,
 }: BaseDialogProps) => {
   return (
@@ -23,21 +25,11 @@ const Dialog: React.FC<BaseDialogProps> = ({
       centered
     >
       <Modal.Header closeButton onHide={onClose}>
-        <Modal.Title id="contained-modal-title-vcenter">
-          {title}
-        </Modal.Title>
+        <Modal.Title id="contained-modal-title-vcenter">{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        {body}
-        <h4>Centered Modal</h4>
-        <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-          consectetur ac, vestibulum at eros.
-        </p>
-      </Modal.Body>
+      <Modal.Body>{body}</Modal.Body>
       <Modal.Footer>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{actionButtonLabel}</Button>
       </Modal.Footer>
     </Modal>
   );
@@ -47,23 +39,35 @@ type DialogProps = {
   title?: React.ReactNode;
   body?: React.ReactNode;
   infoTrigger?: React.ReactNode;
+  actionButtonLabel?: string;
+  onCloseDialogCallback?: () => void;
 };
 
 const useDialog = (props: DialogProps) => {
   const [modalShow, setModalShow] = useState<boolean>(false);
 
+  const onDialogClose = () => {
+    if (props.onCloseDialogCallback) {
+      props.onCloseDialogCallback();
+    }
+    setModalShow(false);
+  };
+
+  const triggerEl = props.infoTrigger || 'Select';
+
   const DialogComponent = (
     <>
       <Button variant="primary" onClick={() => setModalShow(true)}>
-        Launch vertically centered modal
+        {triggerEl}
       </Button>
 
       <Dialog
         visible={modalShow}
-        onClose={() => setModalShow(false)}
+        onClose={onDialogClose}
+        actionButtonLabel={props.actionButtonLabel}
         title={props.title}
         body={props.body}
-        />
+      />
     </>
   );
 

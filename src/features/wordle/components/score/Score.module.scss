@@ -1,0 +1,54 @@
+.Score {
+  &Display {
+    display: flex;
+    gap: 16px;
+    color: var(--mdc-theme-puzzle-primary, #091309);
+    align-items: baseline;
+  }
+
+  &Element {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &Value {
+    font-size: 48px;
+    font-weight: 600;
+  }
+
+  &Label {
+    font-size: larger;
+  }
+
+  &Colon {
+    font-size: 36px;
+    font-weight: 700;
+  }
+}
+
+div.ScoreDisplay {
+  div.ScoreElement:last-child {
+    flex-direction: row-reverse;
+  }
+}
+
+div.ScoreDisplay.UserTurn {
+  div.ScoreElement:first-child {
+    border-bottom: 3px solid
+      var(--mdc-theme-puzzle-game-turn-highlight, #5fc405);
+  }
+  div.ScoreElement:last-child {
+    opacity: 0.7;
+  }
+}
+div.ScoreDisplay.RobotTurn {
+  div.ScoreElement:first-child {
+    opacity: 0.7;
+  }
+  div.ScoreElement:last-child {
+    border-bottom: 3px solid
+      var(--mdc-theme-puzzle-game-turn-highlight, #5fc405);
+  }
+}

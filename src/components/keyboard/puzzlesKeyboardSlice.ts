@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../app/store";
-import { ALPHABET } from "../../features/wordle/PuzzleWords";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AppThunk, RootState } from '../../app/store';
+import { ALPHABET } from '../../features/wordle/PuzzleWords';
 
 import {
   ILetterKey,
@@ -9,7 +9,7 @@ import {
   KeyboardLetter,
   KeyboardLetterColor,
   KEYBOARD_COLORS,
-} from "./PuzzlesKeyboard.types";
+} from './PuzzlesKeyboard.types';
 
 export const generateAlphabetLetters = () => {
   let lettersRecord = {};
@@ -18,7 +18,7 @@ export const generateAlphabetLetters = () => {
       ...a,
       [ltr as KeyboardLetter]: {
         letter: ltr,
-        letterColor: "GREY_OUTLINE" as KeyboardLetterColor,
+        letterColor: 'GREY_OUTLINE' as KeyboardLetterColor,
       },
     }),
     {}
@@ -26,6 +26,31 @@ export const generateAlphabetLetters = () => {
 
   return lettersRecord as Record<KeyboardLetter, ILetterKey>;
 };
+
+export const setKeyboardColors =
+  (word: Array<string>, colors: Array<string>): AppThunk =>
+  (dispatch, getState) => {
+    let lettersRecordCopy = Object.assign({}, getKeyboardLetters(getState()));
+    const keyboardLetterColors: Array<KeyboardLetterColor> = colors.map(
+      (char) => char.toUpperCase() as KeyboardLetterColor
+    );
+    word.forEach((char: string, index: number) => {
+      let color: KeyboardLetterColor = keyboardLetterColors[index];
+      const letter: KeyboardLetter = char as KeyboardLetter;
+      const prevOccurence = word.indexOf(char);
+      if (prevOccurence > -1 && prevOccurence !== index) {
+        const prevColor = keyboardLetterColors[prevOccurence];
+        if (prevColor === 'GREEN' || color === 'GREY') {
+          color = prevColor;
+        }
+      }
+      lettersRecordCopy[letter] = {
+        ...lettersRecordCopy[letter],
+        letterColor: color,
+      };
+    });
+    dispatch(setLetters(lettersRecordCopy));
+  };
 
 const initialState: IPuzzlesKeyboardState = {
   keyboardColor: KEYBOARD_COLORS.GREY,
@@ -39,9 +64,10 @@ type LetterColorPayload = {
   letter: KeyboardLetter;
   color: KeyboardLetterColor;
 };
+type LetterColorPayloadAction = PayloadAction<LetterColorPayload>;
 
 export const puzzlesKeyboardSlice = createSlice({
-  name: "wordleKeyboard",
+  name: 'wordleKeyboard',
   initialState,
   reducers: {
     setLetters: (
@@ -56,20 +82,35 @@ export const puzzlesKeyboardSlice = createSlice({
     ) => {
       state.keyboardColor = action.payload;
     },
-    setLetterColor: (
+    setKeyboardLetterColor: (
       state: IPuzzlesKeyboardState,
-      action: PayloadAction<LetterColorPayload>
+      action: LetterColorPayloadAction
     ) => {
       state.letters[action.payload.letter].letterColor = action.payload.color;
     },
-    resetKeyboard: () => {
-      return {...initialState};
+    resetKeyboard: (state: IPuzzlesKeyboardState) => {
+      const keys = Object.keys(state.letters);
+      keys.forEach((key) => {
+        const keyboardLetter = state.letters[key as KeyboardLetter];
+        state.letters[key as KeyboardLetter] = {
+          ...keyboardLetter,
+          letterColor: 'GREY_OUTLINE' as KeyboardLetterColor,
+          disabled: false,
+          checked: false,
+        };
+      });
+      state.keyboardColor = KEYBOARD_COLORS.GREY;
+      // return { ...initialState };
     },
   },
 });
 
-export const { setLetters, setKeyboardColor, setLetterColor, resetKeyboard } =
-  puzzlesKeyboardSlice.actions;
+export const {
+  setLetters,
+  setKeyboardColor,
+  setKeyboardLetterColor,
+  resetKeyboard,
+} = puzzlesKeyboardSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -92,7 +133,7 @@ export const getKeyboardLetter = (
 
   return {
     letter,
-    letterColor: "GREY" as KeyboardLetterColor,
+    letterColor: 'GREY' as KeyboardLetterColor,
   };
 };
 
