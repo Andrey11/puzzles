@@ -7,7 +7,7 @@ const initialState: IWordleDictionaryState = {
 };
 
 export const uiDictionarySlice = createSlice({
-  name: "dictionary",
+  name: "ui_dictionary",
   initialState,
 
   reducers: {

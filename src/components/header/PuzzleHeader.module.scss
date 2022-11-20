@@ -1,0 +1,40 @@
+@import 'src/scss/mixins.module.scss';
+
+.PuzzleHeader {
+  min-height: 48px;
+  max-height: 48px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+  border-bottom: thin solid rgb(200 191 191 / 30%);
+  box-shadow: 0px 2px 6px -6px #000000ad;
+  position: sticky;
+}
+
+.Items {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin: 0 8px;
+  flex-wrap: nowrap;
+
+  &.Left {
+    justify-content: flex-start;
+  }
+  &.Middle {
+    justify-content: center;
+  }
+  &.Right {
+    justify-content: flex-end;
+    gap: 16px;
+  }
+}
+
+.Item {
+  @include headerIconItem();
+}
+

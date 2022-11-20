@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../app/store';
+import { IHeaderItem, ItemAction } from '../components/header/PuzzleHeader';
 import { AppStatus, IAppState, IPuzzleCardProps, PUZZLES } from './App.types';
 
 const wordleCardProps: IPuzzleCardProps = {
@@ -24,6 +25,9 @@ const initialState: IAppState = {
   activePuzzle: PUZZLES.NONE,
   status: 'idle',
   puzzleCardProps: [wordleCardProps, wordleVersusCardProps],
+  headerItems: [],
+  headerTitle: '',
+  showHeaderDictionaryIcon: false,
 };
 
 export const appSlice = createSlice({
@@ -34,30 +38,59 @@ export const appSlice = createSlice({
     setActivePuzzle: (state, action: PayloadAction<PUZZLES>) => {
       state.activePuzzle = action.payload;
     },
+    setHeaderTitle: (state, action: PayloadAction<string>) => {
+      state.headerTitle = action.payload;
+    },
+    setHeaderItems: (state, action: PayloadAction<Array<IHeaderItem>>) => {
+      state.headerItems = action.payload;
+    },
+    setHeaderItemAction: (state, action: PayloadAction<ItemAction>) => {
+      state.headerItemAction = action.payload;
+    },
     setStatus: (state, action: PayloadAction<AppStatus>) => {
       state.status = action.payload;
     },
-    addPuzzleCard: (
-      state,
-      action: PayloadAction<IPuzzleCardProps | Array<IPuzzleCardProps>>
-    ) => {
-      const currentPuzzleCards = [...state.puzzleCardProps];
-      const cardProps = !Array.isArray(action.payload)
-        ? [action.payload]
-        : action.payload;
-      state.puzzleCardProps = currentPuzzleCards.concat(cardProps);
+    setShowHeaderDictionaryIcon: (state, action: PayloadAction<boolean>) => {
+      state.showHeaderDictionaryIcon = action.payload;
+    },
+    addPuzzleCard: (state, action: PayloadAction<IPuzzleCardProps>) => {
+      state.puzzleCardProps.push(action.payload);
+    },
+    addPuzzleCards: (state, action: PayloadAction<Array<IPuzzleCardProps>>) => {
+      if (!state.puzzleCardProps) {
+        state.puzzleCardProps = [];
+      }
+      state.puzzleCardProps.push(...action.payload);
     },
   },
 });
 
-export const { setActivePuzzle, setStatus } = appSlice.actions;
+export const {
+  setActivePuzzle,
+  setStatus,
+  setHeaderTitle,
+  setHeaderItems,
+  setHeaderItemAction,
+  setShowHeaderDictionaryIcon,
+  addPuzzleCard,
+  addPuzzleCards,
+} = appSlice.actions;
 
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const getActivePuzzle = (state: RootState): PUZZLES => state.app.activePuzzle;
+export const getActivePuzzle = (state: RootState): PUZZLES =>
+  state.app.activePuzzle;
 export const getAppStatus = (state: RootState): AppStatus => state.app.status;
 export const getPuzzleCards = (state: RootState): Array<IPuzzleCardProps> =>
   state.app.puzzleCardProps;
+export const getHeaderItems = (state: RootState): Array<IHeaderItem> =>
+  state.app.headerItems || [];
+export const getHeaderTitle = (state: RootState): string =>
+  state.app.headerTitle || 'PUZZLES';
+export const isHeaderItemActionByType = (
+  state: RootState,
+  itemActionType: ItemAction
+) => state.app.headerItemAction === itemActionType;
+export const isShowHeaderDictionaryIcon = (state: RootState): boolean => 
+  state.app.showHeaderDictionaryIcon === true;
+
 
 export default appSlice.reducer;

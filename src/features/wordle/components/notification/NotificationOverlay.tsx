@@ -1,6 +1,7 @@
 import React, { RefObject, useEffect, useState } from 'react';
 import Overlay from 'react-bootstrap/Overlay';
 import { useAppSelector } from '../../../../app/hooks/hooks';
+import { isRobotPickingWord } from '../../wordleversus/game/robot/robotSolutionSlice';
 import {
   isLostGame,
   isUserGame,
@@ -21,6 +22,7 @@ const NotificationOverlay: React.FunctionComponent<NotificationProps> = ({
   const userWonRound = useAppSelector(isWonGame);
   const isUserTurn = useAppSelector(isUserGame);
   const userLostRound = useAppSelector(isLostGame);
+  const robotPickingWord = useAppSelector(isRobotPickingWord);
 
   const [showOverlay, setShowOverlay] = useState<boolean>(false);
 
@@ -30,6 +32,9 @@ const NotificationOverlay: React.FunctionComponent<NotificationProps> = ({
     if (showErrorNotification) {
       statusCls = styles.InvalidWord;
       message = 'Not in word list';
+    } else if (robotPickingWord) {
+      statusCls = styles.RobotPickingWord;
+      message = 'Robot is picking the guess word...';
     } else if (userWonRound) {
       statusCls = styles.UserWonRound;
       message = isUserTurn ? 'You WON' : 'Robot solved your word';
@@ -54,10 +59,15 @@ const NotificationOverlay: React.FunctionComponent<NotificationProps> = ({
       timerId = setTimeout(() => {
         setShowOverlay(false);
       }, 2100);
+    } else if (robotPickingWord) {
+      setShowOverlay(true);
+      timerId = setTimeout(() => {
+        setShowOverlay(false);
+      }, 1500);
     }
 
     return () => clearTimeout(timerId);
-  }, [showErrorNotification, userLostRound, userWonRound]);
+  }, [showErrorNotification, userLostRound, userWonRound, robotPickingWord]);
 
   return (
     <Overlay

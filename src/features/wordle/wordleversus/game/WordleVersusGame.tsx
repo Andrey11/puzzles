@@ -11,6 +11,7 @@ import NotificationOverlay from '../../components/notification/NotificationOverl
 import RowGroup from '../../components/rowgroup/RowGroup';
 
 import styles from './WordleVersusGame.module.scss';
+import Ratio from 'react-bootstrap/Ratio';
 
 const WordleVersusGame: React.FC = () => {
   const guessRowTargetRef: React.RefObject<any> = useRef(null);
@@ -18,7 +19,7 @@ const WordleVersusGame: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const onEnterPressed = () => dispatch(onSubmitGuess());
-  
+
   const onLetterPressed = (letter: string) => dispatch(addLetter(letter));
 
   const onDeletePressed = (event?: Event) => {
@@ -29,6 +30,17 @@ const WordleVersusGame: React.FC = () => {
     dispatch(deleteLetter());
   };
 
+  const interactiveRobot = (
+    <div className={styles.InteractiveRobotDisplay}>
+      <div className={styles.RobotCover}>
+        <div className={styles.RobotImage}>
+          <Ratio aspectRatio="16x9">
+            <embed type="image/svg+xml" src="/images/robot-head.svg" />
+          </Ratio>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <section itemID="activeGameDisplay">
@@ -39,6 +51,8 @@ const WordleVersusGame: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* {interactiveRobot} */}
 
       <hr />
 

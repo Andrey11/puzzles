@@ -2,6 +2,7 @@ import { ISolutionModel } from "../../PuzzleWordleVersus.types";
 
 export type TRobotStatus =
   | 'idle'
+  | 'robot-picking-word'
   | 'calculate-robot-guess'
   | 'submit-robot-guess'
   | 'analyze-robot-guess-result'

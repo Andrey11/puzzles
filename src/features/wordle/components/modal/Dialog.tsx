@@ -7,7 +7,10 @@ type BaseDialogProps = {
   body: React.ReactNode;
   visible: boolean;
   actionButtonLabel?: string;
+  cancelButtonLabel?: string;
   onClose?: () => void;
+  onCloseCallback?: (props: any) => void;
+  showCancelButton?: boolean;
 };
 
 const Dialog: React.FC<BaseDialogProps> = ({
@@ -15,7 +18,10 @@ const Dialog: React.FC<BaseDialogProps> = ({
   body,
   visible,
   actionButtonLabel = 'Close',
+  cancelButtonLabel = 'Cancel',
   onClose,
+  onCloseCallback,
+  showCancelButton = false,
 }: BaseDialogProps) => {
   return (
     <Modal
@@ -29,7 +35,8 @@ const Dialog: React.FC<BaseDialogProps> = ({
       </Modal.Header>
       <Modal.Body>{body}</Modal.Body>
       <Modal.Footer>
-        <Button onClick={onClose}>{actionButtonLabel}</Button>
+        {showCancelButton && <Button onClick={onClose}>{cancelButtonLabel}</Button>}
+        <Button onClick={onCloseCallback}>{actionButtonLabel}</Button>
       </Modal.Footer>
     </Modal>
   );
@@ -40,6 +47,8 @@ type DialogProps = {
   body?: React.ReactNode;
   infoTrigger?: React.ReactNode;
   actionButtonLabel?: string;
+  cancelButtonLabel?: string;
+  showCancelButton?: boolean;
   onCloseDialogCallback?: () => void;
 };
 
@@ -50,6 +59,10 @@ const useDialog = (props: DialogProps) => {
     if (props.onCloseDialogCallback) {
       props.onCloseDialogCallback();
     }
+    closeDialog();
+  };
+
+  const closeDialog = () => {
     setModalShow(false);
   };
 
@@ -57,14 +70,17 @@ const useDialog = (props: DialogProps) => {
 
   const DialogComponent = (
     <>
-      <Button variant="primary" onClick={() => setModalShow(true)}>
+      <div onClick={() => setModalShow(true)}>
         {triggerEl}
-      </Button>
+      </div>
 
       <Dialog
         visible={modalShow}
-        onClose={onDialogClose}
+        onClose={closeDialog}
+        onCloseCallback={onDialogClose}
         actionButtonLabel={props.actionButtonLabel}
+        cancelButtonLabel={props.cancelButtonLabel}
+        showCancelButton={props.showCancelButton}
         title={props.title}
         body={props.body}
       />

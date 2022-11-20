@@ -4,102 +4,30 @@
   left: -20px;
 }
 
-.InfoPosition {
+.GameSettingsDisplayTrigger {
   position: absolute;
-  top: 0;
-  right: -21px;
-  line-height: 0;
-  z-index: 900;
+  top: 10px;
+  right: 40px; 
 }
 
-.SelectStartingWordOverlay {
-  display: flex;
-  gap: 8px;
-  min-width: 242px;
-  [class*="WordleSelector"] {
-    margin-bottom: 0;
-    resize: none;
-    flex: 1;
-  }
+.StartGameDisplay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: green;
+  padding: 16px 24px;
 }
 
-.Spacer {
-  flex: 1;
-  max-width: 90px;
-}
-
-.Totals {
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  input {
-    width: 25px;
-    height: 25px;
-  }
-  label {
-    // padding-left: 8px;
-    // width: 120px;
-    font-size: 16px;
-    font-weight: 300;
-    vertical-align: top;
-  }
-}
-.TotalLetterLabel {
-  font-size: 24px;
-  font-weight: 500;
-}
-.TotalCountLabel {
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.letterLabel {
-  font-weight: 500;
-}
-.countLabel {
-  font-weight: 600;
-}
-
-.ButtonContainer {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.MatchSpotCheckbox {
-  padding-top: 24px;
-}
-
-// span.MissLetter {
-//   border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
-//   margin: 1px;
-//   width: 15px;
-//   height: 15px;
-//   display: inline-block;
-//   text-align: center;
-//   font-weight: 300;
-//   font-size: small;
-//   color: var(--mdc-theme-puzzle-primary, #091309);
-// }
-
-// .WordCountBadge {
-//   position: relative;
-//   left: -15px;
-//   top: -20px;
-// }
-
-// .LetterCount {
-//   display: inline-block;
-// }
-
-// .TotalCountStats {
-//   line-height: 45px;
-// }
-
-// .StatsContainer {
-//   background: none;
+// .SelectStartingWordOverlay {
+//   display: flex;
+//   gap: 8px;
+//   min-width: 242px;
+//   [class*="WordleSelector"] {
+//     margin-bottom: 0;
+//     resize: none;
+//     flex: 1;
+//   }
 // }
 
 .PlaceholderMessage {
@@ -111,49 +39,14 @@
 .WordleVersusContainer {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   justify-content: center;
   align-items: center;
   position: relative;
 }
 
-// .GuessRowsDisplay {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   gap: 5px;
-//   font-family: inherit;
-//   background-color: transparent;
-//   color: var(--mdc-theme-puzzle-primary, #091309);
-//   position: relative;
-// }
+.RobotDisplay {
+  position: absolute;
+  top: 80px;
+}
 
-// .ControlContainer {
-//   position: relative;
-//   max-width: 270px;
-//   flex: 1;
-//   display: flex;
-//   gap: 8px;
-//   flex-direction: column;
-//   font-size: 22px;
-//   input,
-//   textarea {
-//     width: 50px;
-//     height: 50px;
-//     text-align: center;
-//     font-size: 32px;
-//     font-weight: 700;
-//     &.Match {
-//       background-color: var(--mdc-theme-puzzle-exists, #ffb003);
-//       border: thin solid var(--mdc-theme-puzzle-exists, #ffb003);
-//     }
-//     &.ExactMatch {
-//       background-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
-//       border: thin solid var(--mdc-theme-puzzle-exact-match, #5fc405);
-//     }
-//     &.Miss {
-//       background-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
-//       border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
-//     }
-//   }
-// }

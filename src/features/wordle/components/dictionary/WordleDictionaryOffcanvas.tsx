@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
-import { Search, Book } from 'react-bootstrap-icons';
-import Button from 'react-bootstrap/Button';
+import { Search, BookHalf } from 'react-bootstrap-icons';
 import Spinner from 'react-bootstrap/Spinner';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import AlphabetScrollList from '../alphabetscroll/AlphabetScrollList';
 import WordSelector from '../dropdown/WordSelector';
 
 import styles from './WordleDictionary.module.scss';
-import { useAppSelector } from '../../../../app/hooks/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../app/hooks/hooks';
 import { getSelectableWords, isDictionaryLoaded } from './wordleDictionarySlice';
+import { setActiveLetter } from './uiDictionarySlice';
 
 const WordleDictionaryOffcanvas: React.FC = () => {
   const [show, setShow] = useState<boolean>(false);
   const [wordSelected, setWordSelected] = useState<string>('');
   const [firstPaintDone, setFirstPaintDone] = useState<boolean>(false);
 
+  const dispatch = useAppDispatch();
+
   const handleClose = () => {
     setShow(false);
     setFirstPaintDone(false);
+    dispatch(setActiveLetter('A'));
   };
 
   const handleShow = () => setShow(true);
@@ -50,12 +53,10 @@ const WordleDictionaryOffcanvas: React.FC = () => {
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
-        <Book size={24} />
-      </Button>
+      <BookHalf onClick={handleShow} className={styles.DictionaryIcon} />
 
       <Offcanvas
-        id="DictionaryOffcanvas"
+        id={styles["DictionaryOffcanvas"]}
         className={styles.DictionaryOffcanvasDisplay}
         show={show}
         onHide={handleClose}

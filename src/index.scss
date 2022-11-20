@@ -2,7 +2,7 @@
 
 :root {
   --mdc-theme-puzzle-primary: #091309;
-  --mdc-theme-puzzle-secondary: #0c63e4;
+  --mdc-theme-puzzle-secondary: #0c63e4;            // var(--mdc-theme-puzzle-secondary, #0c63e4);
   --mdc-theme-puzzle-secondary-rgb: 12, 99, 228;
   --mdc-theme-puzzle-background: #f2f1f1;
   --mdc-theme-puzzle-miss: #c2b9b9;

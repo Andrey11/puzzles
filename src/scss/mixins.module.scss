@@ -1,3 +1,8 @@
+@mixin headerIconItem() {
+  color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+  font-size: 1.3rem;
+}
+
 /**
  * Adds max-height to $heightVH, and height to 100%.
  */

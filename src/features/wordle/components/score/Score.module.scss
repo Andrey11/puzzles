@@ -1,9 +1,17 @@
+.RoundDisplay {
+  font-size: smaller;
+  line-height: 0px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .Score {
   &Display {
     display: flex;
     gap: 16px;
     color: var(--mdc-theme-puzzle-primary, #091309);
     align-items: baseline;
+    line-height: 1rem;
   }
 
   &Element {

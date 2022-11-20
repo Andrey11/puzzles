@@ -1,7 +1,8 @@
 @import 'src/scss/mixins.module.scss';
 
-[id="DictionaryOffcanvas"].DictionaryOffcanvasDisplay {
-  height: 90vh;
+// This hella silly, but .offcanvas.offcanvas-bottom keeps winning the specificity battle
+#DictionaryOffcanvas {
+  height: 80vh;
 }
 
 .DictionaryOffcanvasDisplay {
@@ -9,6 +10,10 @@
     overflow-y: hidden;
     padding-top: 0;
   }
+}
+
+.DictionaryIcon {
+  @include headerIconItem();
 }
 
 .SpinnerDisplay {
@@ -37,6 +42,14 @@
   }
 }
 
+.WordsContainer {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  overflow-y: auto;
+  flex: 1 1 100%;
+}
+
 .WordSearchRow {
   display: flex;
   flex-direction: row;
@@ -47,14 +60,6 @@
   &Icon {
     color: var(--mdc-theme-puzzle-secondary, #0c63e4);
   }
-}
-
-.WordsContainer {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  overflow-y: auto;
-  flex: 1 1 100%;
 }
 
 .WordErrorTooltip {
@@ -98,7 +103,7 @@
     &Error {
       cursor: not-allowed;
       font-weight: 400;
-      opacity: 0.8;
+      opacity: 1;
       text-decoration: line-through;
     }
   }

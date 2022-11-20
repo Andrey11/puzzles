@@ -52,7 +52,7 @@ export const setCellColor =
     dispatch(updateColorByRowAndCellId({ rowKey, cellKey, color }));
   };
 
-export const resetRowGroup = (): AppThunk => (dispatch, getState) => {
+export const resetRowGroup = (): AppThunk => (dispatch) => {
   // const rowGroupState = getState().puzzle.ui.rowGroup;
   // const resetLetterColor = { color: CELL_COLORS.GREY_OUTLINE, letter: '' };
   // const payload: IWordleRowGroupUI = {
@@ -86,12 +86,13 @@ export const resetRowGroup = (): AppThunk => (dispatch, getState) => {
   //   },
   // };
 
-  dispatch(resetCellsByRowId('ROW_1' as RowKey));
-  dispatch(resetCellsByRowId('ROW_2' as RowKey));
-  dispatch(resetCellsByRowId('ROW_3' as RowKey));
-  dispatch(resetCellsByRowId('ROW_4' as RowKey));
-  dispatch(resetCellsByRowId('ROW_5' as RowKey));
-  dispatch(resetCellsByRowId('ROW_6' as RowKey));
+  // dispatch(resetCellsByRowId('ROW_1' as RowKey));
+  // dispatch(resetCellsByRowId('ROW_2' as RowKey));
+  // dispatch(resetCellsByRowId('ROW_3' as RowKey));
+  // dispatch(resetCellsByRowId('ROW_4' as RowKey));
+  // dispatch(resetCellsByRowId('ROW_5' as RowKey));
+  // dispatch(resetCellsByRowId('ROW_6' as RowKey));
+  dispatch(resetCellsForAllRows());
 };
 
 const initialState: IWordleRowGroupUI = {
@@ -111,19 +112,28 @@ type UpdateWordPayload = { word: Array<string>; rowKey: RowKey };
 type UpdateWordColorPayload = { color: Array<string>; rowKey: RowKey };
 
 export const rowGroupSlice = createSlice({
-  name: 'rowgroup',
+  name: 'ui_rowgroup',
   initialState,
   reducers: {
     // resetRowGroup: () => {
     //   return { ...initialState };
     // },
+    resetCellsForAllRows: (state) => {
+      const allRows = state.rows;
+      Object.keys(allRows).forEach((row) => { 
+        const rowCells = allRows[row as RowKey].cells;  
+        Object.keys(rowCells).forEach((cell) => {
+          rowCells[cell as CellKey].letter = '';
+          rowCells[cell as CellKey].color = CELL_COLORS.GREY_OUTLINE;
+        });
+      });
+    },
     resetCellsByRowId: (state, action: PayloadAction<RowKey>) => {
       const rowCells = state.rows[action.payload].cells;
       Object.keys(rowCells).forEach((cell) => {
         rowCells[cell as CellKey].letter = '';
         rowCells[cell as CellKey].color = CELL_COLORS.GREY_OUTLINE;
       });
-      // state.rows[action.payload].cells.CELL_1.letter = '';
     },
     updateWordByRowId: (state, action: PayloadAction<UpdateWordPayload>) => {
       const { rowKey, word } = action.payload;
@@ -182,6 +192,7 @@ export const rowGroupSlice = createSlice({
 
 export const {
   // resetRowGroup,
+  resetCellsForAllRows,
   resetCellsByRowId,
   updateLetterByRowAndCellId,
   updateColorByRowAndCellId,

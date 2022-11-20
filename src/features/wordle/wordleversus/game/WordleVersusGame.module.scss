@@ -16,7 +16,6 @@
   }
 }
 
-
 .GuessRowsDisplayWrapper {
   position: relative;
   display: flex;
@@ -35,4 +34,16 @@
   font-family: inherit;
   background-color: transparent;
   color: var(--mdc-theme-puzzle-primary, #091309);
+}
+
+.InteractiveRobotDisplay {
+  position: absolute;
+  .RobotCover {
+    position: relative;
+    .RobotImage {
+      width: 120px;
+      height: 'auto';
+      position: absolute;
+    }
+  }
 }

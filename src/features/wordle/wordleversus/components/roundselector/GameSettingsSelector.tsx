@@ -5,7 +5,10 @@ import styles from './GameSettingsSelector.module.scss';
 import Form from 'react-bootstrap/Form';
 
 type RoundsSelectorCallback = (event: any) => void;
-type RoundSelectorProps = { onRoundsSelected: RoundsSelectorCallback };
+type RoundSelectorProps = { 
+  onRoundsSelected: RoundsSelectorCallback;
+  defaultSelected: string;
+};
 
 const GameSettingsSelector: React.FC<RoundSelectorProps> = (props) => {
   const onRoundsSelected = (targetEl: HTMLInputElement) => {
@@ -18,11 +21,11 @@ const GameSettingsSelector: React.FC<RoundSelectorProps> = (props) => {
       <Form
         onChange={(event) => onRoundsSelected(event.target as HTMLInputElement)}
       >
-        <div key={`inline-radio`} className="mb-3">
+        <div key={`inline-radio`} className={styles.SettingsDisplay}>
           <Form.Check
             inline
-            label="One Round"
-            defaultChecked
+            label="One Game, winner takes all"
+            defaultChecked={props.defaultSelected === 'inline-radio-1'}
             value={2}
             name="roundSelectionGroup"
             type="radio"
@@ -30,7 +33,8 @@ const GameSettingsSelector: React.FC<RoundSelectorProps> = (props) => {
           />
           <Form.Check
             inline
-            label="Three Rounds"
+            label="Three Games, no flukes here"
+            defaultChecked={props.defaultSelected === 'inline-radio-2'}
             value={6}
             name="roundSelectionGroup"
             type="radio"
@@ -38,7 +42,8 @@ const GameSettingsSelector: React.FC<RoundSelectorProps> = (props) => {
           />
           <Form.Check
             inline
-            label="Five Rounds"
+            label="Five Games, the ultimate challenge"
+            defaultChecked={props.defaultSelected === 'inline-radio-3'}
             name="roundSelectionGroup"
             value={10}
             type="radio"

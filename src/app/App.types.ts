@@ -1,5 +1,8 @@
+import { IHeaderItem, ItemAction } from "../components/header/PuzzleHeader";
+
 export enum PUZZLES {
   NONE = 'none',
+  LOBBY = 'lobby',
   WORDLE = 'wordle',
   WORDLE_VERSUS = 'wordleversus',
 };
@@ -18,5 +21,9 @@ export interface IAppState {
   activePuzzle: PUZZLES;
   status: AppStatus;
   puzzleCardProps: Array<IPuzzleCardProps>;
+  headerItems?: Array<IHeaderItem>;
+  headerTitle?: string;
+  headerItemAction?: ItemAction;
+  showHeaderDictionaryIcon?: boolean;
 }
 

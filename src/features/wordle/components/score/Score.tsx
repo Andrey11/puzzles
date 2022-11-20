@@ -2,7 +2,12 @@ import React, { useMemo } from 'react';
 import { useAppSelector } from '../../../../app/hooks/hooks';
 import { isUserGame } from '../../wordleversus/game/wordleVersusGameSlice';
 import { IScoreModel } from '../../wordleversus/PuzzleWordleVersus.types';
-import { getScore, isMatchFinished } from '../../wordleversus/wordleVersusSlice';
+import {
+  getCurrentGame,
+  getScore,
+  isMatchFinished,
+  isMatchStarted,
+} from '../../wordleversus/wordleVersusSlice';
 
 import styles from './Score.module.scss';
 
@@ -10,9 +15,12 @@ const Score: React.FC = () => {
   const score: IScoreModel = useAppSelector(getScore);
   const isUserTurn = useAppSelector(isUserGame);
   const matchFinished = useAppSelector(isMatchFinished);
+  const matchStarted = useAppSelector(isMatchStarted);
+  const currentGame = useAppSelector(getCurrentGame);
+  const roundNumber = !matchFinished && matchStarted ? `Game ${currentGame}` : `*********`;
   const turnHighlightCls = useMemo(() => {
-    return matchFinished ? '' : isUserTurn ? styles.UserTurn : styles.RobotTurn;
-  }, [isUserTurn, matchFinished]);
+    return (matchFinished || !matchStarted) ? '' : isUserTurn ? styles.UserTurn : styles.RobotTurn;
+  }, [isUserTurn, matchFinished, matchStarted]);
   const renderScoreElement = (label: string, score: number): JSX.Element => {
     return (
       <div className={styles.ScoreElement}>
@@ -23,11 +31,14 @@ const Score: React.FC = () => {
   };
 
   return (
-    <div className={`${styles.ScoreDisplay} ${turnHighlightCls}`}>
-      {renderScoreElement('You', score.userScore)}
-      <div className={styles.ScoreColon}>:</div>
-      {renderScoreElement('Robot', score.aiScore)}
-    </div>
+    <>
+      <div className={`${styles.RoundDisplay} text-muted`}>{roundNumber}</div>
+      <div className={`${styles.ScoreDisplay} ${turnHighlightCls}`}>
+        {renderScoreElement('You', score.userScore)}
+        <div className={styles.ScoreColon}>:</div>
+        {renderScoreElement('Robot', score.aiScore)}
+      </div>
+    </>
   );
 };
 

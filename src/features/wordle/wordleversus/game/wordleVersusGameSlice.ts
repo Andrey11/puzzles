@@ -28,7 +28,10 @@ import {
   endWordleVersusGame,
 } from '../wordleVersusSlice';
 import { isValidWord } from '../../components/dictionary/wordleDictionarySlice';
-import { setRobotGuessWordStatus } from './robot/robotSolutionSlice';
+import {
+  setRobotGuessWordStatus,
+  setRoundComplete,
+} from './robot/robotSolutionSlice';
 
 const initialState: IGameState = {
   wod: 'OCEAN',
@@ -149,7 +152,9 @@ export const onSubmitGuess = (): AppThunk => (dispatch, getState) => {
   const isValid =
     activeRound.isValidWord || isWordInDictionary(guessWord.join(''));
 
-  if (isValid && !isLost && !isWon) {
+  if (!isValid) {
+    dispatch(setAnimateInvalidWord(true));
+  } else if (isValid && !isLost && !isWon) {
     const isMatch = wod === guessWord.join('');
 
     const matches = generateMatchesForUserGuess(wod.split(''), guessWord);
@@ -160,15 +165,16 @@ export const onSubmitGuess = (): AppThunk => (dispatch, getState) => {
       rowKey: numberToRowKey(currentRoundNumber),
       color: colors,
     };
-    
+
     const { gameNumber, isUserGame } = currentGameState;
 
     dispatch(setKeyboardColors(guessWord, colors));
     dispatch(updateWordColorsByRowId(updateWordLetterColorsPayload));
     if (!isUserGame) {
-      dispatch(setRobotGuessWordStatus({word: guessWord.join(''), colors: colors}));
+      dispatch(
+        setRobotGuessWordStatus({ word: guessWord.join(''), colors: colors })
+      );
     }
-
 
     if (isMatch) {
       // ----------------------------- winning scenario -----------------------------
@@ -185,6 +191,9 @@ export const onSubmitGuess = (): AppThunk => (dispatch, getState) => {
           score: scoreWithBonus,
         })
       );
+      if (!isUserGame) {
+        dispatch(setRoundComplete(true));
+      }
     } else if (isLastRound(getState())) {
       dispatch(setScore(0));
       dispatch(setLostRound(true));
@@ -204,7 +213,6 @@ export const onSubmitGuess = (): AppThunk => (dispatch, getState) => {
       dispatch(setCurrentRound(newRoundId));
     }
   } else {
-    dispatch(setAnimateInvalidWord(true));
   }
 };
 
@@ -271,7 +279,7 @@ export const {
 export const isUserGame = (state: RootState): boolean =>
   state.puzzle.wordleversusgame.isUserGame;
 export const isRobotGame = (state: RootState): boolean =>
-  !state.puzzle.wordleversusgame.isUserGame;  
+  !state.puzzle.wordleversusgame.isUserGame;
 export const isWonGame = (state: RootState): boolean =>
   state.puzzle.wordleversusgame.isWon === true;
 export const isLostGame = (state: RootState): boolean =>

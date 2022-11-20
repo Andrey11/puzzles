@@ -67,7 +67,7 @@ type LetterColorPayload = {
 type LetterColorPayloadAction = PayloadAction<LetterColorPayload>;
 
 export const puzzlesKeyboardSlice = createSlice({
-  name: 'wordleKeyboard',
+  name: 'ui_keyboard',
   initialState,
   reducers: {
     setLetters: (

@@ -10,6 +10,7 @@ import {
   WordleSolverLoader,
   WordleVersusLoader,
 } from './components/puzzleloader/PuzzleLoader';
+import PuzzleHeader from './components/header/PuzzleHeader';
 
 const PuzzleWordleVersus = React.lazy(
   () => import('./features/wordle/wordleversus/PuzzleWordleVersus')
@@ -23,6 +24,7 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <div className={styles.App}>
+        <PuzzleHeader />
         <div className={styles.AppBody}>
           <Routes>
             <Route

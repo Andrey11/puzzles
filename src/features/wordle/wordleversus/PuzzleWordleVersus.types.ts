@@ -1,4 +1,4 @@
-import { ILetterModel, IWordleRow } from "../PuzzleWordle.types";
+import { ILetterModel, IWordleRow } from '../PuzzleWordle.types';
 
 export interface IScoreModel {
   userScore: number;
@@ -65,27 +65,35 @@ export interface IFinishedGame {
   score: number;
 }
 
-export interface IWordleVsState {
+export interface IRobotControls {
+  shouldRobotPickWod: boolean;
+  shouldRobotSolvePuzzle: boolean;
+}
+
+export interface IWordleVsMatchState {
   games: Array<IFinishedGame>;
   score: IScoreModel;
   currentGame: number;
   maxGames: number;
   showInvalidWordAnimation?: boolean | false;
-  defaultMaxGames: number;
   matchFinished: boolean;
-  shouldRobotPickWod: boolean;
-  shouldRobotSolvePuzzle: boolean;
+  matchStarted: boolean;
+  isUserWinner: boolean;
 }
 
-
+export type IWordleVsState = 
+  IRobotControls &
+  IWordleVsMatchState & {
+    defaultMaxGames: number;
+  };
 
 export interface ISolutionModel {
   currentWordIndex: number;
   availableWordIndexes: Array<number>;
   attempts: number;
-  matchedLetters: Array<ILetterModel>;
-  existsMatchLetter: Array<ILetterModel>;
+  matchedLetters?: Array<ILetterModel>;
   exactMatchLetter: Array<ILetterModel>;
+  existsMatchLetter: Array<ILetterModel>;
   nonExistentLetters: Array<string>;
   nonExistentLetterAtIndex: Array<ILetterModel>;
   usedWordIndexes: Array<number>;
