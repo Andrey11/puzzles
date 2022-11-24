@@ -20,6 +20,33 @@ export enum WordleScreen {
   DICTIONARY = "2",
 }
 
+export enum ROUND_IDS {
+  ROUND_1 = 1,
+  ROUND_2,
+  ROUND_3,
+  ROUND_4,
+  ROUND_5,
+  ROUND_6,
+}
+
+export type RoundKey = keyof typeof ROUND_IDS;
+
+
+export interface IGameRoundState {
+  roundId: ROUND_IDS;
+  guessWord: Array<string>;
+  isValidWord?: boolean;
+}
+
+export interface IWordleGameState {
+  wod: string;
+  currentRound: RoundKey;
+  rounds: Record<RoundKey, IGameRoundState>;
+  isUserGame: boolean;
+  isWon?: boolean;
+  isLost?: boolean;
+}
+
 export type Letters =|"A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z";
   
 export interface IWordleDictionaryState {

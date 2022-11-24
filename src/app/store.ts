@@ -1,13 +1,14 @@
 import { configureStore, ThunkAction, Action, combineReducers } from '@reduxjs/toolkit';
-import appReducer from './appSlice';
-import wordleReducer from '../features/wordle/wordlesolver/wordleSlice';
-import uiDictionaryReducer from '../features/wordle/components/dictionary/uiDictionarySlice';
-import wordleVersusReducer from '../features/wordle/wordleversus/wordleVersusSlice';
-import wordleKeyboardReducer from '../components/keyboard/puzzlesKeyboardSlice';
-import wordleRowGroupReducer from '../features/wordle/components/rowgroup/rowGroupSlice';
-import wordleVersusGameReducer from '../features/wordle/wordleversus/game/wordleVersusGameSlice';
-import wordleDictionaryReducer from '../features/wordle/components/dictionary/wordleDictionarySlice';
-import robotSolutionReducer from '../features/wordle/wordleversus/game/robot/robotSolutionSlice';
+import appReducer from 'app/appSlice';
+import wordleReducer from 'features/wordle/wordlesolver/wordleSlice';
+import uiDictionaryReducer from 'features/wordle/components/dictionary/uiDictionarySlice';
+import wordleVersusReducer from 'features/wordle/wordleversus/wordleVersusSlice';
+import wordleKeyboardReducer from 'components/keyboard/puzzlesKeyboardSlice';
+import wordleRowGroupReducer from 'features/wordle/components/rowgroup/rowGroupSlice';
+import wordleVersusGameReducer from 'features/wordle/wordleversus/game/wordleVersusGameSlice';
+import wordleDictionaryReducer from 'features/wordle/components/dictionary/wordleDictionarySlice';
+import robotSolutionReducer from 'features/wordle/components/robot/robotSolutionSlice';
+import wordleSolverReducer from 'features/wordle/components/solver/wordleSolverSlice';
 
 const uiReducers = combineReducers({
   keyboard: wordleKeyboardReducer,
@@ -20,7 +21,8 @@ const wordleReducers = combineReducers({
   wordleversus: wordleVersusReducer,
   wordleversusgame: wordleVersusGameReducer,
   wordledictionary: wordleDictionaryReducer, 
-  wvsrobotsolution: robotSolutionReducer,
+  wordlerobotsolution: robotSolutionReducer,
+  wordlesolver: wordleSolverReducer,
   ui: uiReducers,
 })
 

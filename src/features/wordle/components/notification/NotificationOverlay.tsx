@@ -1,7 +1,7 @@
 import React, { RefObject, useEffect, useState } from 'react';
 import Overlay from 'react-bootstrap/Overlay';
-import { useAppSelector } from '../../../../app/hooks/hooks';
-import { isRobotPickingWord } from '../../wordleversus/game/robot/robotSolutionSlice';
+import { useAppSelector } from 'app/hooks/hooks';
+import { isRobotPickingWord } from '../robot/robotSolutionSlice';
 import {
   isLostGame,
   isUserGame,

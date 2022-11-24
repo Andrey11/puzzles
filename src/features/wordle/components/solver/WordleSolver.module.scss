@@ -29,12 +29,6 @@
   z-index: 1001;
 }
 
-.PlaceholderMessage {
-  svg {
-    vertical-align: text-bottom;
-  }
-}
-
 .DisplayContainer {
   display: flex;
   flex-direction: column;
@@ -44,47 +38,36 @@
   position: relative;
 }
 
-.GuessContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-
-.ButtonOneRow {
-  display: flex;
-  justify-content: space-between;
-}
-.ControlContainer {
-  position: relative;
-  max-width: 270px;
-  flex: 1;
-  display: flex;
-  gap: 8px;
-  flex-direction: column;
+.WordSelectorWrapper {
   font-size: 22px;
-  input,
-  textarea {
-    width: 50px;
+  position: relative;
+  flex: 1;
+  
+  input {
+    max-width: 270px;
     height: 50px;
     text-align: center;
     font-size: 32px;
     font-weight: 700;
-    // text-transform: uppercase;
-    &.match {
-      background-color: var(--mdc-theme-puzzle-exists, #ffb003);
-      border: thin solid var(--mdc-theme-puzzle-exists, #ffb003);
-      // color: white;
-    }
-    &.exactMatch {
-      background-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
-      border: thin solid var(--mdc-theme-puzzle-exact-match, #5fc405);
-      // color: white;
-    }
-    &.miss {
-      background-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
-      border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
-      // color: white;
-    }
   }
+}
+
+.GuessRowsDisplayWrapper {
+  position: relative;
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  flex-direction: column;
+  font-size: 22px;
+}
+
+.GuessRowsDisplay {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-family: inherit;
+  background-color: transparent;
+  color: var(--mdc-theme-puzzle-primary, #091309);
 }

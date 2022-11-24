@@ -5,9 +5,9 @@ import {
   getHeaderTitle,
   isShowHeaderDictionaryIcon,
   setHeaderItemAction,
-} from '../../app/appSlice';
-import { useAppDispatch, useAppSelector } from '../../app/hooks/hooks';
-import WordleDictionaryOffcanvas from '../../features/wordle/components/dictionary/WordleDictionaryOffcanvas';
+} from 'app/appSlice';
+import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
+import WordleDictionaryOffcanvas from 'features/wordle/components/dictionary/WordleDictionaryOffcanvas';
 
 import styles from './PuzzleHeader.module.scss';
 

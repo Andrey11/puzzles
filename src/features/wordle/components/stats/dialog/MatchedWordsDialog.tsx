@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
+import { NON_BREAKING_SPACE } from '../../../../../components/placeholder/Placeholder';
 
 import {
   IWordleDictionary,
@@ -19,8 +20,6 @@ export type MatchedWordsDialogProps = {
   showDialog: boolean;
   onCloseDialog: () => void;
 };
-
-const NON_BREAKING_SPACE = <>&nbsp;</>;
 
 const MatchedWordsDialog: React.FunctionComponent<MatchedWordsDialogProps> = ({
   dictionary,

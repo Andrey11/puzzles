@@ -1,15 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk, RootState } from '../../../../../app/store';
+import { AppThunk, RootState } from '../../../../app/store';
 import {
   getExactMatches,
   getExistsMatches,
   removeNonExistentLetterIndexes,
   removeNonExistentLetterIndexesAtIndex,
-} from '../../../PuzzleWordle-helpers';
-import { ILetterModel, IWordleDictionary } from '../../../PuzzleWordle.types';
-import { allAvailableWords } from '../../../PuzzleWords';
-import { addWord } from '../wordleVersusGameSlice';
-import { IRobotSolution, IWordStatus, TRobotStatus } from './RobotSolver.types';
+} from '../../PuzzleWordle-helpers';
+import { ILetterModel, IWordleDictionary } from '../../PuzzleWordle.types';
+import { allAvailableWords } from '../../PuzzleWords';
+import { setShouldRobotSolvePuzzle } from '../../wordleversus/wordleVersusSlice';
+import {
+  IRobotSolution,
+  IWordStatus,
+  OnRobotPickedWord as OnRobotPickedWordType,
+  TRobotStatus,
+} from './RobotSolver.types';
 
 const initialState: IRobotSolution = {
   currentWordIndex: 0,
@@ -87,19 +92,19 @@ export const caclulateAvailableIndexes = ({
   availableWordIndexes: available,
   dictionary: dict,
 }: ICalcAvailableProps): Array<number> => {
-  console.log(`Count before reducing... ${available.length}`);
+  // console.log(`Count before reducing... ${available.length}`);
   let wordIndexes = getExactMatches(exact, [...available], dict);
-  console.log(`Count after exact matches... ${wordIndexes.length}`);
+  // console.log(`Count after exact matches... ${wordIndexes.length}`);
   wordIndexes = getExistsMatches(exist, exact, missAt, wordIndexes, dict);
-  console.log(`Count after exists matches... ${wordIndexes.length}`);
+  // console.log(`Count after exists matches... ${wordIndexes.length}`);
   wordIndexes = removeNonExistentLetterIndexes(miss, wordIndexes, dict);
-  console.log(`Count after misses... ${wordIndexes.length}`);
+  // console.log(`Count after misses... ${wordIndexes.length}`);
   wordIndexes = removeNonExistentLetterIndexesAtIndex(
     missAt,
     wordIndexes,
     dict
   );
-  console.log(`Count after misses at index matches... ${wordIndexes.length}`);
+  // console.log(`Count after misses at index matches... ${wordIndexes.length}`);
   return wordIndexes;
 };
 
@@ -108,6 +113,7 @@ export const setRoundComplete =
   (dispatch) => {
     console.log(`Robot ${isWon ? 'won' : 'lost'} this round`);
     dispatch(resetRobotSolution());
+    dispatch(setShouldRobotSolvePuzzle(false));
   };
 
 export const analyzeGuessWordStatus =
@@ -180,7 +186,10 @@ export const analyzeGuessWordStatus =
   };
 
 export const pickNextGuessWordAndStartSolvingPuzzle =
-  (dictionary: IWordleDictionary): AppThunk =>
+  (
+    dictionary: IWordleDictionary,
+    onRobotPickedWord: OnRobotPickedWordType
+  ): AppThunk =>
   (dispatch, getState) => {
     const availableWordIndexes = getAvailableWordIndexes(getState());
     const wordCount = availableWordIndexes.length;
@@ -189,12 +198,16 @@ export const pickNextGuessWordAndStartSolvingPuzzle =
         wordCount !== 1 ? Math.round(Math.random() * (wordCount - 1)) : 0;
       const wordIndex = availableWordIndexes[randomIndex];
       const word = dictionary.words[wordIndex];
-      dispatch(addRobotGuess(word, wordIndex));
+      dispatch(addRobotGuess(word, wordIndex, onRobotPickedWord));
     } else console.log('pick a word error, but availableWordIndexes is empty');
   };
 
 export const addRobotGuess =
-  (word: string, wordIndex: number): AppThunk =>
+  (
+    word: string,
+    wordIndex: number,
+    onRobotPickedWord: OnRobotPickedWordType
+  ): AppThunk =>
   (dispatch, getState) => {
     const robotGuessPayload: Partial<IRobotSolution> = {
       robotStatus: 'submit-robot-guess',
@@ -207,7 +220,7 @@ export const addRobotGuess =
     // set robot solution in this store
     dispatch(setRobotGuess(robotGuessPayload));
     // set word in game store
-    dispatch(addWord(word));
+    dispatch(onRobotPickedWord(word));
   };
 
 // export const findNextBextGuess =
@@ -248,7 +261,7 @@ export const addRobotGuess =
 // type SetNewGameAction = PayloadAction<SetNewGame>;
 
 export const robotSolutionSlice = createSlice({
-  name: 'wvsrobotsolution',
+  name: 'wordlerobotsolution',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
@@ -288,32 +301,32 @@ export const {
 } = robotSolutionSlice.actions;
 
 export const getRobotStatus = (state: RootState): TRobotStatus =>
-  state.puzzle.wvsrobotsolution.robotStatus;
+  state.puzzle.wordlerobotsolution.robotStatus;
 export const isRobotPickingWord = (
   state: RootState,
   status: string = 'robot-picking-word'
-): boolean => state.puzzle.wvsrobotsolution.robotStatus === status;
+): boolean => state.puzzle.wordlerobotsolution.robotStatus === status;
 export const getGuessWordsStatus = (state: RootState): Array<IWordStatus> =>
-  state.puzzle.wvsrobotsolution.guessWordsStatus;
+  state.puzzle.wordlerobotsolution.guessWordsStatus;
 export const getRobotAttemptCount = (state: RootState): number =>
-  state.puzzle.wvsrobotsolution.attempts;
+  state.puzzle.wordlerobotsolution.attempts;
 export const getRobotGuessWords = (state: RootState): Array<string> =>
-  state.puzzle.wvsrobotsolution.guessWords;
+  state.puzzle.wordlerobotsolution.guessWords;
 export const getRobotUsedWords = (state: RootState): Array<string> =>
-  state.puzzle.wvsrobotsolution.usedWords;
+  state.puzzle.wordlerobotsolution.usedWords;
 export const getRobotUsedWordIndexes = (state: RootState): Array<number> =>
-  state.puzzle.wvsrobotsolution.usedWordIndexes;
+  state.puzzle.wordlerobotsolution.usedWordIndexes;
 export const getAvailableWordIndexes = (state: RootState): Array<number> =>
-  state.puzzle.wvsrobotsolution.availableWordIndexes;
+  state.puzzle.wordlerobotsolution.availableWordIndexes;
 export const getExactMatchedLetters = (state: RootState): Array<ILetterModel> =>
-  state.puzzle.wvsrobotsolution.exactMatchLetter;
+  state.puzzle.wordlerobotsolution.exactMatchLetter;
 export const getExistMatchedLetters = (state: RootState): Array<ILetterModel> =>
-  state.puzzle.wvsrobotsolution.existsMatchLetter;
+  state.puzzle.wordlerobotsolution.existsMatchLetter;
 export const getNonExistentLetters = (state: RootState): Array<string> =>
-  state.puzzle.wvsrobotsolution.nonExistentLetters;
+  state.puzzle.wordlerobotsolution.nonExistentLetters;
 export const getNonExistentAtIndexLetters = (
   state: RootState
 ): Array<ILetterModel> =>
-  state.puzzle.wvsrobotsolution.nonExistentLetterAtIndex;
+  state.puzzle.wordlerobotsolution.nonExistentLetterAtIndex;
 
 export default robotSolutionSlice.reducer;

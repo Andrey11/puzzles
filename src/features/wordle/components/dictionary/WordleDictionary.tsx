@@ -5,7 +5,7 @@ import AlphabetScrollList from '../alphabetscroll/AlphabetScrollList';
 import { Search } from 'react-bootstrap-icons';
 
 import styles from './WordleDictionary.module.scss';
-import { useAppSelector } from '../../../../app/hooks/hooks';
+import { useAppSelector } from 'app/hooks/hooks';
 import { getDictionary, isDictionaryLoaded } from './wordleDictionarySlice';
 
 const WordleDictionary: React.FunctionComponent = () => {
@@ -45,7 +45,7 @@ const WordleDictionary: React.FunctionComponent = () => {
               words={selectableWords}
               autoFocus={true}
               onWordSelected={setWordSelected}
-              placeholder={<span className={styles.PlaceholderMessage}>Search</span>}
+              placeholder={<span>Search</span>}
             />
           </div>
           <div className={styles.PuzzleDictionaryScrollListWrapper}>

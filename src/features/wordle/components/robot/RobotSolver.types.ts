@@ -1,4 +1,5 @@
-import { ISolutionModel } from "../../PuzzleWordleVersus.types";
+import { AppThunk } from "../../../../app/store";
+import { ISolutionModel } from "../../wordleversus/PuzzleWordleVersus.types";
 
 export type TRobotStatus =
   | 'idle'
@@ -26,3 +27,6 @@ export interface IRobotSolution extends IWordleSolution {
   guessWordsStatus: Array<IWordStatus>;
   robotStatus: TRobotStatus; 
 }
+
+export type OnRobotPickedWord = (word: string) => AppThunk<void>;
+export type OnSubmitRobotWord = () => AppThunk<void>;

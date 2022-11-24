@@ -1,13 +1,9 @@
 import React, { useMemo, useRef } from 'react';
 import { SelectInstance } from 'react-select';
-import { Robot } from 'react-bootstrap-icons';
 import WordSelector from '../../../components/dropdown/WordSelector';
-
-import styles from './UserWordSelector.module.scss';
-import { useAppSelector } from '../../../../../app/hooks/hooks';
+import { useAppSelector } from 'app/hooks/hooks';
 import { getDictionary } from '../../../components/dictionary/wordleDictionarySlice';
-
-const NON_BREAKING_SPACE: JSX.Element = <>&nbsp;</>;
+import { usePlaceholder } from '../../../../../components/placeholder/Placeholder';
 
 type WordSelectorCallback = (word: string) => void;
 type WordSelectorProps = { onWordSelected: WordSelectorCallback };
@@ -29,21 +25,15 @@ const UserWordSelector: React.FC<WordSelectorProps> = (props) => {
     props.onWordSelected(selectedWord);
   };
 
+  const {PlaceholderWithIcon: PlaceholderMsg} = usePlaceholder({});
+
   return (
     <WordSelector
       refContainer={targetRef}
       refSelector={selectRef}
       words={selectableWords}
       onWordSelected={onSelected}
-      placeholder={
-        <span className={styles.PlaceholderMessage}>
-          Enter wordle for{NON_BREAKING_SPACE}
-          <span>
-            <Robot size={24} />
-          </span>
-          {NON_BREAKING_SPACE} to solve
-        </span>
-      }
+      placeholder={PlaceholderMsg}
     />
   );
 };

@@ -17,7 +17,7 @@
  * @color - tooltip arrow color
  */
 @mixin tooltipArrowColor($position, $color) {
-  &[data-popper-placement^=#{$position}] {
+  &[data-popper-placement^='#{$position}'] {
     > [class*='tooltip-arrow']::before {
       border-#{$position}-color: #{$color} !important;
     }
@@ -36,14 +36,61 @@
   }
 }
 
-@mixin shake-animation($time, $iterationCount) {
-  animation: shake $time;
+@mixin shake-animation($duration, $iterationCount) {
+  animation: shake $duration;
   animation-iteration-count: $iterationCount;
 }
 
-@mixin scale-animation($time, $iterationCount) {
-  animation: scaleCellOnInput $time;
+@mixin scale-animation($duration, $iterationCount) {
+  animation: scaleCellOnInput $duration;
   animation-iteration-count: $iterationCount;
+}
+
+@mixin robot-appear($duration, $delay) {
+  animation-name: robotAppear;
+  animation-duration: $duration;
+  animation-timing-function: ease-out;
+  animation-delay: $delay;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@mixin robot-disappear($duration, $delay) {
+  animation-name: robotDisappear;
+  animation-duration: $duration;
+  animation-timing-function: ease-out;
+  animation-delay: $delay;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@mixin robot-poof($duration, $delay) {
+  animation-name: robotPoofAction;
+  animation-duration: $duration;
+  animation-timing-function: linear;
+  animation-delay: $delay;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+}
+
+@mixin robot-lurk($duration, $delay) {
+  animation-name: robotLurk;
+  animation-duration: $duration;
+  animation-timing-function: ease-out;
+  animation-delay: $delay;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@mixin robot-blink($duration, $delay) {
+  animation: robotBlink $duration ease-in-out $delay infinite;
 }
 
 @keyframes shake {
@@ -115,5 +162,79 @@
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes robotLurk {
+  40% {
+    // transform: translate(0, 20px);
+    top: -60px;
+  }
+  100% {
+    // transform: translate(0, 20px);
+    top: -60px;
+  }
+}
+
+@keyframes robotAppear {
+  0% {
+    transform: translate(0, 0);
+  }
+  40%,
+  80% {
+    transform: translate(0, -60px);
+  }
+  90%,
+  100% {
+    transform: translate(0, -90px);
+  }
+}
+
+@keyframes robotDisappear {
+  0% {
+    transform: translate(0, 0);
+  }
+  1% {
+    transform: translate(0, -90px);
+  }
+  40% {
+    transform: translate(0, -10px);
+  }
+  90%,
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes robotPoofAction {
+  0% {
+    transform: scale(0.1);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.05);
+  }
+  40%,
+  70% {
+    transform: scale(1);
+  }
+  90% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+}
+
+@keyframes robotBlink {
+  0%,
+  100% {
+    transform: scale(1, 0.05);
+  }
+  5%,
+  95% {
+    transform: scale(1, 1);
   }
 }

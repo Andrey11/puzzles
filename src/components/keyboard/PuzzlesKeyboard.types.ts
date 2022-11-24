@@ -59,4 +59,6 @@ export interface IPuzzlesKeyboardState {
   showDeleteKey?: boolean;
   showEnterKey?: boolean;
   showClearKey?: boolean;
+  enabled?: boolean;
+  visible?: boolean;
 }

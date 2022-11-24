@@ -1,4 +1,4 @@
-import { ILetterModel, IWordleRow } from '../PuzzleWordle.types';
+import { ILetterModel, IWordleGameState, IWordleRow } from '../PuzzleWordle.types';
 
 export interface IScoreModel {
   userScore: number;
@@ -26,33 +26,10 @@ export interface IWordleVersusState {
 
 /*********************************/
 
-export enum ROUND_IDS {
-  ROUND_1 = 1,
-  ROUND_2,
-  ROUND_3,
-  ROUND_4,
-  ROUND_5,
-  ROUND_6,
-}
-
-export type RoundKey = keyof typeof ROUND_IDS;
-
-export interface IGameRoundState {
-  roundId: ROUND_IDS;
-  guessWord: Array<string>;
-  isValidWord?: boolean;
-}
-
 export type GameId = number | string;
 
-export interface IGameState {
+export interface IWordleVsGameState extends IWordleGameState {
   gameNumber: GameId;
-  wod: string;
-  currentRound: RoundKey;
-  rounds: Record<RoundKey, IGameRoundState>;
-  isUserGame: boolean;
-  isWon?: boolean;
-  isLost?: boolean;
   score: number;
 }
 
@@ -68,6 +45,10 @@ export interface IFinishedGame {
 export interface IRobotControls {
   shouldRobotPickWod: boolean;
   shouldRobotSolvePuzzle: boolean;
+  shouldShowRobot: boolean;
+  shouldShowSelectWordOverlay: boolean;
+  shouldShowStartMatchOverlay: boolean;
+  shouldShowEndMatchOverlay: boolean;
 }
 
 export interface IWordleVsMatchState {

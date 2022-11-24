@@ -4,8 +4,7 @@ import {
   RowKey,
   ROW_IDS,
 } from './components/rowgroup/RowGroup.types';
-import { RoundKey, ROUND_IDS } from './wordleversus/PuzzleWordleVersus.types';
-import { ConsoleLogStyle, ILetterModel, IWordleDictionary } from './PuzzleWordle.types';
+import { ConsoleLogStyle, ILetterModel, IWordleDictionary, RoundKey, ROUND_IDS } from './PuzzleWordle.types';
 import { allAvailableWords } from './PuzzleWords';
 
 export const CHAR_OFFSET: number = 'A'.charCodeAt(0);

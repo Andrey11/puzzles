@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk, RootState } from '../../../../app/store';
-import { KeyboardColor } from '../../../../components/keyboard/PuzzlesKeyboard.types';
+import { AppThunk, RootState } from 'app/store';
+import { KeyboardColor } from 'components/keyboard/PuzzlesKeyboard.types';
 import {
   CellKey,
   CELL_COLORS,

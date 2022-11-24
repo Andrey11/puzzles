@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { SelectInstance } from "react-select";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { SelectInstance } from 'react-select';
 
-import Button from "react-bootstrap/Button";
-import { Robot, InfoSquare, PencilSquare } from "react-bootstrap-icons";
+import Button from 'react-bootstrap/Button';
+import { InfoSquare, PencilSquare } from 'react-bootstrap-icons';
 
 import {
   getExactMatches,
@@ -10,43 +10,44 @@ import {
   getRandomWordFromDictionary,
   removeNonExistentLetterIndexes,
   removeNonExistentLetterIndexesAtIndex,
-} from "../../PuzzleWordle-helpers";
+} from '../../PuzzleWordle-helpers';
 import {
   IAnalyzerData,
   ILetterModel,
-  IWordleRow,
   IWordleSolution,
   IStat,
   ISolutionModel,
-} from "../../PuzzleWordle.types";
+} from '../../PuzzleWordle.types';
 
-import styles from "./WordleSolver.module.scss";
+import styles from './WordleSolver.module.scss';
 
-import WordSelector from "../dropdown/WordSelector";
-import { useOverlay } from "../overlay/InfoOverlay";
-import { allAvailableWords } from "../../PuzzleWords";
-import { useAppSelector } from "../../../../app/hooks/hooks";
-import { getDictionary, isDictionaryLoaded } from "../dictionary/wordleDictionarySlice";
+import WordSelector from '../dropdown/WordSelector';
+import { useOverlay } from '../overlay/InfoOverlay';
+import { allAvailableWords } from '../../PuzzleWords';
+import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
+import {
+  getDictionary,
+  isDictionaryLoaded,
+} from '../dictionary/wordleDictionarySlice';
+import RowGroup from '../rowgroup/RowGroup';
+import RobotSolver from '../robot/RobotSolver';
+import {
+  addRobotWord,
+  isLostGame,
+  isWonGame,
+  onSubmitRobotGuess,
+  resetGame,
+  setWOD,
+  shouldRobotSolvePuzzle,
+} from './wordleSolverSlice';
+import { usePlaceholder } from '../../../../components/placeholder/Placeholder';
 
 type IPuzzleWordleSolverProps = {
   analyzeSolutionHandler?: (solution: IAnalyzerData) => void;
 };
 
-const NON_BREAKING_SPACE: JSX.Element = <>&nbsp;</>;
-
-const initialPuzzleRowModel: IWordleRow = {
-  letters: ["", "", "", "", ""],
-  colors: [
-    "transparent",
-    "transparent",
-    "transparent",
-    "transparent",
-    "transparent",
-  ],
-};
-
 const MAX_RUNNER_TIMES = 20;
-const START_WORD = "OCEAN";
+const START_WORD = 'OCEAN';
 
 const initialSolutionModel = (): ISolutionModel => {
   return {
@@ -63,9 +64,9 @@ const initialSolutionModel = (): ISolutionModel => {
   };
 };
 
-const WordleSolver: React.FunctionComponent<
-  IPuzzleWordleSolverProps
-> = ({ analyzeSolutionHandler = () => {} }: IPuzzleWordleSolverProps) => {
+const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
+  analyzeSolutionHandler = () => {},
+}: IPuzzleWordleSolverProps) => {
   const selectRef = useRef<SelectInstance | null>();
   const startingWordRef = useRef<SelectInstance | null>();
   const wordRunnerRef = useRef<number>(0);
@@ -76,29 +77,21 @@ const WordleSolver: React.FunctionComponent<
 
   const dictionary = useAppSelector(getDictionary);
   const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
+  const shouldSolvePuzzle = useAppSelector(shouldRobotSolvePuzzle);
+  const isWon = useAppSelector(isWonGame);
+  const isLost = useAppSelector(isLostGame);
 
 
+  const dispatch = useAppDispatch();
   /** Letters not to appear in possible word matches */
-  const [guess1, setGuess1] = useState<IWordleRow>(
-    initialPuzzleRowModel
-  );
-  const [guess2, setGuess2] = useState<IWordleRow>(
-    initialPuzzleRowModel
-  );
-  const [guess3, setGuess3] = useState<IWordleRow>(
-    initialPuzzleRowModel
-  );
-  const [guess4, setGuess4] = useState<IWordleRow>(
-    initialPuzzleRowModel
-  );
-  const [guess5, setGuess5] = useState<IWordleRow>(
-    initialPuzzleRowModel
-  );
-  const [guess6, setGuess6] = useState<IWordleRow>(
-    initialPuzzleRowModel
-  );
+  // const [guess1, setGuess1] = useState<IWordleRow>(initialPuzzleRowModel);
+  // const [guess2, setGuess2] = useState<IWordleRow>(initialPuzzleRowModel);
+  // const [guess3, setGuess3] = useState<IWordleRow>(initialPuzzleRowModel);
+  // const [guess4, setGuess4] = useState<IWordleRow>(initialPuzzleRowModel);
+  // const [guess5, setGuess5] = useState<IWordleRow>(initialPuzzleRowModel);
+  // const [guess6, setGuess6] = useState<IWordleRow>(initialPuzzleRowModel);
 
-  const [selectedWord, setSelectedWord] = useState<string>("");
+  const [selectedWord, setSelectedWord] = useState<string>('');
   const [startingWord, setStartingWord] = useState<string>(START_WORD);
   const [randomStartingWord, setRandomStartingWord] = useState<boolean>(false);
   const [runnerCount, setRunnerCount] = useState<number>(1);
@@ -116,23 +109,24 @@ const WordleSolver: React.FunctionComponent<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dictionaryLoaded, dictionary]);
 
-  useEffect(() => {
-    if (selectedWord !== "") {
-      solveWordlePuzzle(selectedWord);
-    }
+  // useEffect(() => {
+  //   if (selectedWord !== '') {
+  //     solveWordlePuzzle(selectedWord);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedWord]);
+  //   }
 
-  useEffect(() => {
-    if (!guessingInProgress && wordRunnerRef.current > 0) {
-      wordRunner();
-    } else if (guessingInProgress && selectedWord !== "") {
-      // console.log('calling make guess');
-      // makeGuess(initialSolutionModel());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guessingInProgress]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selectedWord]);
+
+  // useEffect(() => {
+  //   if (!guessingInProgress && wordRunnerRef.current > 0) {
+  //     wordRunner();
+  //} //else if (guessingInProgress && selectedWord !== '') {
+  // console.log('calling make guess');
+  // makeGuess(initialSolutionModel());
+  // }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [guessingInProgress]);
 
   useEffect(() => {
     if (
@@ -170,7 +164,7 @@ const WordleSolver: React.FunctionComponent<
             : -1;
           const lastWord: string = hasWords
             ? puzzleSolution.usedWords[guessIndex]
-            : "";
+            : '';
           displayStatus(
             puzzleSolution.attempts,
             puzzleSolution.displayColors,
@@ -188,7 +182,7 @@ const WordleSolver: React.FunctionComponent<
       displayColors: [],
       isFound: false,
       isCompleted: false,
-      statInfoTracker: "",
+      statInfoTracker: '',
       wod: '',
     };
 
@@ -216,14 +210,14 @@ const WordleSolver: React.FunctionComponent<
         solverSolution = value;
       })
       .finally(() => {
-        const successStyle = "color: green; font-weight: bold;";
-        const failuerStyle = "color: red; font-weight: bold;";
-        const wodStyle = "color: blue; font-weight: lighter;";
-        const solutionStyle = "color: #555555; font-weight: lighter;";
+        const successStyle = 'color: green; font-weight: bold;';
+        const failuerStyle = 'color: red; font-weight: bold;';
+        const wodStyle = 'color: blue; font-weight: lighter;';
+        const solutionStyle = 'color: #555555; font-weight: lighter;';
         const resultStyle = solverSolution.isFound
           ? successStyle
           : failuerStyle;
-        const statusText = solverSolution.isFound ? "%cPASS" : "%cFAIL";
+        const statusText = solverSolution.isFound ? '%cPASS' : '%cFAIL';
         const stats = {
           status: statusText,
           wod: wod,
@@ -248,10 +242,10 @@ const WordleSolver: React.FunctionComponent<
         const nonExistent = solverSolution.nonExistentLetters || [];
         const exactStr = exactSpots
           .map((s) => `{let: ${s.letter}, pos: ${s.indexInWord}}`)
-          .join(",");
+          .join(',');
         const existsStr = existSpots
           .map((s) => `{let: ${s.letter}, pos: ${s.indexInWord}}`)
-          .join(", ");
+          .join(', ');
         console.log(
           `Analyze Solution: exact: ${exactStr}, exists: ${existsStr}, miss: ${nonExistent.toString()}`
         );
@@ -271,35 +265,35 @@ const WordleSolver: React.FunctionComponent<
 
   const displayStatus = (
     guessNum: number,
-    colors: Array<string> = ["green", "green", "green", "green", "green"],
+    colors: Array<string> = ['green', 'green', 'green', 'green', 'green'],
     letter: string
   ) => {
-    if (guessNum === 1) {
-      setGuess1({ letters: letter.split(""), colors: colors });
-    } else if (guessNum === 2) {
-      setGuess2({ letters: letter.split(""), colors: colors });
-    } else if (guessNum === 3) {
-      setGuess3({ letters: letter.split(""), colors: colors });
-    } else if (guessNum === 4) {
-      setGuess4({ letters: letter.split(""), colors: colors });
-    } else if (guessNum === 5) {
-      setGuess5({ letters: letter.split(""), colors: colors });
-    } else if (guessNum === 6) {
-      setGuess6({ letters: letter.split(""), colors: colors });
-    }
+    // if (guessNum === 1) {
+    //   setGuess1({ letters: letter.split(''), colors: colors });
+    // } else if (guessNum === 2) {
+    //   setGuess2({ letters: letter.split(''), colors: colors });
+    // } else if (guessNum === 3) {
+    //   setGuess3({ letters: letter.split(''), colors: colors });
+    // } else if (guessNum === 4) {
+    //   setGuess4({ letters: letter.split(''), colors: colors });
+    // } else if (guessNum === 5) {
+    //   setGuess5({ letters: letter.split(''), colors: colors });
+    // } else if (guessNum === 6) {
+    //   setGuess6({ letters: letter.split(''), colors: colors });
+    // }
     // console.log(`Guess: ${guessNum}, ${letter}, ${colors}`);
   };
 
   const getResults = (solution: IWordleSolution): IWordleSolution => {
     const attemptNum = solution.attempts;
     const lastGuess = solution.usedWords[attemptNum - 1];
-    let wod = "";
+    let wod = '';
     const resultStatus: Array<number> = [0, 0, 0, 0, 0];
     if (lastGuess === selectedWord) {
       // console.log(`PASS: wod: ${selectedWord}, guesses (${attemptNum}) = ${solution.usedWords}`);
-      solution.displayColors = ["green", "green", "green", "green", "green"];
+      solution.displayColors = ['green', 'green', 'green', 'green', 'green'];
       solution.exactMatchLetter = lastGuess
-        .split("")
+        .split('')
         .map((l, index) => ({ letter: l, indexInWord: index }));
       solution.existsMatchLetter = [];
       solution.isFound = true;
@@ -314,9 +308,9 @@ const WordleSolver: React.FunctionComponent<
       const exactMatchLetters: Array<ILetterModel> = []; //solution.exactMatchLetter;
       const nonExistentLetters: Array<string> = solution.nonExistentLetters;
 
-      lastGuess.split("").forEach((letter: string, index: number) => {
+      lastGuess.split('').forEach((letter: string, index: number) => {
         if (letter === selectedWord.charAt(index)) {
-          wod = wod.concat("2");
+          wod = wod.concat('2');
           resultStatus[index] = 2;
           exactMatches.push(letter);
           exactMatchLetters.push({ letter: letter, indexInWord: index });
@@ -325,17 +319,17 @@ const WordleSolver: React.FunctionComponent<
         }
       });
 
-      lastGuess.split("").forEach((letter: string, index: number) => {
-        if ("2" === wod.charAt(index)) {
-          colors.push("green");
+      lastGuess.split('').forEach((letter: string, index: number) => {
+        if ('2' === wod.charAt(index)) {
+          colors.push('green');
         } else if (wod.indexOf(letter) !== -1) {
-          wod = wod.replace(letter, "1");
+          wod = wod.replace(letter, '1');
           resultStatus[index] = 1;
           matchedLetters.push(letter);
           existsMatchLetters.push({ letter: letter, indexInWord: index });
-          colors.push("orange");
+          colors.push('orange');
         } else {
-          colors.push("grey");
+          colors.push('grey');
           // letter does not exist in WOD
           if (
             matchedLetters.indexOf(letter) === -1 &&
@@ -352,7 +346,7 @@ const WordleSolver: React.FunctionComponent<
             const exactMatchesForLetter = exactMatchLetters
               .filter((ml: ILetterModel) => ml.letter === letter)
               .map((val: ILetterModel) => val.indexInWord);
-            selectedWord.split("").forEach((l: string, letterIndex: number) => {
+            selectedWord.split('').forEach((l: string, letterIndex: number) => {
               if (!exactMatchesForLetter.includes(letterIndex)) {
                 nonExistentLetterAtIndex.push({
                   letter: letter,
@@ -482,17 +476,17 @@ const WordleSolver: React.FunctionComponent<
     });
   };
 
-  const clearAllGuessRows = () => {
-    setGuess1({ ...initialPuzzleRowModel });
-    setGuess2({ ...initialPuzzleRowModel });
-    setGuess3({ ...initialPuzzleRowModel });
-    setGuess4({ ...initialPuzzleRowModel });
-    setGuess5({ ...initialPuzzleRowModel });
-    setGuess6({ ...initialPuzzleRowModel });
-  };
+  // const clearAllGuessRows = () => {
+  //   setGuess1({ ...initialPuzzleRowModel });
+  //   setGuess2({ ...initialPuzzleRowModel });
+  //   setGuess3({ ...initialPuzzleRowModel });
+  //   setGuess4({ ...initialPuzzleRowModel });
+  //   setGuess5({ ...initialPuzzleRowModel });
+  //   setGuess6({ ...initialPuzzleRowModel });
+  // };
 
   const clearPuzzle = () => {
-    clearAllGuessRows();
+    // clearAllGuessRows();
     // setGuesses([]);
     wordRunnerRef.current = 0;
     setRunnerCount(1);
@@ -501,47 +495,39 @@ const WordleSolver: React.FunctionComponent<
     setRunnerCount(0);
     startingWordRef.current?.setValue(
       { value: START_WORD, label: START_WORD },
-      "select-option"
+      'select-option'
     );
   };
 
   const onStartingWordSelected = (selectedWord: string) => {
-    clearAllGuessRows();
-    if (selectedWord !== "") {
-      selectRef.current?.setValue("", "select-option");
+    // clearAllGuessRows();
+    if (selectedWord !== '') {
+      selectRef.current?.setValue('', 'select-option');
       setStartingWord(selectedWord);
-      displayStatus(
-        1,
-        [
-          "transparent",
-          "transparent",
-          "transparent",
-          "transparent",
-          "transparent",
-        ],
-        selectedWord
-      );
+      // displayStatus(
+      //   1,
+      //   [
+      //     'transparent',
+      //     'transparent',
+      //     'transparent',
+      //     'transparent',
+      //     'transparent',
+      //   ],
+      //   selectedWord
+      // );
     }
   };
 
   const onWordSelected = (selectedWord: string) => {
-    clearAllGuessRows();
-    setGuessingInProgress(selectedWord !== "");
-    if (startingWord !== "") {
-      displayStatus(
-        1,
-        [
-          "transparent",
-          "transparent",
-          "transparent",
-          "transparent",
-          "transparent",
-        ],
-        startingWord
-      );
+    // clearAllGuessRows();
+    setGuessingInProgress(selectedWord !== '');
+    if (startingWord !== '') {
+      // setSelectedWord(selectedWord);
+      setSelectedWord(selectedWord);
+      dispatch(resetGame());
+      dispatch(setWOD(selectedWord));
+      solveWordlePuzzle(selectedWord);
     }
-
-    setSelectedWord(selectedWord);
   };
 
   const wordRunner = () => {
@@ -551,7 +537,7 @@ const WordleSolver: React.FunctionComponent<
     ) {
       selectRef.current?.setValue(
         selectableWords.at(wordRunnerRef.current),
-        "select-option"
+        'select-option'
       );
       wordRunnerRef.current += 1;
     } else if (wordRunnerRef.current >= dictionary.words.length) {
@@ -591,7 +577,7 @@ const WordleSolver: React.FunctionComponent<
   };
 
   const onManualFirstWordSelected = (selectedWord: string) => {
-    if (selectedWord !== "") {
+    if (selectedWord !== '') {
       setRandomStartingWord(false);
       onStartingWordSelected(selectedWord);
       setOverlayVisible(false);
@@ -607,21 +593,21 @@ const WordleSolver: React.FunctionComponent<
   const { OverlayComponent: SelectFirstWord, setOverlayVisible } = useOverlay({
     componentRef: bodyContainerRef,
     targetRef: guessRowTargetRef,
-    placement: "top",
-    title: "Enter word as first guess",
+    placement: 'top',
+    title: 'Enter word as first guess',
     body: (
       <div className={styles.SelectStartingWordOverlay}>
         <WordSelector
           words={selectableWords}
           onWordSelected={onManualFirstWordSelected}
-          placeholder={"Enter starting guess word"}
+          placeholder={'Enter starting guess word'}
           refSelector={startingWordRef}
           autoFocus={false}
         />
         <Button
           size="sm"
           onClick={onRandomFirstWordClicked}
-          variant={randomStartingWord ? "primary" : "outline-primary"}
+          variant={randomStartingWord ? 'primary' : 'outline-primary'}
         >
           RANDOM
         </Button>
@@ -630,62 +616,65 @@ const WordleSolver: React.FunctionComponent<
     infoTrigger: <PencilSquare size={18} />,
   });
 
+  const {PlaceholderWithIcon: PlaceholderMsg} = usePlaceholder({});
+
   return (
     <div className={`${styles.PuzzleDetailSolver} ${styles.DisplayContainer}`}>
-      <div className={styles.ControlContainer}>
+      <section
+        itemID="WordSelectorDisplay"
+        className={styles.WordSelectorWrapper}
+      >
         <div className={styles.InfoPosition}>{InfoTip}</div>
-
         {dictionaryLoaded && (
           <WordSelector
             refContainer={targetRef}
             refSelector={selectRef}
             words={selectableWords}
             onWordSelected={onWordSelected}
-            placeholder={
-              <span className={styles.PlaceholderMessage}>
-                Enter wordle for{NON_BREAKING_SPACE}
-                <span>
-                  <Robot size={24} />
-                </span>
-                {NON_BREAKING_SPACE} to solve
-              </span>
-            }
+            placeholder={PlaceholderMsg}
           />
         )}
-        <div
-          ref={guessRowTargetRef}
-          className={`${styles.RelativePosition} ${styles.GuessContainer}`}
-        >
+      </section>
+
+      <section itemID="WordleSolverRobot">
+        <RobotSolver
+          onRobotGuessWord={addRobotWord}
+          shouldSolvePuzzle={shouldSolvePuzzle}
+          isLost={isLost}
+          isWon={isWon}
+          onSubmitGuess={onSubmitRobotGuess}
+        />
+      </section>
+
+      <section itemID="guessRowsDisplay">
+        <div className={styles.GuessRowsDisplayWrapper}>
           <div className={styles.EditFirstWordPopup}>{SelectFirstWord}</div>
-          {/* <WordleRow rowId={ROW_IDS.ROW_1} guess={guess1} rowNumber={1}/>
-          <WordleRow rowId={ROW_IDS.ROW_2} guess={guess2} rowNumber={2}/>
-          <WordleRow rowId={ROW_IDS.ROW_3} guess={guess3} rowNumber={3}/>
-          <WordleRow rowId={ROW_IDS.ROW_4} guess={guess4} rowNumber={4}/>
-          <WordleRow rowId={ROW_IDS.ROW_5} guess={guess5} rowNumber={5}/>
-          <WordleRow rowId={ROW_IDS.ROW_6} guess={guess6} rowNumber={6}/> */}
+          <div ref={guessRowTargetRef} className={styles.GuessRowsDisplay}>
+            <RowGroup />
+          </div>
         </div>
-        <Button
-          ref={(ref: any) => (calculateBtnRef.current = ref)}
-          variant="primary"
-          size="sm"
-          disabled={guessingInProgress}
-          onClick={wordRunner}
-        >
-          {guessingInProgress ? "SOLIVNG..." : "ACTIVATE WORD RUNNER"}
-        </Button>
-        <Button
-          ref={(ref: any) => (calculateBtnRef.current = ref)}
-          variant="info"
-          size="sm"
-          disabled={false}
-          onClick={analyzeWord}
-        >
-          {"ANALYZE WORD GUESS"}
-        </Button>
-        <Button variant="secondary" size="lg" onClick={clearPuzzle}>
-          CLEAR
-        </Button>
-      </div>
+      </section>
+      <Button
+        ref={(ref: any) => (calculateBtnRef.current = ref)}
+        variant="primary"
+        size="sm"
+        disabled={guessingInProgress}
+        onClick={wordRunner}
+      >
+        {guessingInProgress ? 'SOLIVNG...' : 'ACTIVATE WORD RUNNER'}
+      </Button>
+      <Button
+        ref={(ref: any) => (calculateBtnRef.current = ref)}
+        variant="info"
+        size="sm"
+        disabled={false}
+        onClick={analyzeWord}
+      >
+        {'ANALYZE WORD GUESS'}
+      </Button>
+      <Button variant="secondary" size="lg" onClick={clearPuzzle}>
+        CLEAR
+      </Button>
     </div>
   );
 };

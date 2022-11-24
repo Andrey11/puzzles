@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk, RootState } from '../../../../app/store';
-import { setKeyboardColors } from '../../../../components/keyboard/puzzlesKeyboardSlice';
+import { AppThunk, RootState } from 'app/store';
+import { setKeyboardColors } from 'components/keyboard/puzzlesKeyboardSlice';
 import {
   generateColorsForUserGuess,
   generateMatchesForUserGuess,
@@ -17,13 +17,6 @@ import {
 } from '../../components/rowgroup/rowGroupSlice';
 
 import {
-  GameId,
-  IGameRoundState,
-  IGameState,
-  RoundKey,
-  ROUND_IDS,
-} from '../PuzzleWordleVersus.types';
-import {
   setAnimateInvalidWord,
   endWordleVersusGame,
 } from '../wordleVersusSlice';
@@ -31,9 +24,11 @@ import { isValidWord } from '../../components/dictionary/wordleDictionarySlice';
 import {
   setRobotGuessWordStatus,
   setRoundComplete,
-} from './robot/robotSolutionSlice';
+} from '../../components/robot/robotSolutionSlice';
+import { ROUND_IDS, RoundKey, IGameRoundState } from '../../PuzzleWordle.types';
+import { IWordleVsGameState, GameId } from '../PuzzleWordleVersus.types';
 
-const initialState: IGameState = {
+const initialState: IWordleVsGameState = {
   wod: 'OCEAN',
   currentRound: 'ROUND_1',
   rounds: {
@@ -79,7 +74,7 @@ export const addWord =
 export const addLetter =
   (letter: string): AppThunk =>
   (dispatch, getState) => {
-    const wvGameState: IGameState = getCurrentGame(getState());
+    const wvGameState: IWordleVsGameState = getCurrentGame(getState());
     const { isWon, isLost, currentRound } = wvGameState;
     const activeRound: IGameRoundState = wvGameState.rounds[currentRound];
     const guessWord = [...activeRound.guessWord];
@@ -108,7 +103,7 @@ export const addLetter =
   };
 
 export const deleteLetter = (): AppThunk => (dispatch, getState) => {
-  const wvGameState: IGameState = getState().puzzle.wordleversusgame;
+  const wvGameState: IWordleVsGameState = getState().puzzle.wordleversusgame;
   const { isWon, isLost, currentRound } = wvGameState;
   const activeRound: IGameRoundState = wvGameState.rounds[currentRound];
   const guessWord = [...activeRound.guessWord];
@@ -144,7 +139,7 @@ export const setGuessWordValid =
   };
 
 export const onSubmitGuess = (): AppThunk => (dispatch, getState) => {
-  const currentGameState: IGameState = getCurrentGame(getState());
+  const currentGameState: IWordleVsGameState = getCurrentGame(getState());
   const { wod, isLost, isWon } = currentGameState;
   const activeRound: IGameRoundState = getCurrentGameRoundState(getState());
   const currentRoundNumber: number = getCurrentRoundAsNumber(getState());
@@ -197,6 +192,9 @@ export const onSubmitGuess = (): AppThunk => (dispatch, getState) => {
     } else if (isLastRound(getState())) {
       dispatch(setScore(0));
       dispatch(setLostRound(true));
+      if (!isUserGame) {
+        dispatch(setRoundComplete(false));
+      }
       dispatch(
         endWordleVersusGame({
           gameNumber: gameNumber,
@@ -231,7 +229,7 @@ export const wordleVersusGameSlice = createSlice({
     setWOD: (state, action: PayloadAction<string>) => {
       state.wod = action.payload;
     },
-    setCurrentRound: (state, action: PayloadAction<RoundKey>) => {
+    setCurrentRound: (state: IWordleVsGameState, action: PayloadAction<RoundKey>) => {
       state.currentRound = action.payload;
     },
     setScore: (state, action: PayloadAction<number>) => {
@@ -293,7 +291,7 @@ export const getCurrentRoundAsNumber = (state: RootState): number =>
   roundKeyToNumber(getCurrentRoundKey(state));
 export const getWOD = (state: RootState): string =>
   state.puzzle.wordleversusgame.wod;
-export const getCurrentGame = (state: RootState): IGameState =>
+export const getCurrentGame = (state: RootState): IWordleVsGameState =>
   state.puzzle.wordleversusgame;
 export const getGameRoundStateByRoundKey = (
   state: RootState,

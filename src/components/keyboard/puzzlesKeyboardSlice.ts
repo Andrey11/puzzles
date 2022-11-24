@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk, RootState } from '../../app/store';
-import { ALPHABET } from '../../features/wordle/PuzzleWords';
+import { ALPHABET } from 'features/wordle/PuzzleWords';
 
 import {
   ILetterKey,

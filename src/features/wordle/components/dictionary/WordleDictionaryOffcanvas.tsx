@@ -6,8 +6,11 @@ import AlphabetScrollList from '../alphabetscroll/AlphabetScrollList';
 import WordSelector from '../dropdown/WordSelector';
 
 import styles from './WordleDictionary.module.scss';
-import { useAppDispatch, useAppSelector } from '../../../../app/hooks/hooks';
-import { getSelectableWords, isDictionaryLoaded } from './wordleDictionarySlice';
+import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
+import {
+  getSelectableWords,
+  isDictionaryLoaded,
+} from './wordleDictionarySlice';
 import { setActiveLetter } from './uiDictionarySlice';
 
 const WordleDictionaryOffcanvas: React.FC = () => {
@@ -56,7 +59,7 @@ const WordleDictionaryOffcanvas: React.FC = () => {
       <BookHalf onClick={handleShow} className={styles.DictionaryIcon} />
 
       <Offcanvas
-        id={styles["DictionaryOffcanvas"]}
+        id={styles['DictionaryOffcanvas']}
         className={styles.DictionaryOffcanvasDisplay}
         show={show}
         onHide={handleClose}
@@ -71,9 +74,7 @@ const WordleDictionaryOffcanvas: React.FC = () => {
                 autoFocus={true}
                 onWordSelected={setWordSelected}
                 onFocus={handleSearchComponentLoaded}
-                placeholder={
-                  <span className={styles.PlaceholderMessage}>Search</span>
-                }
+                placeholder={<span>Search</span>}
               />
             </div>
           </Offcanvas.Title>

@@ -30,7 +30,7 @@ import useAddEventListener from '../../../../app/hooks/useAddEventListener';
 import useDeviceDetect from '../../../../app/hooks/useDeviceDetect';
 
 import styles from './PuzzleDetailsStats.module.scss';
-import { useAppSelector } from '../../../../app/hooks/hooks';
+import { useAppSelector } from 'app/hooks/hooks';
 import { getDictionary, isDictionaryLoaded } from '../dictionary/wordleDictionarySlice';
 
 type IPuzzleDetailStatsProps = {

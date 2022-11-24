@@ -10,9 +10,9 @@ import { Letters } from "../../PuzzleWordle.types";
 import WordleDictionaryWord from "../dictionary/WordleDictionaryWord";
 
 import styles from "./AlphabetScrollList.module.scss";
-// import { useAppSelector } from "../../../../app/hooks/hooks";
+// import { useAppSelector } from "app/hooks/hooks";
 // import { isScreenDictionaryActive } from "../../wordlesolver/wordleSlice";
-import { useAppSelector } from "../../../../app/hooks/hooks";
+import { useAppSelector } from "app/hooks/hooks";
 import { getDictionary } from "../dictionary/wordleDictionarySlice";
 
 type IAlphabetScrollWordsByLetterProps = {

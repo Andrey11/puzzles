@@ -32,13 +32,14 @@ const InfoOverlay: React.FunctionComponent<InfoOverlayProps> = ({
       show={visible}
       flip={true}
       placement={placement}
-      rootClose={true}
+      rootClose={false}
+      
       container={containerRef}
       containerPadding={20}
       target={targetRef}
       onHide={onClose}
     >
-      <Popover className={styles.StatsInfoOverlay} id="popover-contained">
+      <Popover className={`${styles.StatsInfoOverlay} ${styles.RobotOverlay}`} id="popover-contained">
         <Popover.Header as="h3">{title}</Popover.Header>
         <Popover.Body>
           {body}
@@ -67,7 +68,7 @@ const useOverlay = (props: OverlayProps) => {
       <div className={styles.InfoTrigger} onClick={() => setShowOverlay(!showOverlay)}>
       {props.infoTrigger ? props.infoTrigger : <InfoCircle size={20}/>}
       </div>
-      <InfoOverlay 
+      <InfoOverlay
         title={props.title ? props.title : 'Enter a word from wordle dictionary' }
         body={props.body ? props.body : 'Wordle Bot will attempt to solve your selected word'} 
         visible={showOverlay}

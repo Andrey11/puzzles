@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "app/hooks/hooks";
 
 import {
   LOG_CLS_WOD as CLS_WOD,

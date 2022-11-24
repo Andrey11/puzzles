@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppThunk, RootState } from '../../../app/store';
-import { resetKeyboard } from '../../../components/keyboard/puzzlesKeyboardSlice';
+import { AppThunk, RootState } from 'app/store';
+import { resetKeyboard } from 'components/keyboard/puzzlesKeyboardSlice';
 import { resetRowGroup } from '../components/rowgroup/rowGroupSlice';
 
 import {
   IFinishedGame,
-  IGameState,
+  IWordleVsGameState,
   IScoreModel,
   IWordleVsState,
 } from './PuzzleWordleVersus.types';
@@ -33,7 +33,8 @@ export const endWordleVersusGame =
     const scoreModel = { userScore: uScore, aiScore: cpuScore };
 
     dispatch(addScore(scoreModel));
-    dispatch(setFinishedGame(finishedGame));
+    dispatch(addFinishedGame(finishedGame));
+    
     if (currentGame === maxGames) {
       dispatch(setMatchFinished());
     }
@@ -50,9 +51,10 @@ export const startWordleVersusNextGame =
   (wod: string): AppThunk =>
   (dispatch, getState) => {
     const wvState: IWordleVsState = getState().puzzle.wordleversus;
-    const wvgState: IGameState = getState().puzzle.wordleversusgame;
+    const wvgState: IWordleVsGameState = getState().puzzle.wordleversusgame;
     const { currentGame } = wvState;
     const { isUserGame } = wvgState;
+    dispatch(setShouldShowSelectWordOverlay(false));
     dispatch(startWordleVersusGame(currentGame + 1, !isUserGame, wod));
   };
 
@@ -60,16 +62,13 @@ export const startWordleVersusGame =
   (gameId: number, isUserGame: boolean, wod: string): AppThunk =>
   (dispatch, getState) => {
     const wvState: IWordleVsState = getState().puzzle.wordleversus;
-    const { maxGames } = wvState;
-    if (gameId <= maxGames) {
+    if (gameId <= wvState.maxGames) {
       dispatch(setCurrentGame(gameId));
       dispatch(resetGame());
       dispatch(resetRowGroup());
       dispatch(resetKeyboard());
       dispatch(startGame({ gameId: gameId, isUserGame: isUserGame, wod: wod }));
-      if (!isUserGame) {
-        dispatch(setShouldRobotSolvePuzzle(true));
-      }
+      dispatch(setShouldRobotSolvePuzzle(!isUserGame));
     } else {
       // match is over
       // do something when match is over
@@ -97,6 +96,10 @@ const initialState: IWordleVsState = {
   showInvalidWordAnimation: false,
   shouldRobotPickWod: false,
   shouldRobotSolvePuzzle: false,
+  shouldShowRobot: true,
+  shouldShowSelectWordOverlay: false,
+  shouldShowStartMatchOverlay: false,
+  shouldShowEndMatchOverlay: false,
   games: [],
   matchFinished: false,
   matchStarted: false,
@@ -117,6 +120,8 @@ export const wordleVersusSlice = createSlice({
       state.matchStarted = true;
       state.currentGame = 0;
       state.isUserWinner = false;
+      state.shouldShowStartMatchOverlay = false;
+      state.shouldShowEndMatchOverlay = false;
     },
     setMaxGames: (state, action: PayloadAction<number>) => {
       state.maxGames = action.payload;
@@ -127,7 +132,7 @@ export const wordleVersusSlice = createSlice({
     addScore: (state, action: PayloadAction<IScoreModel>) => {
       state.score = action.payload;
     },
-    setFinishedGame: (state, action: PayloadAction<IFinishedGame>) => {
+    addFinishedGame: (state, action: PayloadAction<IFinishedGame>) => {
       state.games.push(action.payload);
     },
     setAnimateInvalidWord: (state, action: PayloadAction<boolean>) => {
@@ -137,6 +142,7 @@ export const wordleVersusSlice = createSlice({
       state.matchFinished = true;
       state.matchStarted = false;
       state.shouldRobotSolvePuzzle = false;
+      state.shouldShowStartMatchOverlay = false;
       state.isUserWinner = state.score.userScore > state.score.aiScore;
     },
     setMatchStarted: (state, action: PayloadAction<boolean>) => {
@@ -148,6 +154,21 @@ export const wordleVersusSlice = createSlice({
     setShouldRobotSolvePuzzle: (state, action: PayloadAction<boolean>) => {
       state.shouldRobotSolvePuzzle = action.payload;
     },
+    setShouldShowRobot: (state, action: PayloadAction<boolean>) => {
+      state.shouldShowRobot = action.payload;
+    },
+    setShouldShowSelectWordOverlay: (state, action: PayloadAction<boolean>) => {
+      state.shouldShowSelectWordOverlay = action.payload;
+      state.shouldShowRobot = action.payload ? true : state.shouldShowRobot;
+    },
+    setShouldShowStartMatchOverlay: (state, action: PayloadAction<boolean>) => {
+      state.shouldShowStartMatchOverlay = action.payload;
+      state.shouldShowRobot = action.payload ? true : state.shouldShowRobot;
+    },
+    setShouldShowEndMatchOverlay: (state, action: PayloadAction<boolean>) => {
+      state.shouldShowEndMatchOverlay = action.payload;
+      state.shouldShowRobot = action.payload ? true : state.shouldShowRobot;
+    }, 
   },
 });
 
@@ -156,11 +177,15 @@ export const {
   setMaxGames,
   setCurrentGame,
   addScore,
-  setFinishedGame,
+  addFinishedGame,
   setMatchFinished,
   setAnimateInvalidWord,
   setShouldPickWod,
   setShouldRobotSolvePuzzle,
+  setShouldShowRobot,
+  setShouldShowSelectWordOverlay,
+  setShouldShowStartMatchOverlay,
+  setShouldShowEndMatchOverlay,
 } = wordleVersusSlice.actions;
 
 export const getCurrentGame = (state: RootState) =>
@@ -182,5 +207,15 @@ export const shouldRobotPickWod = (state: RootState) =>
   state.puzzle.wordleversus.shouldRobotPickWod;
 export const shouldRobotSolvePuzzle = (state: RootState) =>
   state.puzzle.wordleversus.shouldRobotSolvePuzzle;
+export const shouldShowRobot = (state: RootState) =>
+  state.puzzle.wordleversus.shouldShowRobot;
+export const shouldShowSelectWordOverlay = (state: RootState) =>
+  state.puzzle.wordleversus.shouldShowSelectWordOverlay;
+export const shouldShowStartMatchOverlay = (state: RootState) =>
+  state.puzzle.wordleversus.shouldShowStartMatchOverlay;
+export const shouldShowEndMatchOverlay = (state: RootState) =>
+  state.puzzle.wordleversus.shouldShowEndMatchOverlay;
+
+  
 
 export default wordleVersusSlice.reducer;

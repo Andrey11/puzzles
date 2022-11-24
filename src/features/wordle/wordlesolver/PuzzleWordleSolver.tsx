@@ -11,19 +11,34 @@ import PuzzleDetailsSolver from '../components/solver/WordleSolver';
 
 import styles from './PuzzleWordleSolver.module.scss';
 import { getActiveScreen, setActiveScreen } from './wordleSlice';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks/hooks';
-import { getActivePuzzle, setActivePuzzle } from '../../../app/appSlice';
+import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
+import { getActivePuzzle, isHeaderItemActionByType, setActivePuzzle, setHeaderItemAction, setHeaderItems, setHeaderTitle, setShowHeaderDictionaryIcon } from '../../../app/appSlice';
 import { PUZZLES } from '../../../app/App.types';
 
 import { createDictionary, getDictionaryStatus, isDictionaryLoaded } from '../components/dictionary/wordleDictionarySlice';
 import { getLogStyles } from '../PuzzleWordle-helpers';
-
-const NON_BREAKING_SPACE: JSX.Element = <>&nbsp;</>;
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../app/store';
+import { IHeaderItem } from '../../../components/header/PuzzleHeader';
+import { NON_BREAKING_SPACE } from '../../../components/placeholder/Placeholder';
 
 const WordleSolverLog = getLogStyles({
   cmpName: 'PuzzleWordleSolver',
   cmpNameCls: 'color: #399e25; font-weight: bold;',
 });
+
+const WordleSolverHeaderSettings: Array<IHeaderItem> = [
+  {
+    itemTitle: 'Help',
+    itemId: 'HelpButton',
+    itemPosition: 'RIGHT',
+    iconName: 'QuestionCircle',
+    isButton: false,
+    isIcon: true,
+    icon: 'QuestionCircle',
+    itemAction: 'ACTION_HELP',
+  },
+];
 
 const PuzzleWordleSolver: React.FunctionComponent = () => {
   const bodyContainerRef = useRef(null);
@@ -34,6 +49,10 @@ const PuzzleWordleSolver: React.FunctionComponent = () => {
   // const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
   const activeScreen = useAppSelector(getActiveScreen);
   const activePuzzle = useAppSelector(getActivePuzzle);
+
+  const isHelpHeaderAction = useSelector((state: RootState) =>
+    isHeaderItemActionByType(state, 'ACTION_HELP')
+  );
 
   const [isInit, setIsInit] = useState<boolean>(false);
   // const [loaded, setLoaded] = useState<boolean>(dictionaryLoaded);
@@ -46,22 +65,37 @@ const PuzzleWordleSolver: React.FunctionComponent = () => {
 
   // const { isMobile, isDeviceWidthXL } = useDeviceDetect();
 
+  /** PUZZLE ACTIVATION ON LOAD EFFECT */
   useEffect(() => {
     if (!isInit) {
       setIsInit(true);
       // console.log(...WordleSolverLog.logSuccess('initializing'));
     } else if (isInit && activePuzzle !== PUZZLES.WORDLE) {
       dispatch(setActivePuzzle(PUZZLES.WORDLE));
+      dispatch(setHeaderTitle('Wordle Solver'));
+      dispatch(setHeaderItems(WordleSolverHeaderSettings));
       console.log(...WordleSolverLog.logAction('activating wordle solver'));
     }
   }, [isInit, activePuzzle, dispatch]);
 
+  /** HEADER ACTION HANDLERS EFFECT */
+  useEffect(() => {
+    if (isHelpHeaderAction) {
+      dispatch(setHeaderItemAction(''));
+      console.log(
+        ...WordleSolverLog.logAction('help button in header was pressed')
+      );
+    }
+  }, [dispatch, isHelpHeaderAction]);
+
+  /** START GAME STATE / DICTIONARY LOADED EFFECT */
   useEffect(() => {
     if (!dictionaryLoaded && dictionaryStatus !== 'loaded' && isInit) {
       dispatch(createDictionary());
       console.log(...WordleSolverLog.logAction('creating wordle dictionary'));
     } else if (dictionaryLoaded && dictionaryStatus === 'loaded' && isInit) {
       console.log(...WordleSolverLog.logSuccess('wordle dictionary loaded'));
+      dispatch(setShowHeaderDictionaryIcon(true));
     }
   }, [dictionaryLoaded, dictionaryStatus, dispatch, isInit]);
 
@@ -78,13 +112,6 @@ const PuzzleWordleSolver: React.FunctionComponent = () => {
       <Robot size={18} />
     </span>
   );
-
-  // const renderDictionaryHeading = () => (
-  //   <span className={styles.HeaderLabel}>
-  //     Dictionary {NON_BREAKING_SPACE}
-  //     {activeScreen === WordleScreen.DICTIONARY ? <BookHalf size={18} /> : <Book size={18} />}
-  //   </span>
-  // );
 
   const renderStatsHeading = () => (
     <span className={styles.HeaderLabel}>
@@ -103,35 +130,6 @@ const PuzzleWordleSolver: React.FunctionComponent = () => {
     <PuzzleDetailsStats analyzeSolution={analyzerData} />
   );
 
-  // const renderAccordionDisplayContainer = (): JSX.Element => {
-  //   return (
-  //     <Accordion
-  //       // flush={isDeviceWidthXXS()}
-  //       flush
-  //       className="h-100"
-  //       activeKey={activeScreen as unknown as string}
-  //       onSelect={(eventKey) => dispatch(setActiveScreen(eventKey as unknown as WordleScreen))}
-  //     >
-  //       <Accordion.Item eventKey={DISPLAY_ITEM_PUZZLE}>
-  //         <Accordion.Header as={'h6'}>{renderPuzzleSolverHeading()}</Accordion.Header>
-  //         <Accordion.Body ref={bodyContainerRef} className={styles.RelativePosition}>
-  //           {renderPuzzleSolver()}
-  //         </Accordion.Body>
-  //       </Accordion.Item>
-  //       <Accordion.Item eventKey={DISPLAY_ITEM_STATS}>
-  //         <Accordion.Header as={'h6'}>{renderStatsHeading()}</Accordion.Header>
-  //         <Accordion.Body>{renderPuzzleStats()}</Accordion.Body>
-  //       </Accordion.Item>
-  //       <Accordion.Item eventKey={DISPLAY_ITEM_DICTIONARY}>
-  //         <Accordion.Header as={'h6'}>{renderDictionaryHeading()}</Accordion.Header>
-  //         <Accordion.Body>
-  //           <PuzzleDictionary />
-  //         </Accordion.Body>
-  //       </Accordion.Item>
-  //     </Accordion>
-  //   );
-  // };
-
   const renderTabDisplayContainer = () => {
     return (
       <Tabs
@@ -146,20 +144,9 @@ const PuzzleWordleSolver: React.FunctionComponent = () => {
         <Tab eventKey={WordleScreen.ANALYZER} title={renderStatsHeading()}>
           {renderPuzzleStats()}
         </Tab>
-        {/* <Tab eventKey={WordleScreen.DICTIONARY} title={renderDictionaryHeading()}>
-          <PuzzleDictionary />
-        </Tab> */}
       </Tabs>
     );
   };
-
-  // const renderPlatformDisplayContainer = () => {
-  //   // if (isMobile && isDeviceWidthXL()) {
-  //   //   return renderAccordionDisplayContainer();
-  //   // } else {
-  //     return renderTabDisplayContainer();
-  //   // }
-  // };
 
   return <div className={styles.PuzzleScene}>{renderTabDisplayContainer()}</div>;
 };

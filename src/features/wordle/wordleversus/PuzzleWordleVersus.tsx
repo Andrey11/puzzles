@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { getLogStyles } from '../PuzzleWordle-helpers';
 
 import styles from './PuzzleWordleVersus.module.scss';
 
-import { useAppDispatch, useAppSelector } from '../../../app/hooks/hooks';
-import { PUZZLES } from '../../../app/App.types';
+import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
+import { PUZZLES } from 'app/App.types';
 import {
   getActivePuzzle,
   isHeaderItemActionByType,
@@ -15,24 +15,26 @@ import {
   setHeaderTitle,
   setShowHeaderDictionaryIcon,
 } from '../../../app/appSlice';
-import UserWordSelector from './components/wordleselector/UserWordSelector';
 import { useDialog } from '../components/modal/Dialog';
-import { Joystick, PencilSquare } from 'react-bootstrap-icons';
 import WordleVersusGame from './game/WordleVersusGame';
 import {
+  addWord,
   isLostGame,
   isUserGame,
   isWonGame,
+  onSubmitGuess,
 } from './game/wordleVersusGameSlice';
 import {
   getMaxGames,
   isMatchFinished,
   isMatchStarted,
-  isUserWinner,
   setMaxGames,
   setShouldPickWod,
+  setShouldShowEndMatchOverlay,
+  setShouldShowSelectWordOverlay,
+  setShouldShowStartMatchOverlay,
+  shouldRobotSolvePuzzle,
   startWordleVersusMatch,
-  startWordleVersusNextGame,
 } from './wordleVersusSlice';
 import Score from '../components/score/Score';
 import {
@@ -41,8 +43,7 @@ import {
   isDictionaryLoaded,
 } from '../components/dictionary/wordleDictionarySlice';
 import WordleVersusGameSettings from './components/roundselector/GameSettingsSelector';
-import RobotSolver from './game/robot/RobotSolver';
-import EndGameSettings from './components/endgame/EndGameSettings';
+import RobotSolver from '../components/robot/RobotSolver';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { IHeaderItem } from '../../../components/header/PuzzleHeader';
@@ -98,35 +99,19 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
   );
 
   const [isInit, setIsInit] = useState<boolean>(false);
-  const [selectedWord, setSelectedWord] = useState<string>('');
 
   const isWon = useAppSelector(isWonGame);
   const isLost = useAppSelector(isLostGame);
-  const userWonMatch = useAppSelector(isUserWinner);
   const matchFinished = useAppSelector(isMatchFinished);
   const matchStarted = useAppSelector(isMatchStarted);
   const userGame = useAppSelector(isUserGame);
-
+  const shouldSolvePuzzle = useAppSelector(shouldRobotSolvePuzzle);
 
   const startNewMatch = () => {
     dispatch(startWordleVersusMatch());
     dispatch(setShouldPickWod(true));
   };
 
-  // Select word for Robot dialog
-  const {
-    DialogComponent: SelectWordForRobotDialog,
-    setDialogVisible: setVisibleSelectWordForRobotDialog,
-  } = useDialog({
-    title: 'Enter guess word for Robot',
-    body: <UserWordSelector onWordSelected={setSelectedWord} />,
-    infoTrigger: <PencilSquare size={18} />,
-    onCloseDialogCallback: () => {
-      if (selectedWord) {
-        dispatch(startWordleVersusNextGame(selectedWord));
-      }
-    },
-  });
   // Game settings dialog
   const {
     DialogComponent: GameSettingsDialog,
@@ -150,22 +135,6 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
     ),
     actionButtonLabel: 'Start New Match',
     infoTrigger: <></>,
-    onCloseDialogCallback: () => {
-      startNewMatch();
-    },
-  });
-  // End game dialog
-  const {
-    DialogComponent: EndGameDialog,
-    setDialogVisible: setVisibleEndGameDialog,
-    dialogVisible: isVisibleEndGameDialog,
-  } = useDialog({
-    title: 'Game Over',
-    body: <EndGameSettings winner={userWonMatch ? 'User' : 'Robot'} />,
-    actionButtonLabel: 'Play Again',
-    cancelButtonLabel: 'No',
-    showCancelButton: true,
-    infoTrigger: <Joystick size={18} />,
     onCloseDialogCallback: () => {
       startNewMatch();
     },
@@ -202,7 +171,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
     setVisibleGameSettingsDialog,
   ]);
 
-  /** START GAME STATE / DICTIONARY LOADED EFFECT */
+  /** LOAD DICTIONARY AND SHOW ON HEADER EFFECT */
   useEffect(() => {
     if (!dictionaryLoaded && dictionaryStatus !== 'loaded' && isInit) {
       dispatch(createDictionary());
@@ -211,13 +180,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       console.log(...WordleVsLog.logSuccess('wordle dictionary loaded'));
       dispatch(setShowHeaderDictionaryIcon(true));
     }
-  }, [
-    dictionaryLoaded,
-    dictionaryStatus,
-    dispatch,
-    isInit,
-    // setVisibleGameSettingsDialog,
-  ]);
+  }, [dictionaryLoaded, dictionaryStatus, dispatch, isInit]);
 
   /** END TURN (aka GAME/ROUND) EFFECT */
   useEffect(() => {
@@ -225,7 +188,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       let timeoutId: NodeJS.Timeout;
       if (userGame) {
         timeoutId = setTimeout(() => {
-          setVisibleSelectWordForRobotDialog(true);
+          dispatch(setShouldShowSelectWordOverlay(true));
         }, 2000);
       } else {
         timeoutId = setTimeout(() => {
@@ -238,45 +201,32 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
 
       return () => clearTimeout(timeoutId);
     }
-  }, [
-    dispatch,
-    isLost,
-    isWon,
-    matchFinished,
-    setVisibleSelectWordForRobotDialog,
-    userGame,
-  ]);
+  }, [dispatch, isLost, isWon, matchFinished, userGame]);
 
   /** END MATCH EFFECT */
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
     if (matchFinished) {
+      console.log(...WordleVsLog.logSuccess('match finished, show EoG dialog'));
+      timeoutId = setTimeout(() => {
+        dispatch(setShouldShowEndMatchOverlay(true));
+      }, 2500);
+    } else if (!matchStarted && !matchFinished) {
       console.log(
-        ...WordleVsLog.logSuccess('match finished, show end game dialog')
+        ...WordleVsLog.logSuccess(
+          'match finished false and match started false'
+        )
       );
-      const timeoutId = setTimeout(() => {
-        setVisibleEndGameDialog(true);
-      }, 1000);
-
-      return () => clearTimeout(timeoutId);
+      dispatch(setShouldShowStartMatchOverlay(true));
     }
-  }, [matchFinished, setVisibleEndGameDialog]);
 
-  const showWordSelectorForRobotTrigger = useMemo(() => {
-    return !matchFinished && (isWon || isLost) && userGame;
-  }, [isLost, isWon, matchFinished, userGame]);
-
-  const showStartMatchTrigger = useMemo(() => {
-    return dictionaryLoaded && dictionaryStatus === 'loaded' && isInit && !matchStarted;
-  }, [dictionaryLoaded, dictionaryStatus, isInit, matchStarted]);
+    return () => clearTimeout(timeoutId);
+  }, [dispatch, matchFinished, matchStarted]);
 
   return (
     <div ref={bodyContainerRef} className={styles.WordleVersusContainer}>
       <section itemID="GameScoreDisplay">
         <Score />
-      </section>
-
-      <section itemID="GameWordSelectorDisplay">
-        {showWordSelectorForRobotTrigger && SelectWordForRobotDialog}
       </section>
 
       <section
@@ -286,31 +236,20 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
         {GameSettingsDialog}
       </section>
 
-      <section itemID="EndGameDisplay">
-        {isVisibleEndGameDialog && EndGameDialog}
-      </section>
-
       <section itemID="RobotGameDisplay" className={styles.RobotDisplay}>
-        <RobotSolver />
+        <RobotSolver
+          onRobotGuessWord={addWord}
+          shouldSolvePuzzle={shouldSolvePuzzle}
+          isLost={isLost}
+          isWon={isWon}
+          onSubmitGuess={onSubmitGuess}
+        />
       </section>
 
       <section itemID="GameBoardWithKeyboardDisplay">
         <WordleVersusGame />
       </section>
 
-      <section itemID="GameStartDisplay">
-        {showStartMatchTrigger && !isVisibleEndGameDialog && (
-          <div className={styles.StartGameDisplay} onClick={startNewMatch}>Start Match</div>
-        )}
-      </section>
-{/* 
-      <section itemID="SelectGuessWordForRobotDisplay">
-        {!matchStarted && (
-          <div className={styles.StartGameDisplay} onClick={startNewMatch}>Start Match</div>
-        )}
-      </section> */}
-
-      
     </div>
   );
 };

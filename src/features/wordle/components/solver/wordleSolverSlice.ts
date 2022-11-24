@@ -1,237 +1,199 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../../../app/store";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AppThunk, RootState } from '../../../../app/store';
+import {
+  generateColorsForUserGuess,
+  generateMatchesForUserGuess,
+  numberToRoundKey,
+  numberToRowKey,
+  roundKeyToNumber,
+} from '../../PuzzleWordle-helpers';
+import {
+  IGameRoundState,
+  IWordleGameState,
+  RoundKey,
+  ROUND_IDS,
+} from '../../PuzzleWordle.types';
+import {
+  setRobotGuessWordStatus,
+  setRoundComplete,
+} from '../robot/robotSolutionSlice';
 
 import {
-  IScoreModel,
-  IWordleVersusState,
-  IWordleVersusUserRound,
-} from "../../wordleversus/PuzzleWordleVersus.types";
+  resetRowGroup,
+  updateWordByRowId,
+  updateWordColorsByRowId,
+} from '../rowgroup/rowGroupSlice';
 
-// const generateColorsForUserGuess = (guess: Array<string>) => {
-//   return guess.map((letter) => {
-//     if (letter === "2") {
-//       return "green";
-//     } else if (letter === "1") {
-//       return "orange";
-//     }
-//     return "grey";
-//   });
-// };
+export const onSubmitRobotGuess = (): AppThunk => (dispatch, getState) => {
+  const currentGameState: IWordleGameState = getCurrentGame(getState());
+  const { wod, isLost, isWon } = currentGameState;
+  const activeRound: IGameRoundState = getCurrentGameRoundState(getState());
+  const currentRoundNumber: number = getCurrentRoundAsNumber(getState());
+  const guessWord = activeRound.guessWord;
 
-// const generateMatchesForUserGuess = (
-//   wod: Array<string>,
-//   guess: Array<string>
-// ) => {
-//   let matches = [...guess];
-//   // find exact matches
-//   wod.forEach((letter, index) => {
-//     if (letter === matches.at(index)) {
-//       wod[index] = "";
-//       matches[index] = "2";
-//     }
-//   });
-//   // find exists in word matches
-//   wod.forEach((letter, index) => {
-//     const indexOfLetter = matches.indexOf(letter);
-//     if (indexOfLetter !== -1) {
-//       wod[index] = "";
-//       matches[indexOfLetter] = "1";
-//     }
-//   });
+  if (!isLost && !isWon) {
+    const isMatch = wod === guessWord.join('');
 
-//   return matches;
-// };
+    const matches = generateMatchesForUserGuess(wod.split(''), guessWord);
+    const colors = generateColorsForUserGuess(matches);
 
-// export const onSubmitUserGuess = (): AppThunk => (dispatch, getState) => {
-//   const wordleVersusState = getState().puzzle.wordleversus;
-//   const dictionary = getState().puzzle.wordle.dictionary;
-//   const userGuessNumber = wordleVersusState.userRound.currentUserGuess;
-//   const botWordle = wordleVersusState.botWordle;
-//   const { letters } = wordleVersusState.userRound.guessWord;
+    // update keyboard letters
+    const updateWordLetterColorsPayload = {
+      rowKey: numberToRowKey(currentRoundNumber),
+      color: colors,
+    };
 
-//   if (userGuessNumber <= 6 && letters.length === 5) {
-//     const userSubmittedWord = letters.join("");
-//     const isValid = dictionary.words.includes(userSubmittedWord);
-//     dispatch(setGuessWordValid(isValid));
+    const { isUserGame } = currentGameState;
 
-//     if (isValid) {
-//       const matches = generateMatchesForUserGuess(botWordle.split(""), letters);
-//       const colors = generateColorsForUserGuess(matches);
+    dispatch(updateWordColorsByRowId(updateWordLetterColorsPayload));
+    if (!isUserGame) {
+      dispatch(
+        setRobotGuessWordStatus({ word: guessWord.join(''), colors: colors })
+      );
+    }
 
-//       // update keyboard letters
-//       letters.forEach((l, index) => {
-//         let color = colors[index].toUpperCase() as KeyboardLetterColor;
-//         const letter: KeyboardLetter = l as KeyboardLetter;
-//         const prevOccurence = letters.indexOf(l);
-//         if (prevOccurence > -1 && prevOccurence !== index) {
-//           const prevColor = colors[
-//             prevOccurence
-//           ].toUpperCase() as KeyboardLetterColor;
-//           if (prevColor === "GREEN" || color === "GREY") {
-//             color = prevColor;
-//           }
-//         }
-//         dispatch(setLetterColor({ letter, color }));
-//       });
-
-//       dispatch(
-//         submitUserGuess({
-//           currentUserGuess: userGuessNumber,
-//           guessWord: { colors, letters },
-//         })
-//       );
-
-//       if (botWordle === userSubmittedWord) {
-//         dispatch(setWonRound(true));
-//       } else if (userGuessNumber === 6) {
-//         dispatch(setLostRound(true));
-//       }
-//     } else {
-//       dispatch(setAnimateInvalidWord(true));
-//     }
-//   }
-// };
-
-// export const submitUserGuess =
-//   (userRound: IWordleVersusUserRound): AppThunk =>
-//   (dispatch, getState) => {
-//     const prevUserGuess =
-//       getState().puzzle.wordleversus.userRound.currentUserGuess;
-
-//     if (prevUserGuess < 6) {
-//       dispatch(addUserGuessToPrevious(userRound));
-//       dispatch(
-//         addGuessWord({
-//           currentUserGuess: prevUserGuess + 1,
-//           guessWord: { colors: [], letters: [] },
-//         })
-//       );
-//     } else {
-//       dispatch(addGuessWord(userRound));
-//     }
-//   };
-
-// export const addLetter =
-//   (ltr: string): AppThunk =>
-//   (dispatch, getState) => {
-//     const wordleVersusState = getState().puzzle.wordleversus;
-//     const { letters, colors } = wordleVersusState.userRound.guessWord;
-
-//     if (letters.length < 5) {
-//       dispatch(
-//         addGuessWord({
-//           currentUserGuess: wordleVersusState.userRound.currentUserGuess,
-//           guessWord: { colors: colors, letters: [...letters, ltr] },
-//         })
-//       );
-//     }
-//   };
-
-// export const deleteLetter = (): AppThunk => (dispatch, getState) => {
-//   const wordleVersusState = getState().puzzle.wordleversus;
-//   const { letters, colors } = wordleVersusState.userRound.guessWord;
-//   const { isWon, isLost} = wordleVersusState.userRound;
-//   if (letters.length > 0 && !isWon && !isLost) {
-//     dispatch(
-//       addGuessWord({
-//         currentUserGuess: wordleVersusState.userRound.currentUserGuess,
-//         guessWord: {
-//           colors: colors,
-//           letters: [...letters.slice(0, letters.length - 1)],
-//         },
-//       })
-//     );
-//   }
-// };
-
-const initialState: IWordleVersusState = {
-  maxGames: 1,
-  currentGame: 1,
-  score: [
-    {
-      userScore: 0,
-      aiScore: 0,
-    },
-  ],
-  // isUserTurn: true,
-  previousUserGuesses: [],
-  botWordle: "OCEAN",
-  userRound: {
-    currentUserGuess: 1,
-    guessWord: { colors: [], letters: [] },
-    isWon: false,
-    isLost: false,
-  },
+    if (isMatch) {
+      // ----------------------------- winning scenario -----------------------------
+      dispatch(setWonRound(true));
+      dispatch(setRoundComplete(true));
+    } else if (isLastRound(getState())) {
+      dispatch(setLostRound(true));
+      dispatch(setRoundComplete(false));
+    } else {
+      const nextRoundNumber = currentRoundNumber + 1;
+      const newRoundId: RoundKey = numberToRoundKey(nextRoundNumber);
+      dispatch(setCurrentRound(newRoundId));
+    }
+  } else {
+  }
 };
 
-type ActionToPrev = PayloadAction<IWordleVersusUserRound>;
+// Thunk actions
+export const addRobotWord =
+  (word: string): AppThunk =>
+  (dispatch, getState) => {
+    const roundKey: RoundKey = getCurrentRoundKey(getState());
+    const roundState: IGameRoundState = getCurrentGameRoundState(getState());
+    const roundNum: number = getCurrentRoundAsNumber(getState());
+
+    dispatch(
+      setGuessWordByRoundId({
+        roundId: roundState.roundId,
+        guessWord: word.split(''),
+        isValidWord: true,
+        roundKey: roundKey,
+      })
+    );
+
+    // update UI
+    const updateWordPayload = {
+      rowKey: numberToRowKey(roundNum),
+      word: word.split(''),
+    };
+    dispatch(updateWordByRowId(updateWordPayload));
+  };
+
+export const resetWordleSolverGame = (): AppThunk => (dispatch, getState) => {
+  dispatch(resetGame());
+  dispatch(resetRowGroup());
+};
+
+const initialState: IWordleGameState = {
+  wod: '',
+  currentRound: 'ROUND_1',
+  rounds: {
+    ROUND_1: { roundId: ROUND_IDS.ROUND_1, guessWord: [] },
+    ROUND_2: { roundId: ROUND_IDS.ROUND_2, guessWord: [] },
+    ROUND_3: { roundId: ROUND_IDS.ROUND_3, guessWord: [] },
+    ROUND_4: { roundId: ROUND_IDS.ROUND_4, guessWord: [] },
+    ROUND_5: { roundId: ROUND_IDS.ROUND_5, guessWord: [] },
+    ROUND_6: { roundId: ROUND_IDS.ROUND_6, guessWord: [] },
+  },
+  isUserGame: false,
+  isWon: false,
+  isLost: false,
+};
+
+type IGameRoundStateWithRoundKey = IGameRoundState & { roundKey: RoundKey };
+type IsValidWordByRoundId = { roundKey: RoundKey; isValid: boolean };
+type AddWordToRoundAction = PayloadAction<IGameRoundStateWithRoundKey>;
+type SetIsValidWordAction = PayloadAction<IsValidWordByRoundId>;
 
 export const wordleSolverSlice = createSlice({
-  name: "wordleversus",
+  name: 'wordlesolver',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setMaxGames: (state, action: PayloadAction<number>) => {
-      state.maxGames = action.payload;
+    setWOD: (state, action: PayloadAction<string>) => {
+      state.wod = action.payload;
     },
-    // setUserTurn: (state, action: PayloadAction<boolean>) => {
-    //   state.isUserTurn = action.payload;
-    // },
-    setBotWordle: (state, action: PayloadAction<string>) => {
-      state.botWordle = action.payload;
+    setCurrentRound: (state, action: PayloadAction<RoundKey>) => {
+      state.currentRound = action.payload;
     },
-    // Use the PayloadAction type to declare the contents of `action.payload`
-    setCurrentGame: (state, action: PayloadAction<number>) => {
-      state.currentGame = action.payload;
+    setGuessWordByRoundId: (state, action: AddWordToRoundAction) => {
+      const { roundKey } = action.payload;
+      state.rounds[roundKey] = { ...action.payload }; //{roundId, guessWord, isValidWord};
     },
-    addScore: (state, action: PayloadAction<IScoreModel>) => {
-      state.score = [...state.score, action.payload];
-    },
-    addGuessWord: (state, action: PayloadAction<IWordleVersusUserRound>) => {
-      state.userRound = action.payload;
-    },
-    setGuessWordValid: (state, action: PayloadAction<boolean>) => {
-      state.userRound.isValidWord = action.payload;
-    },
-    addUserGuessToPrevious: (state, action: ActionToPrev) => {
-      state.previousUserGuesses = [
-        ...state.previousUserGuesses,
-        action.payload,
-      ];
-    },
-    setAnimateInvalidWord: (state, action: PayloadAction<boolean>) => {
-      state.showInvalidWordAnimation = action.payload;
+    setGuessWordValidByRoundId: (state, action: SetIsValidWordAction) => {
+      const { roundKey, isValid } = action.payload;
+      state.rounds[roundKey].isValidWord = isValid;
     },
     setWonRound: (state, action: PayloadAction<boolean>) => {
-      state.userRound.isWon = action.payload;
+      state.isWon = action.payload;
     },
     setLostRound: (state, action: PayloadAction<boolean>) => {
-      state.userRound.isLost = action.payload;
+      state.isLost = action.payload;
+    },
+    // startGame: (state, action: SetNewGameAction) => {
+    //   state.wod = action.payload.wod;
+    //   state.isUserGame = action.payload.isUserGame;
+    //   state.gameNumber = action.payload.gameId;
+    // },
+    resetGame: () => {
+      return initialState;
     },
   },
 });
 
 export const {
-  setMaxGames,
-  setCurrentGame,
-  // setUserTurn,
-  setBotWordle,
-  setGuessWordValid,
-  addScore,
-  addGuessWord,
-  addUserGuessToPrevious,
-  setAnimateInvalidWord,
-  setLostRound,
+  setWOD,
+  setCurrentRound,
+  setGuessWordByRoundId,
+  setGuessWordValidByRoundId,
   setWonRound,
+  setLostRound,
+  resetGame,
 } = wordleSolverSlice.actions;
 
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-// export const isUserTurn = (state: RootState) =>
-//   state.puzzle.wordleversus.isUserTurn;
-export const getMaxGames = (state: RootState) =>
-  state.puzzle.wordleversus.maxGames;
-export const getScore = (state: RootState) => state.puzzle.wordleversus.score;
+export const isWonGame = (state: RootState): boolean =>
+  state.puzzle.wordlesolver.isWon === true;
+export const isLostGame = (state: RootState): boolean =>
+  state.puzzle.wordlesolver.isLost === true;
+
+export const getCurrentRoundKey = (state: RootState): RoundKey =>
+  state.puzzle.wordlesolver.currentRound;
+export const getCurrentRoundAsNumber = (state: RootState): number =>
+  roundKeyToNumber(getCurrentRoundKey(state));
+export const getWOD = (state: RootState): string =>
+  state.puzzle.wordlesolver.wod;
+export const getCurrentGame = (state: RootState): IWordleGameState =>
+  state.puzzle.wordlesolver;
+export const getGameRoundStateByRoundKey = (
+  state: RootState,
+  roundKey: RoundKey
+): IGameRoundState => state.puzzle.wordlesolver.rounds[roundKey];
+export const getCurrentGameRoundState = (state: RootState): IGameRoundState =>
+  getGameRoundStateByRoundKey(state, getCurrentRoundKey(state));
+export const isLastRound = (state: RootState): boolean =>
+  getCurrentRoundAsNumber(state) === ROUND_IDS.ROUND_6;
+export const getAllGuessWords = (state: RootState): Array<string> => {
+  const rounds: Record<RoundKey, IGameRoundState> =
+    getCurrentGame(state).rounds;
+  return Object.keys(rounds)
+    .map((rd: string) => rounds[rd as RoundKey].guessWord.join(''))
+    .filter((word: string) => word.length === 0);
+};
+export const shouldRobotSolvePuzzle = (state: RootState) =>
+  !isLostGame(state) && !isWonGame(state) && getWOD(state).length > 0;
 
 export default wordleSolverSlice.reducer;

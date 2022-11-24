@@ -1,0 +1,10 @@
+.SelectWordForRobotDisplay {
+  display: flex;
+  gap: 8px;
+  min-width: 242px;
+  [class*="WordleSelector"] {
+    margin-bottom: 0;
+    resize: none;
+    flex: 1;
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { IPuzzleCardProps, PUZZLES } from '../../app/App.types';
+import { IPuzzleCardProps, PUZZLES } from 'app/App.types';
 import {
   getActivePuzzle,
   getPuzzleCards,
@@ -10,18 +10,18 @@ import {
   setHeaderItems,
   setHeaderTitle,
   setShowHeaderDictionaryIcon,
-} from '../../app/appSlice';
-import { useAppDispatch, useAppSelector } from '../../app/hooks/hooks';
-import { RootState } from '../../app/store';
+} from 'app/appSlice';
+import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
+import { RootState } from 'app/store';
 
-import PuzzleCard from '../../components/card/PuzzleCard';
-import { IHeaderItem } from '../../components/header/PuzzleHeader';
+import PuzzleCard from 'components/card/PuzzleCard';
+import { IHeaderItem } from 'components/header/PuzzleHeader';
 import {
   createDictionary,
   getDictionaryStatus,
   isDictionaryLoaded,
-} from '../wordle/components/dictionary/wordleDictionarySlice';
-import { getLogStyles } from '../wordle/PuzzleWordle-helpers';
+} from 'features/wordle/components/dictionary/wordleDictionarySlice';
+import { getLogStyles } from 'features/wordle/PuzzleWordle-helpers';
 
 import styles from './Puzzles.module.scss';
 

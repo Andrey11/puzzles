@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { useAppSelector } from "../../../../app/hooks/hooks";
+import { useAppSelector } from "app/hooks/hooks";
 import { RootState } from "../../../../app/store";
 import PuzzleWordleCell from "../cell/PuzzleWordleCell";
 import { RowKey, ROW_IDS } from "../rowgroup/RowGroup.types";

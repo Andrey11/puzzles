@@ -4,7 +4,7 @@ import {
   LOG_CLS_EVENT,
   LOG_CLS_INFO,
   LOG_CLS_MOBILE,
-} from '../../features/wordle/PuzzleWordle-helpers';
+} from 'features/wordle/PuzzleWordle-helpers';
 import {
   DeviceWidthSize,
   DEVICE_WIDTH_L,
@@ -13,7 +13,7 @@ import {
   DEVICE_WIDTH_XL,
   DEVICE_WIDTH_XS,
   DEVICE_WIDTH_XXS,
-} from '../../features/wordle/PuzzleWordle.types';
+} from 'features/wordle/PuzzleWordle.types';
 import useAddEventListener from './useAddEventListener';
 
 export const getDeviceWidthSize = (w: number): DeviceWidthSize => {

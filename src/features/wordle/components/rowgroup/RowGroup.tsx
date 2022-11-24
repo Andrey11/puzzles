@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppDispatch } from '../../../../app/hooks/hooks';
+import { useAppDispatch } from 'app/hooks/hooks';
 import WordleRow from '../row/WordleRow';
 import { setAnimateInvalidWord } from '../../wordleversus/wordleVersusSlice';
 import { ROW_IDS } from './RowGroup.types';

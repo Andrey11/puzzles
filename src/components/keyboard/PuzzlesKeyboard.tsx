@@ -1,11 +1,11 @@
 import React from "react";
-import useDeviceDetect from "../../app/hooks/useDeviceDetect";
-import { ALPHABET } from "../../features/wordle/PuzzleWords";
+import useDeviceDetect from "app/hooks/useDeviceDetect";
+import { ALPHABET } from "features/wordle/PuzzleWords";
 import LetterKey from "./LetterKey";
 import Button from "react-bootstrap/Button";
+import { Backspace, BoxArrowRight } from "react-bootstrap-icons";
 
 import styles from './PuzzlesKeyboard.module.scss';
-import { Backspace, BoxArrowRight } from "react-bootstrap-icons";
 
 interface PuzzlesKeyboardProps {
   onKeyPressed: (letter: string) => void;
