@@ -1,6 +1,6 @@
 .Keyboard {
   &Wrapper {
-    position: absolute;
+    position: relative;
     background-color: white;
     z-index: 10;
   }
@@ -46,4 +46,6 @@
 
 .RobotDisplay {
   position: relative;
+  top: 255px;
+  z-index: 1;
 }

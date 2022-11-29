@@ -1,4 +1,8 @@
-import { ILetterModel, IWordleGameState, IWordleRow } from '../PuzzleWordle.types';
+import {
+  ILetterModel,
+  IWordleGameState,
+  IWordleRow,
+} from '../PuzzleWordle.types';
 
 export interface IScoreModel {
   userScore: number;
@@ -62,11 +66,9 @@ export interface IWordleVsMatchState {
   isUserWinner: boolean;
 }
 
-export type IWordleVsState = 
-  IRobotControls &
-  IWordleVsMatchState & {
-    defaultMaxGames: number;
-  };
+export interface IWordleVsState extends IRobotControls, IWordleVsMatchState {
+  defaultMaxGames: number;
+}
 
 export interface ISolutionModel {
   currentWordIndex: number;

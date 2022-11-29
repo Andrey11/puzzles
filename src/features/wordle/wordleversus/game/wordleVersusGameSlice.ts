@@ -19,6 +19,7 @@ import {
 import {
   setAnimateInvalidWord,
   endWordleVersusGame,
+  isMatchStarted,
 } from '../wordleVersusSlice';
 import { isValidWord } from '../../components/dictionary/wordleDictionarySlice';
 import {
@@ -75,11 +76,12 @@ export const addLetter =
   (letter: string): AppThunk =>
   (dispatch, getState) => {
     const wvGameState: IWordleVsGameState = getCurrentGame(getState());
+    const matchStarted: boolean = isMatchStarted(getState());
     const { isWon, isLost, currentRound } = wvGameState;
     const activeRound: IGameRoundState = wvGameState.rounds[currentRound];
     const guessWord = [...activeRound.guessWord];
     const initialWordLength = guessWord.length;
-    if (guessWord.length < 5 && !isWon && !isLost) {
+    if (matchStarted && guessWord.length < 5 && !isWon && !isLost) {
       guessWord.push(letter);
       const roundId = activeRound.roundId;
       const isGuessWordValid = isValidWord(getState(), guessWord);
@@ -105,11 +107,12 @@ export const addLetter =
 export const deleteLetter = (): AppThunk => (dispatch, getState) => {
   const wvGameState: IWordleVsGameState = getState().puzzle.wordleversusgame;
   const { isWon, isLost, currentRound } = wvGameState;
+  const matchStarted: boolean = isMatchStarted(getState());
   const activeRound: IGameRoundState = wvGameState.rounds[currentRound];
   const guessWord = [...activeRound.guessWord];
   const initialWordLength = guessWord.length;
 
-  if (initialWordLength > 0 && !isWon && !isLost) {
+  if (matchStarted && initialWordLength > 0 && !isWon && !isLost) {
     guessWord.pop();
     const roundId = activeRound.roundId;
     dispatch(
@@ -140,6 +143,7 @@ export const setGuessWordValid =
 
 export const onSubmitGuess = (): AppThunk => (dispatch, getState) => {
   const currentGameState: IWordleVsGameState = getCurrentGame(getState());
+  const matchStarted: boolean = isMatchStarted(getState());
   const { wod, isLost, isWon } = currentGameState;
   const activeRound: IGameRoundState = getCurrentGameRoundState(getState());
   const currentRoundNumber: number = getCurrentRoundAsNumber(getState());
@@ -147,7 +151,7 @@ export const onSubmitGuess = (): AppThunk => (dispatch, getState) => {
   const isValid =
     activeRound.isValidWord || isWordInDictionary(guessWord.join(''));
 
-  if (!isValid) {
+  if (matchStarted && !isValid) {
     dispatch(setAnimateInvalidWord(true));
   } else if (isValid && !isLost && !isWon) {
     const isMatch = wod === guessWord.join('');

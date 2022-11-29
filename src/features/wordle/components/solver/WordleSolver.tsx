@@ -10,14 +10,14 @@ import {
   getRandomWordFromDictionary,
   removeNonExistentLetterIndexes,
   removeNonExistentLetterIndexesAtIndex,
-} from '../../PuzzleWordle-helpers';
+} from 'features/wordle/PuzzleWordle-helpers';
 import {
   IAnalyzerData,
   ILetterModel,
   IWordleSolution,
   IStat,
   ISolutionModel,
-} from '../../PuzzleWordle.types';
+} from 'features/wordle/PuzzleWordle.types';
 
 import styles from './WordleSolver.module.scss';
 
@@ -41,6 +41,8 @@ import {
   shouldRobotSolvePuzzle,
 } from './wordleSolverSlice';
 import { usePlaceholder } from '../../../../components/placeholder/Placeholder';
+import InteractiveRobot from '../robot/InteractiveRobot';
+import { shouldShowRobot } from 'features/wordle/wordlesolver/wordleSlice';
 
 type IPuzzleWordleSolverProps = {
   analyzeSolutionHandler?: (solution: IAnalyzerData) => void;
@@ -78,18 +80,13 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
   const dictionary = useAppSelector(getDictionary);
   const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
   const shouldSolvePuzzle = useAppSelector(shouldRobotSolvePuzzle);
+  const showRobot = useAppSelector(shouldShowRobot);
+
   const isWon = useAppSelector(isWonGame);
   const isLost = useAppSelector(isLostGame);
 
 
   const dispatch = useAppDispatch();
-  /** Letters not to appear in possible word matches */
-  // const [guess1, setGuess1] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess2, setGuess2] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess3, setGuess3] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess4, setGuess4] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess5, setGuess5] = useState<IWordleRow>(initialPuzzleRowModel);
-  // const [guess6, setGuess6] = useState<IWordleRow>(initialPuzzleRowModel);
 
   const [selectedWord, setSelectedWord] = useState<string>('');
   const [startingWord, setStartingWord] = useState<string>(START_WORD);
@@ -476,15 +473,6 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
     });
   };
 
-  // const clearAllGuessRows = () => {
-  //   setGuess1({ ...initialPuzzleRowModel });
-  //   setGuess2({ ...initialPuzzleRowModel });
-  //   setGuess3({ ...initialPuzzleRowModel });
-  //   setGuess4({ ...initialPuzzleRowModel });
-  //   setGuess5({ ...initialPuzzleRowModel });
-  //   setGuess6({ ...initialPuzzleRowModel });
-  // };
-
   const clearPuzzle = () => {
     // clearAllGuessRows();
     // setGuesses([]);
@@ -588,6 +576,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
     componentRef: bodyContainerRef,
     targetRef: targetRef,
     infoTrigger: <InfoSquare size={18} />,
+    rootClose: false,
   });
 
   const { OverlayComponent: SelectFirstWord, setOverlayVisible } = useOverlay({
@@ -595,6 +584,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
     targetRef: guessRowTargetRef,
     placement: 'top',
     title: 'Enter word as first guess',
+    rootClose: false,
     body: (
       <div className={styles.SelectStartingWordOverlay}>
         <WordSelector
@@ -619,7 +609,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
   const {PlaceholderWithIcon: PlaceholderMsg} = usePlaceholder({});
 
   return (
-    <div className={`${styles.PuzzleDetailSolver} ${styles.DisplayContainer}`}>
+    <div className={styles.SolverDisplayWrapper}>
       <section
         itemID="WordSelectorDisplay"
         className={styles.WordSelectorWrapper}
@@ -654,6 +644,23 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
           </div>
         </div>
       </section>
+
+      <section
+        itemID="InteractiveRobotDisplay"
+        className={styles.RelativePosition}
+      >
+        <InteractiveRobot
+          // onRobotClicked={handleOnRobotClicked}
+          showRobot={showRobot}
+          // showSelectWordOverlay={showSelectWordOverlay}
+          // showStartMatchOverlay={showStartMatchOverlay}
+          // showEndMatchOverlay={showEndMatchOverlay}
+          // onSelectWordCallback={onSelectedWordForRobot}
+          // onStartMatchCallback={startNewMatch}
+          // onEndMatchCallback={endMatchCompleted}
+        />
+      </section>
+
       <Button
         ref={(ref: any) => (calculateBtnRef.current = ref)}
         variant="primary"

@@ -2,29 +2,32 @@
 
 .InteractiveRobotDisplay {
   width: 100px;
-  height: 85px;
-  top: 16px;
+  height: 200px;
+  top: 0;
   position: absolute;
+  background-color: rgba(255, 255, 255, 0.01);
   opacity: 1;
   z-index: 0;
-  
+
   .RobotImage {
     width: 100px;
-    height: 85px;
+    height: 100px;
     position: absolute;
     top: 0;
     z-index: 2;
   }
 
   ellipse.RobotEye {
-    ry:10;
-    rx:10;
+    ry: 10;
+    rx: 10;
+    cx: 10;
+    cy: 10;
   }
 
   .RobotLeftEye,
   .RobotRightEye {
     position: absolute;
-    top: 48px;
+    top: 43px;
     width: 12px;
     height: 12px;
     @include robot-blink(3s, 0.1s);
@@ -35,53 +38,56 @@
   .RobotRightEye {
     left: 60px;
   }
-  
+
   .RobotPoof {
-    width: 90px;
-    height: 90px;
-    position: absolute;
-    // top: -90px;
-    top: -90px;
-    z-index: 3;
-    opacity: 0;   
-  }
-  
-  .RobotCover {
-    position: relative; 
     width: 100px;
-    height: 85px;
+    height: 100px;
+    position: absolute;
+    top: 0px;
+    z-index: 0;
+    opacity: 0;
+  }
+
+  .RobotCover {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    top: 87px;
     background-color: white;
     z-index: 4;
   }
 }
 
-.InteractiveRobotDisplay[class*="robot--on"] {
+.InteractiveRobotDisplay[class*='robot--on'] {
   .RobotImage {
-    @include robot-appear(2s, 0.2s);
+    @include robot-appear(2s, 0s);
   }
 }
 
-.InteractiveRobotDisplay[class*="robot--fullOn"] {
-  .RobotImage {
-    top: -90px;
-  }
-  &[class*="robot--halfOn"] {
+.InteractiveRobotDisplay[class*='robot--fullOn'] {
+  &[class*='robot--halfDown'] {
     .RobotImage {
       @include robot-lurk(1s, 0.1s);
       ellipse.RobotEye {
-        ry:5;
-        rx:10;
-      } 
+        ry: 5;
+        rx: 10;
+      }
+    }
+  }
+  &[class*='robot--halfUp'] {
+    .RobotImage {
+      @include robot-stop-lurk(0.5s, 0s);
     }
   }
 }
 
-.InteractiveRobotDisplay[class*="robot--off"] {
+.InteractiveRobotDisplay[class*='robot--off'] {
   .RobotPoof {
+    z-index: 3;
     transition: opacity 0.001s 0s ease-out;
     @include robot-poof(1s, 0.001s);
   }
   .RobotImage {
-    @include robot-disappear(0.01s, 0s);
+    @include robot-disappear(0.05s, 0s);
   }
 }

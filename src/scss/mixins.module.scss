@@ -1,5 +1,5 @@
 @mixin headerIconItem() {
-  color: var(--mdc-theme-puzzle-secondary, #0c63e4);
+  color: var(--mdc-theme-puzzle-robot-primary, #557cb3);
   font-size: 1.3rem;
 }
 
@@ -89,6 +89,17 @@
   animation-play-state: running;
 }
 
+@mixin robot-stop-lurk($duration, $delay) {
+  animation-name: robotStopLurk;
+  animation-duration: $duration;
+  animation-timing-function: ease-in-out;
+  animation-delay: $delay;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
 @mixin robot-blink($duration, $delay) {
   animation: robotBlink $duration ease-in-out $delay infinite;
 }
@@ -167,42 +178,46 @@
 
 @keyframes robotLurk {
   40% {
-    // transform: translate(0, 20px);
-    top: -60px;
+    top: 30px;
   }
   100% {
-    // transform: translate(0, 20px);
-    top: -60px;
+    top: 30px;
+  }
+}
+
+@keyframes robotStopLurk {
+  0% {
+    top: 30px;
+  }
+  70% {
+    transform: translate(0, 0);
+  }
+  90% {
+    transform: translate(0, -10px);
+  } 
+  100% {
+    transform: translate(0, 0);
   }
 }
 
 @keyframes robotAppear {
   0% {
-    transform: translate(0, 0);
+    transform: translate(0, 70px);
   }
   40%,
   80% {
-    transform: translate(0, -60px);
+    transform: translate(0, 30px);
   }
   90%,
   100% {
-    transform: translate(0, -90px);
+    transform: translate(0, 0);
   }
 }
 
 @keyframes robotDisappear {
-  0% {
-    transform: translate(0, 0);
-  }
-  1% {
-    transform: translate(0, -90px);
-  }
-  40% {
-    transform: translate(0, -10px);
-  }
   90%,
   100% {
-    transform: translate(0, 0);
+    transform: translate(0, 70px);
   }
 }
 

@@ -11,6 +11,7 @@ type InfoOverlayProps = {
   title: React.ReactNode;
   body: React.ReactNode;
   visible: boolean;
+  rootClose: boolean;
   containerRef: HTMLElement;
   targetRef: HTMLElement;
   placement?: Placement | undefined;
@@ -24,6 +25,7 @@ const InfoOverlay: React.FunctionComponent<InfoOverlayProps> = ({
   containerRef,
   targetRef,
   placement = 'auto',
+  rootClose = false,
   onClose, 
 }: InfoOverlayProps) => {
 
@@ -32,12 +34,12 @@ const InfoOverlay: React.FunctionComponent<InfoOverlayProps> = ({
       show={visible}
       flip={true}
       placement={placement}
-      rootClose={false}
-      
+      rootClose={rootClose}
       container={containerRef}
       containerPadding={20}
       target={targetRef}
       onHide={onClose}
+      onExit={onClose}
     >
       <Popover className={`${styles.StatsInfoOverlay} ${styles.RobotOverlay}`} id="popover-contained">
         <Popover.Header as="h3">{title}</Popover.Header>
@@ -57,6 +59,7 @@ type OverlayProps = {
   body?: React.ReactNode,
   placement?: Placement | undefined,
   infoTrigger?: React.ReactNode,
+  rootClose: boolean,
 }
 
 const useOverlay = (props: OverlayProps) => {
@@ -72,6 +75,7 @@ const useOverlay = (props: OverlayProps) => {
         title={props.title ? props.title : 'Enter a word from wordle dictionary' }
         body={props.body ? props.body : 'Wordle Bot will attempt to solve your selected word'} 
         visible={showOverlay}
+        rootClose={props.rootClose}
         placement={props.placement} 
         containerRef={props.componentRef.current} 
         targetRef={props.targetRef}

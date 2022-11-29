@@ -601,6 +601,7 @@ const WordleSolver: React.FunctionComponent<
     componentRef: bodyContainerRef,
     targetRef: targetRef,
     infoTrigger: <InfoSquare size={18} />,
+    rootClose: false,
   });
 
   const { OverlayComponent: SelectFirstWord, setOverlayVisible } = useOverlay({
@@ -608,6 +609,7 @@ const WordleSolver: React.FunctionComponent<
     targetRef: guessRowTargetRef,
     placement: "top",
     title: "Enter word as first guess",
+    rootClose: false,
     body: (
       <div className={styles.SelectStartingWordOverlay}>
         <WordSelector

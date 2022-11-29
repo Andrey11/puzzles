@@ -12,6 +12,43 @@
   border-bottom: thin solid rgb(200 191 191 / 30%);
   box-shadow: 0px 2px 6px -6px #000000ad;
   position: sticky;
+
+  span.CellLetter {
+    border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
+    margin: 2px;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    text-align: center;
+    font-weight: 700;
+    font-size: larger;
+    text-transform: uppercase;
+  }
+
+  @media only screen and (max-width: 425px) {
+    span.CellLetter {
+      width: 15px;
+      height: 20px;
+      font-weight: 600;
+      font-size: small;
+    }
+  }
+
+  span.Match {
+    background-color: var(--mdc-theme-puzzle-exists, #ffb003);
+    outline-color: var(--mdc-theme-puzzle-exists, #ffb003);
+  }
+  span.ExactMatch {
+    background-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
+    outline-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
+  }
+
+  .CellLetter.Match {
+    border: thin solid var(--mdc-theme-puzzle-exists, #ffb003);
+  }
+  .CellLetter.ExactMatch {
+    border: thin solid var(--mdc-theme-puzzle-exact-match, #5fc405);
+  }
 }
 
 .Items {
@@ -37,4 +74,3 @@
 .Item {
   @include headerIconItem();
 }
-

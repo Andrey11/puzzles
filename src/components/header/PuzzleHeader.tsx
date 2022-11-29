@@ -49,9 +49,6 @@ const PuzzleHeader: React.FC = () => {
   const headerTitle = useAppSelector(getHeaderTitle);
   const headerItems: Array<IHeaderItem> = useAppSelector(getHeaderItems);
   const isDictionaryIconVisible = useAppSelector(isShowHeaderDictionaryIcon);
-  // const rightSectionItems = userAppSelection(getRightSectionItems);
-  // const middleSectionItems = userAppSelection(getRightSectionItems);
-  // const leftSectionItems = userAppSelection(getRightSectionItems);
 
   const onCallback = (ia: ItemAction) => dispatch(setHeaderItemAction(ia));
 
@@ -67,6 +64,7 @@ const PuzzleHeader: React.FC = () => {
               <section key={item.itemId}>
                 {
                   <ItemIcon
+                    // color='#557cb3'
                     className={styles.Item}
                     onClick={() => onCallback(action)}
                   />
@@ -76,6 +74,26 @@ const PuzzleHeader: React.FC = () => {
           })}
       </>
     );
+  };
+
+const getLettersForWord = (word: string, letterCls: string, prefix: string) => {
+  return word.split('').map((letter: string, index: number) => {
+    return <span key={`$${prefix}_${index}_${letter}`} className={`${styles.CellLetter} ${letterCls}`}>{letter}</span>;
+  });
+};
+
+  const renderHeaderTitle = (title: string): JSX.Element[] => {
+    const titleArray = title.split(' ');
+    let headerTitle: Array<JSX.Element> = [];
+
+    titleArray.forEach((word: string, index: number) => {
+      let fillCls = index === 0 ? styles.Match : styles.ExactMatch;
+      let letterElsForWord = getLettersForWord(word, fillCls, `${index}_${word}`);
+      headerTitle.push(...letterElsForWord);
+      headerTitle.push(<span key={`${index}_${word}_SPACER`}>&nbsp;&nbsp;</span>); 
+    });
+
+    return headerTitle;
   };
 
   return (
@@ -90,7 +108,7 @@ const PuzzleHeader: React.FC = () => {
         itemID="CenterSection"
         className={`${styles.Items} ${styles.Middle}`}
       >
-        <span>{headerTitle}</span>
+        {renderHeaderTitle(headerTitle)}
       </section>
       <section
         itemID="RightSection"

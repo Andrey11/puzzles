@@ -1,4 +1,8 @@
 .WordleSelector {
   flex: 1;
   z-index: 1500;
+
+  #react-select-9-listbox {
+    z-index: 100;
+  }
 }

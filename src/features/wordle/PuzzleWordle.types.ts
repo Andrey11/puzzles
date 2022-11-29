@@ -56,6 +56,7 @@ export interface IWordleDictionaryState {
 export interface IWordleState {
   activeScreen: WordleScreen;
   status: WordleStatus;
+  shouldShowRobot: boolean;
 }
 
 export interface ILetterModel {

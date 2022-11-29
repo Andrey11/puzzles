@@ -24,9 +24,16 @@ import {
   startWordleVersusMatch,
   startWordleVersusNextGame,
 } from '../wordleVersusSlice';
+import { getLogStyles } from 'features/wordle/PuzzleWordle-helpers';
+
+const WvGameLog = getLogStyles({
+  cmpName: 'WordleVersusGame',
+  cmpNameCls: 'color: #3dc6a6; font-weight: bold;',
+});
 
 const WordleVersusGame: React.FC = () => {
   const guessRowTargetRef: React.RefObject<any> = useRef(null);
+  const overlayRef: React.RefObject<any> = useRef(null);
 
   const dispatch = useAppDispatch();
 
@@ -52,7 +59,6 @@ const WordleVersusGame: React.FC = () => {
   const startNewMatch = () => {
     dispatch(startWordleVersusMatch());
     dispatch(setShouldPickWod(true));
-    dispatch(setShouldShowRobot(false));
   };
 
   const endMatchCompleted = (playAgain: boolean) => {
@@ -71,6 +77,10 @@ const WordleVersusGame: React.FC = () => {
   };
 
   const handleOnRobotClicked = () => {
+    console.log(
+      ...WvGameLog.logAction(`Clicked on robot whose state is ${showRobot}`)
+    );
+
     if (shouldShowOverlayMemo) {
       dispatch(setShouldShowRobot(true));
     } else {
@@ -87,20 +97,8 @@ const WordleVersusGame: React.FC = () => {
   };
 
   return (
-    <section itemID="ActiveGameDisplay">
-      <section itemID="GuessRowsDisplay">
-        <div className={styles.GuessRowsWrapper}>
-          <div ref={guessRowTargetRef} className={styles.GuessRowsDisplay}>
-            <RowGroup />
-          </div>
-        </div>
-      </section>
-
-      <section
-        itemID="InteractiveRobotDisplay"
-        className={styles.RobotDisplay}
-        // onClick={() => dispatch(setShouldShowRobot(!showRobot))}
-      >
+    <section ref={overlayRef} itemID="ActiveGameDisplay">
+      <section itemID="InteractiveRobotDisplay" className={styles.RobotDisplay}>
         <InteractiveRobot
           onRobotClicked={handleOnRobotClicked}
           showRobot={showRobotMemo}
@@ -110,12 +108,24 @@ const WordleVersusGame: React.FC = () => {
           onSelectWordCallback={onSelectedWordForRobot}
           onStartMatchCallback={startNewMatch}
           onEndMatchCallback={endMatchCompleted}
+          overlayBodyRef={overlayRef}
         />
+      </section>
+
+      <section itemID="GuessRowsDisplay">
+        <div className={styles.GuessRowsWrapper}>
+          <div ref={guessRowTargetRef} className={styles.GuessRowsDisplay}>
+            <RowGroup />
+          </div>
+        </div>
       </section>
 
       <hr />
 
-      <section itemID="keyboardDisplay" className={styles.KeyboardWrapper}>
+      <section
+        itemID="keyboardDisplay"
+        className={styles.KeyboardWrapper}
+      >
         <div className={styles.KeyboardDisplay}>
           <PuzzlesKeyboard
             onKeyPressed={onLetterPressed}
