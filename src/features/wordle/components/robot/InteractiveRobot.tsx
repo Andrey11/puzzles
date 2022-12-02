@@ -1,17 +1,18 @@
-import React, { TouchEvent, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Ratio from 'react-bootstrap/Ratio';
 import { getLogStyles } from '../../PuzzleWordle-helpers';
 import { useOverlay } from '../overlay/InfoOverlay';
 import EndGameOverlay from './components/endgame/EndGameOverlay';
+import RobotHead, { DisplayPosition } from './components/head/RobotHead';
 import SelectWordForRobot from './components/selectword/SelectWordForRobot';
 import StartGameOverlay from './components/startgame/StartGameOverlay';
 
 import styles from './InteractiveRobot.module.scss';
-import { OAnimationCls, getDownCls, getUpCls, isAnimatedToVisible, isHidden, isVisible } from './RobotAnimations';
-
-type TSwipeDirection = 'none' | 'up' | 'down' | 'show';
+// import { OAnimationCls, getDownCls, getUpCls, isAnimatedToVisible, isHidden, isVisible } from './RobotAnimations';
+// import { RobotHeadSwipeDirection } from './RobotSolver.types';
 
 type IRobotProps = {
+  isInit: boolean;
   showRobot: boolean;
   showSelectWordOverlay?: boolean;
   showStartMatchOverlay?: boolean;
@@ -28,7 +29,6 @@ const RobotLog = getLogStyles({
   cmpNameCls: 'color: #557CB3; font-weight: bold;',
 });
 
-
 const InteractiveRobot: React.FC<IRobotProps> = ({
   showRobot,
   showSelectWordOverlay = false,
@@ -39,47 +39,53 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
   onSelectWordCallback = () => {},
   onEndMatchCallback = () => {},
   overlayBodyRef = document.body,
+  isInit = false,
   ...props
 }: IRobotProps) => {
-  const swipePositionY = useRef(0);
-  const isAnimatingRef = useRef(false);
   const bodyContainerRef = useRef(null);
   const targetRef = useRef(null);
 
-  const [isInit, setIsInit] = useState<boolean>(false);
-  const [animationCls, setAnimationCls] = useState<string>(OAnimationCls.HideRobot);
-  const [swipeDir, setSwipeDir] = useState<TSwipeDirection>('none');
-
+  const [headDisplayPosition, setHeadDisplayPosition] = useState<DisplayPosition>('none');
+  
   /** MEMO OVERLAYS THAT AVIALBLE TO BE RENDERED */
   const overlayProps = useMemo(() => {
     let titleString: string = '';
     let bodyEl: JSX.Element = <></>;
     let trigger: JSX.Element = <></>;
     let canDismiss: boolean = showSelectWordOverlay || showStartMatchOverlay;
+    let visible: boolean = false;
 
     if (showSelectWordOverlay) {
       titleString = 'Enter your guess';
+      visible = true;
       bodyEl = (
         <SelectWordForRobot
           onWordSelected={(word) => {
-            setAnimationCls(OAnimationCls.LurkRobot);
+            setHeadDisplayPosition('halfWay');
             onSelectWordCallback(word);
           }}
         />
       );
     } else if (showEndMatchOverlay) {
       titleString = 'Match is over!';
-      bodyEl = <EndGameOverlay onEndMatchCallback={(playAgain) => {
-        if (playAgain) {
-          setAnimationCls(OAnimationCls.LurkRobot);
-        }
-        onEndMatchCallback(playAgain)}} />;
+      visible = true;
+      bodyEl = (
+        <EndGameOverlay
+          onEndMatchCallback={(playAgain) => {
+            if (playAgain) {
+              setHeadDisplayPosition('halfWay');
+            }
+            onEndMatchCallback(playAgain);
+          }}
+        />
+      );
     } else if (showStartMatchOverlay) {
       titleString = 'New Match';
+      visible = true;
       bodyEl = (
         <StartGameOverlay
           onStartMatchCallback={() => {
-            setAnimationCls(OAnimationCls.LurkRobot);
+            setHeadDisplayPosition('halfWay');
             onStartMatchCallback();
           }}
           newSession={false}
@@ -92,6 +98,7 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
       bodyEl: bodyEl,
       trigger: trigger,
       rootClose: canDismiss,
+      visible: visible,
     };
   }, [
     onEndMatchCallback,
@@ -120,148 +127,77 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
     body: overlayProps.bodyEl,
     infoTrigger: overlayProps.trigger,
     rootClose: overlayProps.rootClose,
+    visible: overlayProps.visible,
   });
 
-  /** OVRLAY VISIBILITY CONTROL, ACCOUNTS FOR ANIMATION DURATION */
+  /** OVRLAY VISIBILITY CONTROL */
   useEffect(() => {
-    if (!isInit) {
-      setIsInit(true);
-      return;
-    }
+    if (!isInit) return;
 
-    if (shouldRenderOverlay) {
+    if (shouldRenderOverlay && showRobot) {
       console.log(...RobotLog.logData(`Should show overlay`));
-      updateRobotPosition('show');
-    }
-  }, [isInit, shouldRenderOverlay]);
-
-  /** ROBOT ANIMATION STATE CONTROLS */
-  useEffect(() => {
-    setAnimationCls(showRobot ? OAnimationCls.ShowRobot : OAnimationCls.HideRobot);
-  }, [showRobot]);
-
-  useEffect(() => {
-    if (isAnimatingRef.current || overlayVisible || swipeDir === 'none') {
-      const logString = `animating=${isAnimatingRef.current ? 'T' : 'F'}, overlay=${
-        overlayVisible ? 'T' : 'F'
-      }, swipeDir=${swipeDir}`;
-      console.log(...RobotLog.logFail(`useEffect - ${logString}`));
-      return;
-    }
-
-    if (swipeDir === 'down') {
-      const downCls = getDownCls(animationCls);
-      console.log(...RobotLog.logAction(`useEffect - animating down from ${animationCls} to ${downCls}`));
-      isAnimatingRef.current = true;
-      setOverlayVisible(false);
-      setAnimationCls(downCls);
-    } else if (swipeDir === 'show' || swipeDir === 'up') {
-      if (isVisible(animationCls)) {
-        console.log(...RobotLog.logAction(`useEffect - cls is ${animationCls}, overlay = ${shouldRenderOverlay}`));
-        setOverlayVisible(shouldRenderOverlay);
-        setSwipeDir('none');
+      if (headDisplayPosition === 'fullyUp') {
+        setOverlayVisible(true);
       } else {
-        const upCls = getUpCls(animationCls);
-        console.log(...RobotLog.logAction(`useEffect - up cls ${upCls}`));
-        isAnimatingRef.current = true;
-        setOverlayVisible(false);
-        setAnimationCls(upCls);
+        setHeadDisplayPosition('fullyUp');
       }
     } else {
-      console.log(...RobotLog.logAction(`useEffect - how did we get here?`));
+      setOverlayVisible(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [overlayVisible, animationCls, swipeDir, setOverlayVisible, shouldRenderOverlay]);
+  // we don't want to listen for headDisplayPosition changes in this hook
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInit, setOverlayVisible, shouldRenderOverlay, showRobot]);
 
-  const onRobotHeadAnimationStart = () => {
-    isAnimatingRef.current = true;
-    console.log(...RobotLog.logAction(`Animation start - ${animationCls}`));
-    setOverlayVisible(false);
+  const onHeadSwipeDown = useCallback(() => {
+    if (!overlayVisible) {
+      if (headDisplayPosition === 'fullyUp') {
+        setHeadDisplayPosition('halfWay');
+      } else if (headDisplayPosition === 'halfWay') {
+        setHeadDisplayPosition('onlyAntenaUp');
+      } else if (headDisplayPosition === 'onlyAntenaUp') {
+        setHeadDisplayPosition('hidden');
+      }
+    }
+  }, [headDisplayPosition, overlayVisible]);
+
+  const onHeadSwipeUp = () => {
+    if (headDisplayPosition === 'hidden') {
+      setHeadDisplayPosition('fullyUp');
+    } else if (headDisplayPosition === 'halfWay') {
+      setHeadDisplayPosition('fullyUp');
+    } else if (headDisplayPosition === 'onlyAntenaUp') {
+      setHeadDisplayPosition('halfWay');
+    }
   };
 
-  const onRobotHeadAnimationEnd = () => {
-    isAnimatingRef.current = false;
-    if (isAnimatedToVisible(animationCls)) {
-      const successStr = `setting ${animationCls} to ${OAnimationCls.VisibleRobot}`;
-      console.log(...RobotLog.logSuccess(`Animation end - ${successStr}`));
-      setAnimationCls(OAnimationCls.VisibleRobot);
-    } else {
-      console.log(...RobotLog.logSuccess(`Animation end - ${animationCls}`));
-      setSwipeDir('none');
-    }
-  };
-
-  const onRobotTouchStart = (touchEvent: TouchEvent<HTMLDivElement>) => {
-    const startY = touchEvent.changedTouches.item(0).clientY;
-    swipePositionY.current = startY;
-  };
-
-  const onRobotTouchEnd = (touchEvent: TouchEvent<HTMLDivElement>) => {
-    const endY: number = touchEvent.changedTouches.item(0).clientY;
-    if (!showRobot) {
-      console.log(...RobotLog.logFail(`TouchEnd - Robot hidden via Redux`));
-      return;
-    }
-
-    let animateDir: TSwipeDirection = 'none';
-    let eventType: string = 'Swipe';
-
-    // handle swipe actions
-    if (endY !== swipePositionY.current) {
-      animateDir = endY < swipePositionY.current ? 'up' : 'down';
-    } else {
-      // handle click action
-      animateDir = isHidden(animationCls) ? 'up' : 'down';
-      eventType = 'Click';
-    }
-    console.log(...RobotLog.logData(`TouchEnd | type = ${eventType} | animating = ${animateDir}`));
-    updateRobotPosition(animateDir);
-  };
-
-  const updateRobotPosition = (direction: TSwipeDirection) => {
-    if (!isAnimatingRef.current) {
-      setSwipeDir(direction);
+  const onHeadAnimationEnd = (displayPos: DisplayPosition) => {
+    if (shouldRenderOverlay && !overlayVisible && displayPos === 'fullyUp') {
+      setOverlayVisible(true);
     }
   };
 
   return (
-    <div ref={bodyContainerRef} className={`${styles.InteractiveRobotDisplay} ${animationCls} ${props.className || ''}`}>
-      <div
-        itemID="PoofAnimation"
-        ref={targetRef}
-        className={styles.RobotPoof}
-      >
+    <div ref={bodyContainerRef} className={`${styles.InteractiveRobotDisplay} ${props.className || ''}`}>
+      <div itemID="PoofAnimation" ref={targetRef} className={styles.RobotPoof}>
         <Ratio aspectRatio="1x1">
           <embed type="image/svg+xml" src="/images/poof.svg" />
         </Ratio>
       </div>
 
-      <div
-        itemID="RobotHead"
-        className={styles.RobotImage}
-        onAnimationStart={onRobotHeadAnimationStart}
-        onAnimationEnd={onRobotHeadAnimationEnd}
-      >
-        <img
-          src="/images/robot-head-filled.svg"
-          width={100}
-          height={100}
-          alt="Robot Head"
-          onTouchStart={onRobotTouchStart}
-          onTouchEnd={onRobotTouchEnd}
-        />
-
-        <svg className={styles.RobotLeftEye} viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <ellipse className={styles.RobotEye} fill="white" />
-        </svg>
-        <svg className={styles.RobotRightEye} viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <ellipse className={styles.RobotEye} fill="white" />
-        </svg>
-      </div>
+      <RobotHead
+        isInit={isInit}
+        displayPosition={headDisplayPosition}
+        onHeadClick={() => {
+          console.log(...RobotLog.logAction(`clicked on robot head`));
+        }}
+        onHeadSwipeDown={onHeadSwipeDown}
+        onHeadSwipeUp={onHeadSwipeUp}
+        onHeadAnimationEnd={onHeadAnimationEnd}
+      />
 
       <div className={styles.RobotCover}></div>
 
-      {shouldRenderOverlay && InteractiveRobotOverlay}
+      {InteractiveRobotOverlay}
     </div>
   );
 };

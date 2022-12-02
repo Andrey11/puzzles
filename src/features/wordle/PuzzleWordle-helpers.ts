@@ -48,8 +48,6 @@ export const getLogStyles = (props?: ConsoleLogStyle | Partial<ConsoleLogStyle>)
   return MergedStyles;
 };
 
-
-
 export const getStyledString = (componentName: string, message: string, variant?:number) => {
   const messageColor = (!variant || variant === 0) ? LOG_CLS_DATA : variant === 1 ? LOG_CLS_ACTION : LOG_CLS_SUCCESS; 
   return [`%c[${componentName}]%c ${message}`, CMP_NAME_CLS, messageColor];

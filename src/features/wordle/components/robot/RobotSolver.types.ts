@@ -1,6 +1,8 @@
 import { AppThunk } from "../../../../app/store";
 import { ISolutionModel } from "../../wordleversus/PuzzleWordleVersus.types";
 
+export type RobotHeadSwipeDirection = 'none' | 'up' | 'down' | 'show';
+
 export type TRobotStatus =
   | 'idle'
   | 'robot-picking-word'

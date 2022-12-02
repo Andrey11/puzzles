@@ -31,7 +31,11 @@ const WvGameLog = getLogStyles({
   cmpNameCls: 'color: #3dc6a6; font-weight: bold;',
 });
 
-const WordleVersusGame: React.FC = () => {
+type WordleVersusGameProps = {
+  isInit: boolean;
+};
+
+const WordleVersusGame: React.FC<WordleVersusGameProps> = ({isInit}: WordleVersusGameProps) => {
   const guessRowTargetRef: React.RefObject<any> = useRef(null);
   const overlayRef: React.RefObject<any> = useRef(null);
 
@@ -100,6 +104,7 @@ const WordleVersusGame: React.FC = () => {
     <section ref={overlayRef} itemID="ActiveGameDisplay">
       <section itemID="InteractiveRobotDisplay" className={styles.RobotDisplay}>
         <InteractiveRobot
+          isInit={isInit}
           onRobotClicked={handleOnRobotClicked}
           showRobot={showRobotMemo}
           showSelectWordOverlay={showSelectWordOverlay}

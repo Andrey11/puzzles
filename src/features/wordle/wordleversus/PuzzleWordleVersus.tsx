@@ -17,13 +17,7 @@ import {
 } from '../../../app/appSlice';
 import { useDialog } from '../components/modal/Dialog';
 import WordleVersusGame from './game/WordleVersusGame';
-import {
-  addWord,
-  isLostGame,
-  isUserGame,
-  isWonGame,
-  onSubmitGuess,
-} from './game/wordleVersusGameSlice';
+import { addWord, isLostGame, isUserGame, isWonGame, onSubmitGuess } from './game/wordleVersusGameSlice';
 import {
   getMaxGames,
   isMatchFinished,
@@ -59,6 +53,16 @@ const WordleVsLog = getLogStyles({
 
 const WordleVsHeaderSettings: Array<IHeaderItem> = [
   {
+    itemTitle: 'Back to Puzzles',
+    itemId: 'BackButton',
+    itemPosition: 'LEFT',
+    iconName: 'PuzzleFill',
+    isButton: false,
+    isIcon: true,
+    icon: 'PuzzleFill',
+    itemAction: 'ACTION_BACK',
+  },
+  {
     itemTitle: 'Settings',
     itemId: 'SettingsButton',
     itemPosition: 'RIGHT',
@@ -91,14 +95,11 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
   const activePuzzle = useAppSelector(getActivePuzzle);
   const maxGames = useAppSelector(getMaxGames);
 
-  const isSettingsHeaderAction = useSelector((state: RootState) =>
-    isHeaderItemActionByType(state, 'ACTION_SETTINGS')
-  );
-  const isHelpHeaderAction = useSelector((state: RootState) =>
-    isHeaderItemActionByType(state, 'ACTION_HELP')
-  );
+  const isSettingsHeaderAction = useSelector((state: RootState) => isHeaderItemActionByType(state, 'ACTION_SETTINGS'));
+  const isHelpHeaderAction = useSelector((state: RootState) => isHeaderItemActionByType(state, 'ACTION_HELP'));
 
   const [isInit, setIsInit] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
 
   const isWon = useAppSelector(isWonGame);
   const isLost = useAppSelector(isLostGame);
@@ -124,13 +125,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
         onRoundsSelected={(rounds) => {
           dispatch(setMaxGames(rounds));
         }}
-        defaultSelected={
-          maxGames === 2
-            ? 'inline-radio-1'
-            : maxGames === 6
-            ? 'inline-radio-2'
-            : 'inline-radio-3'
-        }
+        defaultSelected={maxGames === 2 ? 'inline-radio-1' : maxGames === 6 ? 'inline-radio-2' : 'inline-radio-3'}
       />
     ),
     actionButtonLabel: 'Start New Match',
@@ -159,17 +154,9 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       dispatch(setHeaderItemAction(''));
       setVisibleGameSettingsDialog(true);
     } else if (isHelpHeaderAction) {
-      console.log(
-        ...WordleVsLog.logAction('help button in header was pressed')
-      );
+      console.log(...WordleVsLog.logAction('help button in header was pressed'));
     }
-  }, [
-    dispatch,
-    isHelpHeaderAction,
-    isSettingsHeaderAction,
-    isVisibleGameSettingsDialog,
-    setVisibleGameSettingsDialog,
-  ]);
+  }, [dispatch, isHelpHeaderAction, isSettingsHeaderAction, isVisibleGameSettingsDialog, setVisibleGameSettingsDialog]);
 
   /** LOAD DICTIONARY AND SHOW ON HEADER EFFECT */
   useEffect(() => {
@@ -179,11 +166,14 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
     } else if (dictionaryLoaded && dictionaryStatus === 'loaded' && isInit) {
       console.log(...WordleVsLog.logSuccess('wordle dictionary loaded'));
       dispatch(setShowHeaderDictionaryIcon(true));
+      setIsReady(true);
     }
   }, [dictionaryLoaded, dictionaryStatus, dispatch, isInit]);
 
   /** END TURN (aka GAME/ROUND) EFFECT */
   useEffect(() => {
+    if (!isReady) return;
+
     if (!matchFinished && (isWon || isLost)) {
       let timeoutId: NodeJS.Timeout;
       if (userGame) {
@@ -192,19 +182,19 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
         }, 2000);
       } else {
         timeoutId = setTimeout(() => {
-          console.log(
-            ...WordleVsLog.logSuccess('asking Robot to pick guess word')
-          );
+          console.log(...WordleVsLog.logSuccess('asking Robot to pick guess word'));
           dispatch(setShouldPickWod(true));
         }, 2000);
       }
 
       return () => clearTimeout(timeoutId);
     }
-  }, [dispatch, isLost, isWon, matchFinished, userGame]);
+  }, [dispatch, isReady, isLost, isWon, matchFinished, userGame]);
 
   /** END MATCH EFFECT */
   useEffect(() => {
+    if (!isReady) return;
+    
     let timeoutId: NodeJS.Timeout;
     if (matchFinished) {
       console.log(...WordleVsLog.logSuccess('match finished, show EoG dialog'));
@@ -212,16 +202,12 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
         dispatch(setShouldShowEndMatchOverlay(true));
       }, 2500);
     } else if (!matchStarted && !matchFinished) {
-      console.log(
-        ...WordleVsLog.logSuccess(
-          'match finished false and match started false'
-        )
-      );
+      console.log(...WordleVsLog.logSuccess('match finished false and match started false'));
       dispatch(setShouldShowStartMatchOverlay(true));
     }
 
     return () => clearTimeout(timeoutId);
-  }, [dispatch, matchFinished, matchStarted]);
+  }, [dispatch, isReady, matchFinished, matchStarted]);
 
   return (
     <div ref={bodyContainerRef} className={styles.WordleVersusContainer}>
@@ -229,10 +215,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
         <Score />
       </section>
 
-      <section
-        className={styles.GameSettingsDisplayTrigger}
-        itemID="GameSettingsDisplay"
-      >
+      <section className={styles.GameSettingsDisplayTrigger} itemID="GameSettingsDisplay">
         {GameSettingsDialog}
       </section>
 
@@ -247,9 +230,8 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       </section>
 
       <section itemID="GameBoardWithKeyboardDisplay">
-        <WordleVersusGame />
+        <WordleVersusGame isInit={isReady}/>
       </section>
-
     </div>
   );
 };

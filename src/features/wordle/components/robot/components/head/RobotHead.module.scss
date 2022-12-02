@@ -1,0 +1,89 @@
+@import '/src/scss/mixins.module.scss';
+
+.RobotHead {
+  width: 100px;
+  height: 200px;
+  top: 0;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.01);
+  opacity: 1;
+  z-index: 0;
+
+  .RobotImage {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    z-index: 2;
+  }
+
+  ellipse.RobotEye {
+    ry: 10;
+    rx: 10;
+    cx: 10;
+    cy: 10;
+  }
+
+  .RobotLeftEye,
+  .RobotRightEye {
+    position: absolute;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    @include robot-blink(3s, 0.1s);
+  }
+  .RobotLeftEye {
+    left: 30px;
+  }
+  .RobotRightEye {
+    left: 60px;
+  }
+}
+
+.RobotHead[class*='robot--init'] {
+  .RobotImage {
+    top: 70px;
+  }
+}
+
+.RobotHead[class*='robot--on'] {
+  .RobotImage {
+    @include robot-appear(1.5s, 0s);
+  }
+}
+
+.RobotHead[class*='robot--fullOn'] {
+  &[class*='robot--halfDown'] {
+    .RobotImage {
+      @include robot-lurk(1s, 0.1s);
+      ellipse.RobotEye {
+        ry: 5;
+        rx: 10;
+      }
+    }
+  }
+  &[class*='robot--halfUp'] {
+    .RobotImage {
+      @include robot-stop-lurk(0.5s, 0s);
+    }
+  }
+}
+
+.RobotHead[class*='robot--antena'] {
+  .RobotImage {
+    transform-origin: bottom;
+    @include robot-disappear-to-antena(1s, 0s);
+  }
+}
+
+.RobotHead[class*='robot--toHalf'] {
+  .RobotImage {
+    transform-origin: top;
+    @include robot-appear-to-antena(1s, 0s);
+  }
+}
+
+.RobotHead[class*='robot--off'] {
+  .RobotImage {
+    @include robot-disappear(0.05s, 0s);
+  }
+}

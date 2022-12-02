@@ -60,6 +60,7 @@ type OverlayProps = {
   placement?: Placement | undefined,
   infoTrigger?: React.ReactNode,
   rootClose: boolean,
+  visible?: boolean,
 }
 
 const useOverlay = (props: OverlayProps) => {
@@ -74,7 +75,7 @@ const useOverlay = (props: OverlayProps) => {
       <InfoOverlay
         title={props.title ? props.title : 'Enter a word from wordle dictionary' }
         body={props.body ? props.body : 'Wordle Bot will attempt to solve your selected word'} 
-        visible={showOverlay}
+        visible={showOverlay && props.visible !== false}
         rootClose={props.rootClose}
         placement={props.placement} 
         containerRef={props.componentRef.current} 

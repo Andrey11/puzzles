@@ -1,12 +1,8 @@
 import React from 'react';
 import * as Icon from 'react-bootstrap-icons';
-import {
-  getHeaderItems,
-  getHeaderTitle,
-  isShowHeaderDictionaryIcon,
-  setHeaderItemAction,
-} from 'app/appSlice';
+import { getHeaderItems, getHeaderTitle, isShowHeaderDictionaryIcon, setHeaderItemAction } from 'app/appSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
+import useDeviceDetect from 'app/hooks/useDeviceDetect';
 import WordleDictionaryOffcanvas from 'features/wordle/components/dictionary/WordleDictionaryOffcanvas';
 
 import styles from './PuzzleHeader.module.scss';
@@ -38,6 +34,9 @@ const getIconByName = (name: string | undefined): Icon.Icon => {
     case 'Back':
       icon = Icon.Back;
       break;
+    case 'PuzzleFill':
+      icon = Icon.PuzzleFill;
+      break;
     default:
       icon = Icon['Puzzle'] as Icon.Icon;
   }
@@ -49,6 +48,8 @@ const PuzzleHeader: React.FC = () => {
   const headerTitle = useAppSelector(getHeaderTitle);
   const headerItems: Array<IHeaderItem> = useAppSelector(getHeaderItems);
   const isDictionaryIconVisible = useAppSelector(isShowHeaderDictionaryIcon);
+
+  const { isMobile } = useDeviceDetect();
 
   const onCallback = (ia: ItemAction) => dispatch(setHeaderItemAction(ia));
 
@@ -76,11 +77,15 @@ const PuzzleHeader: React.FC = () => {
     );
   };
 
-const getLettersForWord = (word: string, letterCls: string, prefix: string) => {
-  return word.split('').map((letter: string, index: number) => {
-    return <span key={`$${prefix}_${index}_${letter}`} className={`${styles.CellLetter} ${letterCls}`}>{letter}</span>;
-  });
-};
+  const getLettersForWord = (word: string, letterCls: string, prefix: string) => {
+    return word.split('').map((letter: string, index: number) => {
+      return (
+        <span key={`$${prefix}_${index}_${letter}`} className={`${styles.CellLetter} ${letterCls}`}>
+          {letter}
+        </span>
+      );
+    });
+  };
 
   const renderHeaderTitle = (title: string): JSX.Element[] => {
     const titleArray = title.split(' ');
@@ -90,35 +95,38 @@ const getLettersForWord = (word: string, letterCls: string, prefix: string) => {
       let fillCls = index === 0 ? styles.Match : styles.ExactMatch;
       let letterElsForWord = getLettersForWord(word, fillCls, `${index}_${word}`);
       headerTitle.push(...letterElsForWord);
-      headerTitle.push(<span key={`${index}_${word}_SPACER`}>&nbsp;&nbsp;</span>); 
+      headerTitle.push(<span key={`${index}_${word}_SPACER`}>&nbsp;&nbsp;</span>);
     });
 
     return headerTitle;
   };
 
+  const renderHeaderMobileTitle = (title: string): JSX.Element[] => {
+    const titleArray = title.split(' ');
+    let headerTitle: Array<JSX.Element> = [];
+
+    titleArray.forEach((word: string, index: number) => {
+      let fillCls = index === 0 ? styles.OrangeText : styles.GreenText;
+      headerTitle.push(<span className={fillCls}>{word}</span>);
+      headerTitle.push(<span key={`${index}_${word}_SPACER`}>&nbsp;&nbsp;</span>);
+    });
+
+    return headerTitle;
+  };
+
+
+
   return (
     <header itemID="AppHeaderDisplay" className={styles.PuzzleHeader}>
-      <section
-        itemID="LeftSection"
-        className={`${styles.Items} ${styles.Left}`}
-      >
+      <section itemID="LeftSection" className={`${styles.Items} ${styles.Left}`}>
         {renderHeaderItems('LEFT')}
       </section>
-      <section
-        itemID="CenterSection"
-        className={`${styles.Items} ${styles.Middle}`}
-      >
-        {renderHeaderTitle(headerTitle)}
+      <section itemID="CenterSection" className={`${styles.Items} ${styles.Middle}`}>
+        {isMobile ? renderHeaderMobileTitle(headerTitle) : renderHeaderTitle(headerTitle)}
       </section>
-      <section
-        itemID="RightSection"
-        className={`${styles.Items} ${styles.Right}`}
-      >
+      <section itemID="RightSection" className={`${styles.Items} ${styles.Right}`}>
         {isDictionaryIconVisible && (
-          <section
-            itemID="DictionaryDisplay"
-            className={styles.DictionaryTrigger}
-          >
+          <section itemID="DictionaryDisplay" className={styles.DictionaryTrigger}>
             <WordleDictionaryOffcanvas />
           </section>
         )}

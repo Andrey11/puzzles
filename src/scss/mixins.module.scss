@@ -46,58 +46,63 @@
   animation-iteration-count: $iterationCount;
 }
 
-@mixin robot-appear($duration, $delay) {
-  animation-name: robotAppear;
-  animation-duration: $duration;
+%robotBaseAnimationProps {
   animation-timing-function: ease-out;
-  animation-delay: $delay;
   animation-iteration-count: 1;
   animation-direction: normal;
   animation-fill-mode: forwards;
   animation-play-state: running;
+}
+
+@mixin robot-appear($duration, $delay) {
+  animation-name: robotAppear;
+  animation-duration: $duration;
+  animation-delay: $delay;
+  @extend %robotBaseAnimationProps;
 }
 
 @mixin robot-disappear($duration, $delay) {
   animation-name: robotDisappear;
   animation-duration: $duration;
-  animation-timing-function: ease-out;
   animation-delay: $delay;
-  animation-iteration-count: 1;
-  animation-direction: normal;
-  animation-fill-mode: forwards;
-  animation-play-state: running;
+  @extend %robotBaseAnimationProps;
+}
+
+@mixin robot-disappear-to-antena($duration, $delay) {
+  animation-name: robotDisappearToAntena;
+  animation-duration: $duration;
+  animation-delay: $delay;
+  @extend %robotBaseAnimationProps;
+}
+
+@mixin robot-appear-to-antena($duration, $delay) {
+  animation-name: robotAppearToAntena;
+  animation-duration: $duration;
+  animation-delay: $delay;
+  @extend %robotBaseAnimationProps;
 }
 
 @mixin robot-poof($duration, $delay) {
-  animation-name: robotPoofAction;
+  animation-name: robotAppearToAntena;
   animation-duration: $duration;
-  animation-timing-function: linear;
   animation-delay: $delay;
-  animation-iteration-count: 1;
-  animation-direction: normal;
-  animation-fill-mode: forwards;
+  @extend %robotBaseAnimationProps;
+  animation-timing-function: linear;
 }
 
 @mixin robot-lurk($duration, $delay) {
   animation-name: robotLurk;
   animation-duration: $duration;
-  animation-timing-function: ease-out;
   animation-delay: $delay;
-  animation-iteration-count: 1;
-  animation-direction: normal;
-  animation-fill-mode: forwards;
-  animation-play-state: running;
+  @extend %robotBaseAnimationProps;
 }
 
 @mixin robot-stop-lurk($duration, $delay) {
   animation-name: robotStopLurk;
   animation-duration: $duration;
-  animation-timing-function: ease-in-out;
   animation-delay: $delay;
-  animation-iteration-count: 1;
-  animation-direction: normal;
-  animation-fill-mode: forwards;
-  animation-play-state: running;
+  @extend %robotBaseAnimationProps;
+  animation-timing-function: ease-in-out;
 }
 
 @mixin robot-blink($duration, $delay) {
@@ -178,25 +183,25 @@
 
 @keyframes robotLurk {
   40% {
-    top: 30px;
+    transform: translateY(30px);
   }
   100% {
-    top: 30px;
+    transform: translateY(30px);
   }
 }
 
 @keyframes robotStopLurk {
   0% {
-    top: 30px;
+    transform: translateY(30px);
   }
   70% {
-    transform: translate(0, 0);
+    transform: translateY(0);
   }
   90% {
-    transform: translate(0, -10px);
+    transform: translateY(-5px);
   } 
   100% {
-    transform: translate(0, 0);
+    transform: translateY(0);
   }
 }
 
@@ -204,7 +209,7 @@
   0% {
     transform: translate(0, 70px);
   }
-  40%,
+  75%,
   80% {
     transform: translate(0, 30px);
   }
@@ -214,7 +219,30 @@
   }
 }
 
+@keyframes robotDisappearToAntena {
+  0% {
+    transform: translateY(30px);
+  }
+  60%,
+  100% {
+    transform: translateY(65px);
+  }
+}
+
+@keyframes robotAppearToAntena {
+  0% {
+    transform: translate(0, 65px);
+  }
+  60%,
+  100% {
+    transform: translate(0, 30px);
+  }
+}
+
 @keyframes robotDisappear {
+  0% {
+    top: 65px;
+  }
   90%,
   100% {
     transform: translate(0, 70px);

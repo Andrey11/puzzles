@@ -26,12 +26,20 @@
   }
 
   @media only screen and (max-width: 425px) {
-    span.CellLetter {
-      width: 15px;
-      height: 20px;
-      font-weight: 600;
-      font-size: small;
+    span {
+      font-weight: 500;
+      font-size: x-large;
+      -webkit-font-smoothing: auto;
+      text-transform: uppercase;
+      letter-spacing: -1px;
     }
+  }
+
+  span.GreenText {
+    color: var(--mdc-theme-puzzle-exact-match, #5fc405);
+  }
+  span.OrangeText {
+    color: var(--mdc-theme-puzzle-exists, #ffb003);
   }
 
   span.Match {

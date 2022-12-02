@@ -25,10 +25,7 @@ import WordSelector from '../dropdown/WordSelector';
 import { useOverlay } from '../overlay/InfoOverlay';
 import { allAvailableWords } from '../../PuzzleWords';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
-import {
-  getDictionary,
-  isDictionaryLoaded,
-} from '../dictionary/wordleDictionarySlice';
+import { getDictionary, isDictionaryLoaded } from '../dictionary/wordleDictionarySlice';
 import RowGroup from '../rowgroup/RowGroup';
 import RobotSolver from '../robot/RobotSolver';
 import {
@@ -85,7 +82,6 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
   const isWon = useAppSelector(isWonGame);
   const isLost = useAppSelector(isLostGame);
 
-
   const dispatch = useAppDispatch();
 
   const [selectedWord, setSelectedWord] = useState<string>('');
@@ -126,10 +122,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
   // }, [guessingInProgress]);
 
   useEffect(() => {
-    if (
-      wordRunnerRef.current !== 0 &&
-      wordRunnerRef.current + MAX_RUNNER_TIMES >= MAX_RUNNER_TIMES * runnerCount
-    ) {
+    if (wordRunnerRef.current !== 0 && wordRunnerRef.current + MAX_RUNNER_TIMES >= MAX_RUNNER_TIMES * runnerCount) {
       // if (wordRunnerRef.current < 83) {
       if (calculateBtnRef.current && calculateBtnRef.current.onclick) {
         calculateBtnRef.current.click();
@@ -141,8 +134,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
     let puzzleSolution: IWordleSolution = startPuzzleSolution;
 
     while (!puzzleSolution.isCompleted) {
-      const guessResultPromise: Promise<IWordleSolution> =
-        makeGuess(startPuzzleSolution);
+      const guessResultPromise: Promise<IWordleSolution> = makeGuess(startPuzzleSolution);
       await guessResultPromise
         // eslint-disable-next-line no-loop-func
         .then((lastGuessSolution: IWordleSolution) => {
@@ -154,19 +146,10 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
         })
         // eslint-disable-next-line no-loop-func
         .finally(() => {
-          const hasWords =
-            puzzleSolution.usedWords && puzzleSolution.usedWords.length > 0;
-          const guessIndex: number = hasWords
-            ? puzzleSolution.usedWords.length - 1
-            : -1;
-          const lastWord: string = hasWords
-            ? puzzleSolution.usedWords[guessIndex]
-            : '';
-          displayStatus(
-            puzzleSolution.attempts,
-            puzzleSolution.displayColors,
-            lastWord
-          );
+          const hasWords = puzzleSolution.usedWords && puzzleSolution.usedWords.length > 0;
+          const guessIndex: number = hasWords ? puzzleSolution.usedWords.length - 1 : -1;
+          const lastWord: string = hasWords ? puzzleSolution.usedWords[guessIndex] : '';
+          displayStatus(puzzleSolution.attempts, puzzleSolution.displayColors, lastWord);
         });
     }
 
@@ -183,17 +166,15 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
       wod: '',
     };
 
-    const solutionPromise: Promise<IWordleSolution> = new Promise(
-      async (resolve, reject) => {
-        const resultSolution = await puzzleSolver(puzzleSolution);
+    const solutionPromise: Promise<IWordleSolution> = new Promise(async (resolve, reject) => {
+      const resultSolution = await puzzleSolver(puzzleSolution);
 
-        if (resultSolution.isCompleted && resultSolution.isFound) {
-          resolve(resultSolution);
-        } else {
-          reject(resultSolution);
-        }
+      if (resultSolution.isCompleted && resultSolution.isFound) {
+        resolve(resultSolution);
+      } else {
+        reject(resultSolution);
       }
-    );
+    });
 
     let solverSolution: IWordleSolution = puzzleSolution;
 
@@ -211,9 +192,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
         const failuerStyle = 'color: red; font-weight: bold;';
         const wodStyle = 'color: blue; font-weight: lighter;';
         const solutionStyle = 'color: #555555; font-weight: lighter;';
-        const resultStyle = solverSolution.isFound
-          ? successStyle
-          : failuerStyle;
+        const resultStyle = solverSolution.isFound ? successStyle : failuerStyle;
         const statusText = solverSolution.isFound ? '%cPASS' : '%cFAIL';
         const stats = {
           status: statusText,
@@ -237,15 +216,9 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
         const exactSpots = solverSolution.exactMatchLetter || [];
         const existSpots = solverSolution.existsMatchLetter || [];
         const nonExistent = solverSolution.nonExistentLetters || [];
-        const exactStr = exactSpots
-          .map((s) => `{let: ${s.letter}, pos: ${s.indexInWord}}`)
-          .join(',');
-        const existsStr = existSpots
-          .map((s) => `{let: ${s.letter}, pos: ${s.indexInWord}}`)
-          .join(', ');
-        console.log(
-          `Analyze Solution: exact: ${exactStr}, exists: ${existsStr}, miss: ${nonExistent.toString()}`
-        );
+        const exactStr = exactSpots.map((s) => `{let: ${s.letter}, pos: ${s.indexInWord}}`).join(',');
+        const existsStr = existSpots.map((s) => `{let: ${s.letter}, pos: ${s.indexInWord}}`).join(', ');
+        console.log(`Analyze Solution: exact: ${exactStr}, exists: ${existsStr}, miss: ${nonExistent.toString()}`);
         setGuessingInProgress(false);
       });
 
@@ -289,16 +262,13 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
     if (lastGuess === selectedWord) {
       // console.log(`PASS: wod: ${selectedWord}, guesses (${attemptNum}) = ${solution.usedWords}`);
       solution.displayColors = ['green', 'green', 'green', 'green', 'green'];
-      solution.exactMatchLetter = lastGuess
-        .split('')
-        .map((l, index) => ({ letter: l, indexInWord: index }));
+      solution.exactMatchLetter = lastGuess.split('').map((l, index) => ({ letter: l, indexInWord: index }));
       solution.existsMatchLetter = [];
       solution.isFound = true;
       return solution;
     } else {
       const colors: Array<string> = [];
-      const nonExistentLetterAtIndex: Array<ILetterModel> =
-        solution.nonExistentLetterAtIndex;
+      const nonExistentLetterAtIndex: Array<ILetterModel> = solution.nonExistentLetterAtIndex;
       const matchedLetters: Array<string> = []; //solution.matchedLetters;
       const existsMatchLetters: Array<ILetterModel> = []; //solution.existsMatchLetter;
       const exactMatches: Array<string> = []; //solution.exactMatchLetter.map((exactMatch) => {
@@ -328,18 +298,12 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
         } else {
           colors.push('grey');
           // letter does not exist in WOD
-          if (
-            matchedLetters.indexOf(letter) === -1 &&
-            exactMatches.indexOf(letter) === -1
-          ) {
+          if (matchedLetters.indexOf(letter) === -1 && exactMatches.indexOf(letter) === -1) {
             if (!nonExistentLetters.includes(letter)) {
               nonExistentLetters.push(letter);
             }
             // WOD contains multiple instances of a letter
-          } else if (
-            exactMatches.indexOf(letter) !== -1 &&
-            matchedLetters.indexOf(letter) === -1
-          ) {
+          } else if (exactMatches.indexOf(letter) !== -1 && matchedLetters.indexOf(letter) === -1) {
             const exactMatchesForLetter = exactMatchLetters
               .filter((ml: ILetterModel) => ml.letter === letter)
               .map((val: ILetterModel) => val.indexInWord);
@@ -375,18 +339,9 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
 
   const getNextIndex = (solution: IWordleSolution): IWordleSolution => {
     let currentWordIndexes: Array<number> = [...solution.availableWordIndexes];
-    const {
-      exactMatchLetter,
-      existsMatchLetter,
-      nonExistentLetterAtIndex,
-      nonExistentLetters,
-    } = solution;
+    const { exactMatchLetter, existsMatchLetter, nonExistentLetterAtIndex, nonExistentLetters } = solution;
 
-    currentWordIndexes = getExactMatches(
-      exactMatchLetter,
-      currentWordIndexes,
-      dictionary
-    );
+    currentWordIndexes = getExactMatches(exactMatchLetter, currentWordIndexes, dictionary);
     currentWordIndexes = getExistsMatches(
       existsMatchLetter,
       exactMatchLetter,
@@ -394,11 +349,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
       currentWordIndexes,
       dictionary
     );
-    currentWordIndexes = removeNonExistentLetterIndexes(
-      nonExistentLetters,
-      currentWordIndexes,
-      dictionary
-    );
+    currentWordIndexes = removeNonExistentLetterIndexes(nonExistentLetters, currentWordIndexes, dictionary);
     currentWordIndexes = removeNonExistentLetterIndexesAtIndex(
       nonExistentLetterAtIndex,
       currentWordIndexes,
@@ -406,8 +357,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
     );
 
     const aIndex = currentWordIndexes[0];
-    solution.currentWordIndex =
-      currentWordIndexes[aIndex] || solution.currentWordIndex + 1;
+    solution.currentWordIndex = currentWordIndexes[aIndex] || solution.currentWordIndex + 1;
     solution.availableWordIndexes = currentWordIndexes;
     // console.log(`Available guesses: ${solution.availableWordIndexes.length}`);
     return solution;
@@ -431,9 +381,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
     return Math.floor(solution.availableWordIndexes.length / 2);
   };
 
-  const makeGuess = (
-    puzzleSolution: IWordleSolution
-  ): Promise<IWordleSolution> => {
+  const makeGuess = (puzzleSolution: IWordleSolution): Promise<IWordleSolution> => {
     return new Promise((resolve, reject) => {
       // let puzzleSolution: IPuzzleSolution = {
       //   ...initialGuess,
@@ -448,10 +396,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
       } else {
         puzzleSolution.attempts += 1;
         const startingWordIndex = allAvailableWords.indexOf(startingWord);
-        const wordIndex =
-          puzzleSolution.attempts === 1
-            ? startingWordIndex
-            : getBestGuess(puzzleSolution);
+        const wordIndex = puzzleSolution.attempts === 1 ? startingWordIndex : getBestGuess(puzzleSolution);
         const currentWordIndex = puzzleSolution.availableWordIndexes[wordIndex];
         const currentWord = dictionary.words[currentWordIndex];
         puzzleSolution.usedWords.push(currentWord);
@@ -481,10 +426,7 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
     setGuessingInProgress(false);
     selectRef.current?.clearValue();
     setRunnerCount(0);
-    startingWordRef.current?.setValue(
-      { value: START_WORD, label: START_WORD },
-      'select-option'
-    );
+    startingWordRef.current?.setValue({ value: START_WORD, label: START_WORD }, 'select-option');
   };
 
   const onStartingWordSelected = (selectedWord: string) => {
@@ -519,14 +461,8 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
   };
 
   const wordRunner = () => {
-    if (
-      wordRunnerRef.current < dictionary.words.length &&
-      wordRunnerRef.current < MAX_RUNNER_TIMES * runnerCount
-    ) {
-      selectRef.current?.setValue(
-        selectableWords.at(wordRunnerRef.current),
-        'select-option'
-      );
+    if (wordRunnerRef.current < dictionary.words.length && wordRunnerRef.current < MAX_RUNNER_TIMES * runnerCount) {
+      selectRef.current?.setValue(selectableWords.at(wordRunnerRef.current), 'select-option');
       wordRunnerRef.current += 1;
     } else if (wordRunnerRef.current >= dictionary.words.length) {
       // end reached
@@ -606,14 +542,11 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
     infoTrigger: <PencilSquare size={18} />,
   });
 
-  const {PlaceholderWithIcon: PlaceholderMsg} = usePlaceholder({});
+  const { PlaceholderWithIcon: PlaceholderMsg } = usePlaceholder({});
 
   return (
     <div className={styles.SolverDisplayWrapper}>
-      <section
-        itemID="WordSelectorDisplay"
-        className={styles.WordSelectorWrapper}
-      >
+      <section itemID="WordSelectorDisplay" className={styles.WordSelectorWrapper}>
         <div className={styles.InfoPosition}>{InfoTip}</div>
         {dictionaryLoaded && (
           <WordSelector
@@ -645,11 +578,9 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
         </div>
       </section>
 
-      <section
-        itemID="InteractiveRobotDisplay"
-        className={styles.RelativePosition}
-      >
+      <section itemID="InteractiveRobotDisplay" className={styles.RelativePosition}>
         <InteractiveRobot
+          isInit={true}
           // onRobotClicked={handleOnRobotClicked}
           showRobot={showRobot}
           // showSelectWordOverlay={showSelectWordOverlay}
