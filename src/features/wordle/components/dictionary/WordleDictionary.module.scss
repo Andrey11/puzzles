@@ -1,5 +1,7 @@
 @import 'src/scss/mixins.module.scss';
 
+$tooltip-bg: #2684ff;
+
 // This hella silly, but .offcanvas.offcanvas-bottom keeps winning the specificity battle
 #DictionaryOffcanvas {
   height: 80vh;
@@ -11,6 +13,13 @@
     padding-top: 0;
   }
 }
+
+// Target react bootstrap component - but decided to go with override in custom.module.scss
+// .DictionaryTooltip[id='tooltip-dictionary'] {
+//   div[class*='tooltip-inner'] {
+//     background-color: #2684ff;
+//   }
+// }
 
 .DictionaryIcon {
   @include headerIconItem();

@@ -1,12 +1,9 @@
+@import 'src/scss/mixins.module.scss';
+
 .SelectWordForRobotWrapper {
   display: flex;
   flex-direction: column;
   gap: 16px;
-
-  hr {
-    margin: 1rem 0 0;
-    color: var(--mdc-theme-puzzle-miss, #c2b9b9);
-  }
 }
 
 .SelectorsDisplay {
@@ -41,14 +38,7 @@
 }
 
 span.CellLetter {
-  border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
-  margin: 2px;
-  width: 45px;
-  height: 45px;
-  display: inline-block;
-  text-align: center;
-  font-weight: 700;
+  @include cellLetterSpan(45px, 45px, 2px, 700);
   font-size: xx-large;
-  text-transform: uppercase;
   line-height: 45px;
 }

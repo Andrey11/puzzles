@@ -36,6 +36,7 @@ const WordleSolverHeaderSettings: Array<IHeaderItem> = [
     isButton: false,
     isIcon: true,
     icon: 'QuestionCircle',
+    tooltipText: 'Puzzle Help',
     itemAction: 'ACTION_HELP',
   },
 ];

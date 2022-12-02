@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
+import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
 import { Search, BookHalf } from 'react-bootstrap-icons';
-import Spinner from 'react-bootstrap/Spinner';
 import Offcanvas from 'react-bootstrap/Offcanvas';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Spinner from 'react-bootstrap/Spinner';
+import Tooltip from 'react-bootstrap/Tooltip';
 import AlphabetScrollList from '../alphabetscroll/AlphabetScrollList';
 import WordSelector from '../dropdown/WordSelector';
+import { setActiveLetter } from './uiDictionarySlice';
+import { getSelectableWords, isDictionaryLoaded } from './wordleDictionarySlice';
 
 import styles from './WordleDictionary.module.scss';
-import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
-import {
-  getSelectableWords,
-  isDictionaryLoaded,
-} from './wordleDictionarySlice';
-import { setActiveLetter } from './uiDictionarySlice';
 
 const WordleDictionaryOffcanvas: React.FC = () => {
   const [show, setShow] = useState<boolean>(false);
@@ -56,7 +55,18 @@ const WordleDictionaryOffcanvas: React.FC = () => {
 
   return (
     <>
-      <BookHalf onClick={handleShow} className={styles.DictionaryIcon} />
+      <OverlayTrigger
+        placement="auto"
+        overlay={
+          <Tooltip className={styles.DictionaryTooltip} id="tooltip-dictionary">
+            Open Dictionary
+          </Tooltip>
+        }
+      >
+        <span className="d-inline-block">
+          <BookHalf onClick={handleShow} className={styles.DictionaryIcon} />
+        </span>
+      </OverlayTrigger>
 
       <Offcanvas
         id={styles['DictionaryOffcanvas']}

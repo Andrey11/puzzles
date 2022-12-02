@@ -1,3 +1,23 @@
+%robotBaseAnimationProps {
+  animation-timing-function: ease-out;
+  animation-iteration-count: 1;
+  animation-direction: normal;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@mixin cellLetterSpan($width, $height, $margin, $fontWeight) {
+  border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
+  margin: $margin;
+  width: $width;
+  height: $height;
+  display: inline-block;
+  text-align: center;
+  font-weight: $fontWeight;
+  text-transform: uppercase;
+}
+
+
 @mixin headerIconItem() {
   color: var(--mdc-theme-puzzle-robot-primary, #557cb3);
   font-size: 1.3rem;
@@ -44,14 +64,6 @@
 @mixin scale-animation($duration, $iterationCount) {
   animation: scaleCellOnInput $duration;
   animation-iteration-count: $iterationCount;
-}
-
-%robotBaseAnimationProps {
-  animation-timing-function: ease-out;
-  animation-iteration-count: 1;
-  animation-direction: normal;
-  animation-fill-mode: forwards;
-  animation-play-state: running;
 }
 
 @mixin robot-appear($duration, $delay) {

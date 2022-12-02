@@ -14,15 +14,8 @@
   position: sticky;
 
   span.CellLetter {
-    border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
-    margin: 2px;
-    width: 30px;
-    height: 30px;
-    display: inline-block;
-    text-align: center;
-    font-weight: 700;
+    @include cellLetterSpan(30px, 30px, 2px, 700);
     font-size: larger;
-    text-transform: uppercase;
   }
 
   @media only screen and (max-width: 425px) {
@@ -31,7 +24,6 @@
       font-size: x-large;
       -webkit-font-smoothing: auto;
       text-transform: uppercase;
-      letter-spacing: -1px;
     }
   }
 

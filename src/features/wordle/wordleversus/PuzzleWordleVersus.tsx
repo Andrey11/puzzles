@@ -60,6 +60,7 @@ const WordleVsHeaderSettings: Array<IHeaderItem> = [
     isButton: false,
     isIcon: true,
     icon: 'PuzzleFill',
+    tooltipText: 'Back to Puzzles Lobby',
     itemAction: 'ACTION_BACK',
   },
   {
@@ -70,6 +71,7 @@ const WordleVsHeaderSettings: Array<IHeaderItem> = [
     isButton: false,
     isIcon: true,
     icon: 'GearFill',
+    tooltipText: 'Puzzle Settings',
     itemAction: 'ACTION_SETTINGS',
   },
   {
@@ -80,6 +82,7 @@ const WordleVsHeaderSettings: Array<IHeaderItem> = [
     isButton: false,
     isIcon: true,
     icon: 'QuestionCircle',
+    tooltipText: 'Puzzle Help',
     itemAction: 'ACTION_HELP',
   },
 ];

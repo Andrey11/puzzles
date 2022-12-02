@@ -21,9 +21,11 @@ const EndGameOverlay: React.FC<EndGameOverlayProps> = ({
     <div className={styles.EndGameComponent}>
       <h3>{result}</h3>
       <Score />
-      <p>Play Again?</p>
-      <Button onClick={() => onEndMatchCallback(true)}>AGAIN</Button>
-      <Button onClick={() => onEndMatchCallback(false)}>NOPE</Button>
+      <p>Would you like to play again?</p>
+      <div className={styles.ActionButtons}>
+        <Button variant='secondary' onClick={() => onEndMatchCallback(false)}>NOT NOW</Button>
+        <Button onClick={() => onEndMatchCallback(true)}>START</Button>
+      </div>
     </div>
   );
 };

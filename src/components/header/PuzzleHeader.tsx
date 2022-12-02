@@ -1,8 +1,10 @@
 import React from 'react';
-import * as Icon from 'react-bootstrap-icons';
-import { getHeaderItems, getHeaderTitle, isShowHeaderDictionaryIcon, setHeaderItemAction } from 'app/appSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
 import useDeviceDetect from 'app/hooks/useDeviceDetect';
+import * as Icon from 'react-bootstrap-icons';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { getHeaderItems, getHeaderTitle, isShowHeaderDictionaryIcon, setHeaderItemAction } from 'app/appSlice';
 import WordleDictionaryOffcanvas from 'features/wordle/components/dictionary/WordleDictionaryOffcanvas';
 
 import styles from './PuzzleHeader.module.scss';
@@ -18,6 +20,7 @@ export interface IHeaderItem {
   isIcon: boolean;
   iconName?: string;
   icon?: string;
+  tooltipText?: string;
   onClickCallback?: (agrs: any) => void;
   itemAction?: ItemAction;
 }
@@ -63,13 +66,14 @@ const PuzzleHeader: React.FC = () => {
             const action = item.itemAction || 'ACTION_HELP';
             return (
               <section key={item.itemId}>
-                {
-                  <ItemIcon
-                    // color='#557cb3'
+                <OverlayTrigger placement='auto' overlay={<Tooltip id={`tooltip-${item.itemId}`}>Tooltip!</Tooltip>}>
+                <span className="d-inline-block">
+                <ItemIcon
                     className={styles.Item}
                     onClick={() => onCallback(action)}
                   />
-                }
+                </span>
+                </OverlayTrigger>
               </section>
             );
           })}
@@ -77,7 +81,11 @@ const PuzzleHeader: React.FC = () => {
     );
   };
 
-  const getLettersForWord = (word: string, letterCls: string, prefix: string) => {
+  const getLettersForWord = (word: string, letterCls: string, prefix: string): Array<JSX.Element> => {
+    if (isMobile) {
+      return [<span key={`${prefix}`} className={letterCls}>{word}</span>];
+    }
+
     return word.split('').map((letter: string, index: number) => {
       return (
         <span key={`$${prefix}_${index}_${letter}`} className={`${styles.CellLetter} ${letterCls}`}>
@@ -87,7 +95,7 @@ const PuzzleHeader: React.FC = () => {
     });
   };
 
-  const renderHeaderTitle = (title: string): JSX.Element[] => {
+  const renderHeaderTitle = (title: string): Array<JSX.Element> => {
     const titleArray = title.split(' ');
     let headerTitle: Array<JSX.Element> = [];
 
@@ -101,20 +109,18 @@ const PuzzleHeader: React.FC = () => {
     return headerTitle;
   };
 
-  const renderHeaderMobileTitle = (title: string): JSX.Element[] => {
-    const titleArray = title.split(' ');
-    let headerTitle: Array<JSX.Element> = [];
+  // const renderHeaderMobileTitle = (title: string): Array<JSX.Element> => {
+  //   const titleArray = title.split(' ');
+  //   let headerTitle: Array<JSX.Element> = [];
 
-    titleArray.forEach((word: string, index: number) => {
-      let fillCls = index === 0 ? styles.OrangeText : styles.GreenText;
-      headerTitle.push(<span className={fillCls}>{word}</span>);
-      headerTitle.push(<span key={`${index}_${word}_SPACER`}>&nbsp;&nbsp;</span>);
-    });
+  //   titleArray.forEach((word: string, index: number) => {
+  //     let fillCls = index === 0 ? styles.OrangeText : styles.GreenText;
+  //     headerTitle.push(<span key={`${index}_${word}`} className={fillCls}>{word}</span>);
+  //     headerTitle.push(<span key={`${index}_${word}_SPACER`}>&nbsp;&nbsp;</span>);
+  //   });
 
-    return headerTitle;
-  };
-
-
+  //   return headerTitle;
+  // };
 
   return (
     <header itemID="AppHeaderDisplay" className={styles.PuzzleHeader}>
@@ -122,7 +128,7 @@ const PuzzleHeader: React.FC = () => {
         {renderHeaderItems('LEFT')}
       </section>
       <section itemID="CenterSection" className={`${styles.Items} ${styles.Middle}`}>
-        {isMobile ? renderHeaderMobileTitle(headerTitle) : renderHeaderTitle(headerTitle)}
+        {renderHeaderTitle(headerTitle)}
       </section>
       <section itemID="RightSection" className={`${styles.Items} ${styles.Right}`}>
         {isDictionaryIconVisible && (

@@ -52,7 +52,7 @@ const SelectWordForRobot: React.FC<SelectWordForRobotProps> = (props) => {
       </div>
       <div className={styles.SelectedWordDisplay}>{renderSelectedWord()}</div>
       <div className={styles.ActionButtonsDisplay}>
-        <Button onClick={() => props.onWordSelected(selectedWord)} variant="primary">
+        <Button disabled={selectedWord.length !== MAX_CHARS} onClick={() => props.onWordSelected(selectedWord)} variant="primary">
           SUBMIT
         </Button>
       </div>
