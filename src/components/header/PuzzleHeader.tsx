@@ -66,13 +66,16 @@ const PuzzleHeader: React.FC = () => {
             const action = item.itemAction || 'ACTION_HELP';
             return (
               <section key={item.itemId}>
-                <OverlayTrigger placement='auto' overlay={<Tooltip id={`tooltip-${item.itemId}`}>Tooltip!</Tooltip>}>
-                <span className="d-inline-block">
-                <ItemIcon
-                    className={styles.Item}
-                    onClick={() => onCallback(action)}
-                  />
-                </span>
+                <OverlayTrigger
+                  placement="auto"
+                  overlay={<Tooltip id={`tooltip-${item.itemId}`}>{item.tooltipText}</Tooltip>}
+                >
+                  <span className="d-inline-block">
+                    <ItemIcon
+                      className={`${styles.Item} ${item.iconName === 'PuzzleFill' ? styles.RotateItem : ''}`}
+                      onClick={() => onCallback(action)}
+                    />
+                  </span>
                 </OverlayTrigger>
               </section>
             );
@@ -83,7 +86,11 @@ const PuzzleHeader: React.FC = () => {
 
   const getLettersForWord = (word: string, letterCls: string, prefix: string): Array<JSX.Element> => {
     if (isMobile) {
-      return [<span key={`${prefix}`} className={letterCls}>{word}</span>];
+      return [
+        <span key={`${prefix}`} className={letterCls}>
+          {word}
+        </span>,
+      ];
     }
 
     return word.split('').map((letter: string, index: number) => {
@@ -108,19 +115,6 @@ const PuzzleHeader: React.FC = () => {
 
     return headerTitle;
   };
-
-  // const renderHeaderMobileTitle = (title: string): Array<JSX.Element> => {
-  //   const titleArray = title.split(' ');
-  //   let headerTitle: Array<JSX.Element> = [];
-
-  //   titleArray.forEach((word: string, index: number) => {
-  //     let fillCls = index === 0 ? styles.OrangeText : styles.GreenText;
-  //     headerTitle.push(<span key={`${index}_${word}`} className={fillCls}>{word}</span>);
-  //     headerTitle.push(<span key={`${index}_${word}_SPACER`}>&nbsp;&nbsp;</span>);
-  //   });
-
-  //   return headerTitle;
-  // };
 
   return (
     <header itemID="AppHeaderDisplay" className={styles.PuzzleHeader}>

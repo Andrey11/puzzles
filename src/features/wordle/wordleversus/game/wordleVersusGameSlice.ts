@@ -11,7 +11,7 @@ import {
   roundKeyToNumber,
 } from '../../PuzzleWordle-helpers';
 import {
-  setCell,
+  setCellProps,
   updateWordByRowId,
   updateWordColorsByRowId,
 } from '../../components/rowgroup/rowGroupSlice';
@@ -20,6 +20,7 @@ import {
   setAnimateInvalidWord,
   endWordleVersusGame,
   isMatchStarted,
+  setShouldRobotSolvePuzzle,
 } from '../wordleVersusSlice';
 import { isValidWord } from '../../components/dictionary/wordleDictionarySlice';
 import {
@@ -100,7 +101,7 @@ export const addLetter =
         cellKey: numberToCellKey(initialWordLength + 1),
         letter: letter,
       };
-      dispatch(setCell(payloadAction));
+      dispatch(setCellProps(payloadAction));
     }
   };
 
@@ -130,7 +131,7 @@ export const deleteLetter = (): AppThunk => (dispatch, getState) => {
       letter: '',
     };
 
-    dispatch(setCell(payloadAction));
+    dispatch(setCellProps(payloadAction));
   }
 };
 
@@ -192,12 +193,14 @@ export const onSubmitGuess = (): AppThunk => (dispatch, getState) => {
       );
       if (!isUserGame) {
         dispatch(setRoundComplete(true));
+        dispatch(setShouldRobotSolvePuzzle(false));
       }
     } else if (isLastRound(getState())) {
       dispatch(setScore(0));
       dispatch(setLostRound(true));
       if (!isUserGame) {
         dispatch(setRoundComplete(false));
+        dispatch(setShouldRobotSolvePuzzle(false));
       }
       dispatch(
         endWordleVersusGame({

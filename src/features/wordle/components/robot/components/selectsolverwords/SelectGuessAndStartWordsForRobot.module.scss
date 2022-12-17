@@ -1,0 +1,52 @@
+@import 'src/scss/mixins.module.scss';
+
+.SelectWordForRobotWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.GuessWordDisplay {
+  z-index: 2;
+}
+.FirstWordDisplay {
+  z-index: 1;
+  flex-direction: column;
+}
+
+.SelectorsDisplay {
+  display: flex;
+  gap: 8px;
+  min-width: 242px;
+  [class*="WordleSelector"] {
+    margin-bottom: 0;
+    resize: none;
+    flex: 1;
+  }
+  button.RandomButton {
+    &:active,
+    &:hover,
+    &:focus
+     {
+      background-color: white;
+      color: var(--bs-btn-color);
+    }
+  }
+}
+
+.SelectedWordDisplay {
+  display: flex;
+}
+
+.ActionButtonsDisplay {
+  margin-top: 8px;
+  button { 
+    width: 100%;
+  }
+}
+
+span.CellLetter {
+  @include cellLetterSpan(45px, 45px, 2px, 700);
+  font-size: xx-large;
+  line-height: 45px;
+}

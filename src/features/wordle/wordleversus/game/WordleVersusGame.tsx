@@ -1,17 +1,13 @@
 import React, { useMemo, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
-import {
-  addLetter,
-  deleteLetter,
-  onSubmitGuess,
-} from './wordleVersusGameSlice';
 
 import PuzzlesKeyboard from 'components/keyboard/PuzzlesKeyboard';
+
 import NotificationOverlay from 'features/wordle/components/notification/NotificationOverlay';
 import RowGroup from 'features/wordle/components/rowgroup/RowGroup';
 import InteractiveRobot from 'features/wordle/components/robot/InteractiveRobot';
+import { getLogStyles } from 'features/wordle/PuzzleWordle-helpers';
 
-import styles from './WordleVersusGame.module.scss';
 import {
   setShouldPickWod,
   setShouldShowEndMatchOverlay,
@@ -23,8 +19,11 @@ import {
   shouldShowStartMatchOverlay,
   startWordleVersusMatch,
   startWordleVersusNextGame,
-} from '../wordleVersusSlice';
-import { getLogStyles } from 'features/wordle/PuzzleWordle-helpers';
+} from 'features/wordle/wordleversus/wordleVersusSlice';
+import { addLetter, deleteLetter, onSubmitGuess } from './wordleVersusGameSlice';
+
+
+import styles from './WordleVersusGame.module.scss';
 
 const WvGameLog = getLogStyles({
   cmpName: 'WordleVersusGame',
@@ -35,7 +34,7 @@ type WordleVersusGameProps = {
   isInit: boolean;
 };
 
-const WordleVersusGame: React.FC<WordleVersusGameProps> = ({isInit}: WordleVersusGameProps) => {
+const WordleVersusGame: React.FC<WordleVersusGameProps> = ({ isInit }: WordleVersusGameProps) => {
   const guessRowTargetRef: React.RefObject<any> = useRef(null);
   const overlayRef: React.RefObject<any> = useRef(null);
 
@@ -51,9 +50,7 @@ const WordleVersusGame: React.FC<WordleVersusGameProps> = ({isInit}: WordleVersu
   const showEndMatchOverlay = useAppSelector(shouldShowEndMatchOverlay);
 
   const shouldShowOverlayMemo = useMemo(() => {
-    return (
-      showSelectWordOverlay || showStartMatchOverlay || showEndMatchOverlay
-    );
+    return showSelectWordOverlay || showStartMatchOverlay || showEndMatchOverlay;
   }, [showEndMatchOverlay, showSelectWordOverlay, showStartMatchOverlay]);
 
   const showRobotMemo = useMemo(() => {
@@ -81,9 +78,7 @@ const WordleVersusGame: React.FC<WordleVersusGameProps> = ({isInit}: WordleVersu
   };
 
   const handleOnRobotClicked = () => {
-    console.log(
-      ...WvGameLog.logAction(`Clicked on robot whose state is ${showRobot}`)
-    );
+    console.log(...WvGameLog.logAction(`Clicked on robot whose state is ${showRobot}`));
 
     if (shouldShowOverlayMemo) {
       dispatch(setShouldShowRobot(true));
@@ -127,10 +122,7 @@ const WordleVersusGame: React.FC<WordleVersusGameProps> = ({isInit}: WordleVersu
 
       <hr />
 
-      <section
-        itemID="keyboardDisplay"
-        className={styles.KeyboardWrapper}
-      >
+      <section itemID="keyboardDisplay" className={styles.KeyboardWrapper}>
         <div className={styles.KeyboardDisplay}>
           <PuzzlesKeyboard
             onKeyPressed={onLetterPressed}

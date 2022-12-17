@@ -33,8 +33,7 @@ export interface IWordleRowCellUI {
   letter: string;
   color: CELL_COLORS;
   disabled?: boolean;
-  prevCellId?: CELL_IDS | null;
-  nextCellId?: CELL_IDS | null;
+  selected?: boolean;
 }
 
 export interface IWordleRowUI {

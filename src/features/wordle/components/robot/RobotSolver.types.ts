@@ -28,6 +28,7 @@ export interface IRobotSolution extends IWordleSolution {
   guessWords: Array<string>;
   guessWordsStatus: Array<IWordStatus>;
   robotStatus: TRobotStatus; 
+  startingWord?: string;
 }
 
 export type OnRobotPickedWord = (word: string) => AppThunk<void>;

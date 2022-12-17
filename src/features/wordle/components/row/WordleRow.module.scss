@@ -4,10 +4,10 @@
   text-decoration: none;
 }
 
-.ComponentWrapper {
+.WordleRowWrapper {
   position: relative;
 
-  .GuessRowContainer {
+  .WordleRowDisplay {
     display: flex;
     gap: 5px;
     z-index: 2;
@@ -16,7 +16,7 @@
   }
 
   &.InvalidWord {
-    .GuessRowContainer {
+    .WordleRowDisplay {
       @include shake-animation(0.4s, 3);
     }
   }

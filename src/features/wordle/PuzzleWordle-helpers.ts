@@ -1,9 +1,5 @@
-import {
-  CellKey,
-  CELL_IDS,
-  RowKey,
-  ROW_IDS,
-} from './components/rowgroup/RowGroup.types';
+import { Type } from 'typescript';
+import { CellKey, CELL_IDS, RowKey, ROW_IDS } from './components/rowgroup/RowGroup.types';
 import { ConsoleLogStyle, ILetterModel, IWordleDictionary, RoundKey, ROUND_IDS } from './PuzzleWordle.types';
 import { allAvailableWords } from './PuzzleWords';
 
@@ -20,7 +16,6 @@ export const LOG_CLS_DATA = 'color: #0097ED;font-weight: 600;';
 export const LOG_CLS_ACTION = 'color: #AA97ED;font-weight: 500;';
 
 export const getLogStyles = (props?: ConsoleLogStyle | Partial<ConsoleLogStyle>): ConsoleLogStyle => {
-
   const LogStyles: ConsoleLogStyle = {
     cmpName: props?.cmpName || 'Component',
     cmpNameCls: props?.cmpNameCls || 'color: #23232A; font-weight: bold;',
@@ -29,11 +24,7 @@ export const getLogStyles = (props?: ConsoleLogStyle | Partial<ConsoleLogStyle>)
     actionCls: props?.actionCls || 'color: #AA97ED;font-weight: 500;',
     successCls: props?.successCls || 'color: #08A734;',
     failCls: props?.failCls || 'color: #FF5733;',
-    logMsg: (msg: string, msgStyle: string) => [
-      `%c[${LogStyles.cmpName}]%c ${msg}`,
-      LogStyles.cmpNameCls,
-      msgStyle,
-    ],
+    logMsg: (msg: string, msgStyle: string) => [`%c[${LogStyles.cmpName}]%c ${msg}`, LogStyles.cmpNameCls, msgStyle],
     logSuccess: (msg: string) => LogStyles.logMsg(msg, LogStyles.successCls),
     logAction: (msg: string) => LogStyles.logMsg(msg, LogStyles.actionCls),
     logData: (msg: string) => LogStyles.logMsg(msg, LogStyles.dataCls),
@@ -43,22 +34,17 @@ export const getLogStyles = (props?: ConsoleLogStyle | Partial<ConsoleLogStyle>)
   const MergedStyles: ConsoleLogStyle = {
     ...LogStyles,
     ...props,
-  }
+  };
 
   return MergedStyles;
 };
 
-export const getStyledString = (componentName: string, message: string, variant?:number) => {
-  const messageColor = (!variant || variant === 0) ? LOG_CLS_DATA : variant === 1 ? LOG_CLS_ACTION : LOG_CLS_SUCCESS; 
+export const getStyledString = (componentName: string, message: string, variant?: number) => {
+  const messageColor = !variant || variant === 0 ? LOG_CLS_DATA : variant === 1 ? LOG_CLS_ACTION : LOG_CLS_SUCCESS;
   return [`%c[${componentName}]%c ${message}`, CMP_NAME_CLS, messageColor];
 };
 
-export const binarySearch = (
-  min: number,
-  max: number,
-  word: string,
-  sortedList: Array<string>
-): number => {
+export const binarySearch = (min: number, max: number, word: string, sortedList: Array<string>): number => {
   if (word === sortedList[min] || word === sortedList[max]) {
     return word === sortedList[max] ? max : min;
   } else if (max - min <= 1) {
@@ -75,32 +61,40 @@ export const binarySearch = (
   return binarySearch(mid, max, word, sortedList);
 };
 
-export const findIndexOf = (
-  word: string,
-  sortedList: Array<string> = allAvailableWords
-): number => {
+export const findIndexOf = (word: string, sortedList: Array<string> = allAvailableWords): number => {
   return binarySearch(0, sortedList.length, word, sortedList);
 };
 
-export const isWordInDictionary = (word: string) =>
-  word.length === 5 && findIndexOf(word.toUpperCase()) > -1;
+export const isWordInDictionary = (word: string) => word.length === 5 && findIndexOf(word.toUpperCase()) > -1;
 
-export const getIndexByLetterCode = (letter: string): number =>
-  letter.charCodeAt(0) - CHAR_OFFSET;
+export const getIndexByLetterCode = (letter: string): number => letter.charCodeAt(0) - CHAR_OFFSET;
 
-export const getLetterByIndexCode = (index: number): string =>
-  String.fromCharCode(index + CHAR_OFFSET);
+export const getLetterByIndexCode = (index: number): string => String.fromCharCode(index + CHAR_OFFSET);
 
-export const intersectionArray = (
-  listA: Array<number>,
-  listB: Array<number>
-): Array<number> => {
+type ListItem = string | number | Type;
+type ItemList = Array<ListItem>;
+
+/**
+ * Returns a new item list as a subset of `listToFilter`
+ * that does not contain matching  `intersectingItems`.
+ *
+ * @param listToFilter list of items to be evaluated
+ * @param intersectingItems items to exclude
+ */
+export const removeIntersectingItems = (listToFilter: ItemList, intersectingItems: ItemList): ItemList => {
+  if (!listToFilter || !intersectingItems) {
+    return listToFilter || intersectingItems;
+  }
+  return listToFilter
+    .filter((item: ListItem) => intersectingItems.indexOf(item) === -1)
+    .filter((item: ListItem, index: number, cleanList: ItemList) => cleanList.lastIndexOf(item) === index);
+};
+
+export const intersectionArray = (listA: Array<number>, listB: Array<number>): Array<number> => {
   if (!listA || !listB) {
     return listA || listB;
   }
-  const returnList = listA.filter(
-    (wordIndex) => listB.indexOf(wordIndex) !== -1
-  );
+  const returnList = listA.filter((wordIndex) => listB.indexOf(wordIndex) !== -1);
   return dedupeArray(returnList);
 };
 
@@ -120,25 +114,26 @@ export const getExactMatches = (
   currentSolutionIndexes: Array<number>,
   dictionaryWords: IWordleDictionary
 ): Array<number> => {
-  let solutionIndexes: Array<number> = currentSolutionIndexes;
-
   if (exactMatchLetter.length === 0) {
     return currentSolutionIndexes;
   }
 
-  exactMatchLetter.forEach((letterMatch: ILetterModel) => {
+  let solutionIndexes: Array<number> = [];
+  exactMatchLetter.forEach((letterMatch: ILetterModel, index: number) => {
     const letterCode = getIndexByLetterCode(letterMatch.letter);
     const filteredWordIndexes = dictionaryWords.letters[letterCode].filter(
-      (wordIndex: number) =>
-        dictionaryWords.words[wordIndex].charAt(letterMatch.indexInWord) ===
-        letterMatch.letter
+      (wordIndex: number) => dictionaryWords.words[wordIndex].charAt(letterMatch.indexInWord) === letterMatch.letter
     );
-    if (solutionIndexes.length === 0) {
+    if (index === 0) {
       solutionIndexes = filteredWordIndexes;
     } else {
       solutionIndexes = intersectionArray(filteredWordIndexes, solutionIndexes);
     }
   });
+
+  if (currentSolutionIndexes.length > 0) {
+    solutionIndexes = intersectionArray(currentSolutionIndexes, solutionIndexes);
+  }
 
   return solutionIndexes;
 };
@@ -150,26 +145,24 @@ export const getExistsMatches = (
   currentSolutionIndexes: Array<number>,
   dictionaryWords: IWordleDictionary
 ): Array<number> => {
-  let solutionIndexes: Array<number> = currentSolutionIndexes;
+  let solutionIndexes: Array<number> = [];
 
-  existsMatchLetter.forEach((matchedLetter: ILetterModel) => {
+  if (existsMatchLetter.length === 0) {
+    return currentSolutionIndexes;
+  }
+
+  existsMatchLetter.forEach((matchedLetter: ILetterModel, index: number) => {
     const ml: string = matchedLetter.letter;
-    const exactMatchCount = exactMatchLetter.filter(
-      (l) => ml === l.letter
-    ).length;
+    const exactMatchCount = exactMatchLetter.filter((l) => ml === l.letter).length;
     const containsLetterInExactMatches = exactMatchCount > 0;
-    const existMatchCount = existsMatchLetter.filter(
-      (l) => ml === l.letter
-    ).length;
+    const existMatchCount = existsMatchLetter.filter((l) => ml === l.letter).length;
     const containsMoreThanOneMatch = existMatchCount > 1;
-    const containsNonExistentMatch =
-      nonExistentLetterAtIndex.filter((l) => l.letter === ml).length > 0;
-    const isMoreThanOne =
-      containsMoreThanOneMatch || containsLetterInExactMatches;
+    const containsNonExistentMatch = nonExistentLetterAtIndex.filter((l) => l.letter === ml).length > 0;
+    const isMoreThanOne = containsMoreThanOneMatch || containsLetterInExactMatches;
     const indexInWord = matchedLetter.indexInWord;
     const letterCode = getIndexByLetterCode(ml);
-    const availableWordIndexesForLetter: Array<number> =
-      dictionaryWords.letters[letterCode].filter((wordIndex: number) => {
+    const availableWordIndexesForLetter: Array<number> = dictionaryWords.letters[letterCode].filter(
+      (wordIndex: number) => {
         const fWord = dictionaryWords.words[wordIndex];
         if (isMoreThanOne) {
           if (containsNonExistentMatch) {
@@ -181,23 +174,21 @@ export const getExistsMatches = (
               letterCount === exactMatchCount + existMatchCount
             );
           }
-          return (
-            fWord.charAt(indexInWord) !== ml &&
-            fWord.indexOf(ml) !== fWord.lastIndexOf(ml)
-          );
+          return fWord.charAt(indexInWord) !== ml && fWord.indexOf(ml) !== fWord.lastIndexOf(ml);
         }
         return fWord.charAt(indexInWord) !== ml;
-      });
-    if (solutionIndexes.length === 0) {
-      // solutionIndexes = dictionaryWords.letters[letterCode];
+      }
+    );
+    if (index === 0) {
       solutionIndexes = availableWordIndexesForLetter;
     } else {
-      solutionIndexes = intersectionArray(
-        solutionIndexes,
-        availableWordIndexesForLetter
-      );
+      solutionIndexes = intersectionArray(solutionIndexes, availableWordIndexesForLetter);
     }
   });
+
+  if (currentSolutionIndexes.length > 0) {
+    solutionIndexes = intersectionArray(currentSolutionIndexes, solutionIndexes);
+  }
 
   return solutionIndexes;
 };
@@ -208,15 +199,11 @@ export const removeNonExistentLetterIndexes = (
   dictionaryWords: IWordleDictionary
 ): Array<number> => {
   let solutionIndexes: Array<number> = currentSolutionIndexes;
-  
 
   nonExistentLetters.forEach((letter) => {
     const letterIndex = getIndexByLetterCode(letter);
-    const nonExistentWordIndexes: Array<number> =
-      dictionaryWords.letters[letterIndex];
-    solutionIndexes = solutionIndexes.filter(
-      (wordIndex: number) => nonExistentWordIndexes.indexOf(wordIndex) === -1
-    );
+    const nonExistentWordIndexes: Array<number> = dictionaryWords.letters[letterIndex];
+    solutionIndexes = solutionIndexes.filter((wordIndex: number) => nonExistentWordIndexes.indexOf(wordIndex) === -1);
   });
 
   return dedupeArray(solutionIndexes);
@@ -231,16 +218,10 @@ export const removeNonExistentLetterIndexesAtIndex = (
 
   nonExistentLettersAtIndex.forEach((letterMatch: ILetterModel) => {
     const letterIndex = getIndexByLetterCode(letterMatch.letter);
-    const nonExistentWordIndexes: Array<number> = dictionaryWords.letters[
-      letterIndex
-    ].filter(
-      (wordIndex: number) =>
-        dictionaryWords.words[wordIndex].charAt(letterMatch.indexInWord) !==
-        letterMatch.letter
+    const nonExistentWordIndexes: Array<number> = dictionaryWords.letters[letterIndex].filter(
+      (wordIndex: number) => dictionaryWords.words[wordIndex].charAt(letterMatch.indexInWord) !== letterMatch.letter
     );
-    solutionIndexes = solutionIndexes.filter(
-      (wordIndex: number) => nonExistentWordIndexes.indexOf(wordIndex) !== -1
-    );
+    solutionIndexes = solutionIndexes.filter((wordIndex: number) => nonExistentWordIndexes.indexOf(wordIndex) !== -1);
   });
 
   return solutionIndexes;
@@ -259,17 +240,13 @@ export const processGuess = (guessWord: string, selectedWord: string) => {
     const selectedWordCurrentLetter = selectedWord.charAt(i);
     const isMatch = currentLetter === selectedWordCurrentLetter;
     const isMissingGuessLetter = !selectedWord.includes(currentLetter);
-    const isMissingSelectedLetter = !guessWord.includes(
-      selectedWordCurrentLetter
-    );
+    const isMissingSelectedLetter = !guessWord.includes(selectedWordCurrentLetter);
     if (isMatch) {
       selectedWordCopy += '_';
       guessWordCopy += '2';
     } else {
       guessWordCopy += isMissingGuessLetter ? '0' : currentLetter;
-      selectedWordCopy += isMissingSelectedLetter
-        ? '_'
-        : selectedWordCurrentLetter;
+      selectedWordCopy += isMissingSelectedLetter ? '_' : selectedWordCurrentLetter;
     }
   }
 
@@ -292,17 +269,11 @@ export const processGuess = (guessWord: string, selectedWord: string) => {
   return guessWordCopy;
 };
 
-export const getVariantBySelectedMatchType = (selectedMatchType: string) => {
-  return selectedMatchType === 'exact'
-    ? 'success'
-    : selectedMatchType === 'exists'
-    ? 'warning'
-    : 'outline-secondary';
-};
+// export const getVariantBySelectedMatchType = (selectedMatchType: string) => {
+//   return selectedMatchType === 'exact' ? 'success' : selectedMatchType === 'exists' ? 'warning' : 'outline-secondary';
+// };
 
-export const getRandomWordFromDictionary = (
-  dictionaryWords: IWordleDictionary
-) => {
+export const getRandomWordFromDictionary = (dictionaryWords: IWordleDictionary) => {
   const len = dictionaryWords.words.length - 1;
   const randomIndex = Math.round(Math.random() * len);
   return dictionaryWords.words[randomIndex];
@@ -319,10 +290,7 @@ export const generateColorsForUserGuess = (guess: Array<string>) => {
   });
 };
 
-export const generateMatchesForUserGuess = (
-  wod: Array<string>,
-  guess: Array<string>
-) => {
+export const generateMatchesForUserGuess = (wod: Array<string>, guess: Array<string>) => {
   let matches = [...guess];
   // find exact matches
   wod.forEach((letter, index) => {
@@ -343,13 +311,14 @@ export const generateMatchesForUserGuess = (
   return matches;
 };
 
-export const roundKeyToNumber = (rk: RoundKey): number =>
-  ROUND_IDS[rk] as number;
-export const numberToRoundKey = (num: number): RoundKey =>
-  ROUND_IDS[num] as RoundKey;
+export const roundKeyToNumber = (rk: RoundKey): number => ROUND_IDS[rk] as number;
+export const numberToRoundKey = (num: number): RoundKey => ROUND_IDS[num] as RoundKey;
 export const numberToRowKey = (num: number): RowKey => ROW_IDS[num] as RowKey;
-export const numberToCellKey = (num: number): CellKey =>
-  CELL_IDS[num] as CellKey;
+export const numberToCellKey = (num: number): CellKey => CELL_IDS[num] as CellKey;
+export const numberToCellId = (cellNum: number): CELL_IDS => CELL_IDS[numberToCellKey(cellNum)] as CELL_IDS;
+export const cellKeyToNumber = (cellKey: CellKey): number => CELL_IDS[cellKey] as number;
+export const positionInWordToCellKey = (num: number): CellKey => CELL_IDS[num + 1] as CellKey;
+export const cellKeyToPositionInWord = (cellKey: CellKey): number => cellKeyToNumber(cellKey) - 1;
 
 /**
  * Returns a sorted, deduped array of all available `words` in `dictionary` that begin with `letter`.

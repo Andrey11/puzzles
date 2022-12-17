@@ -3,7 +3,9 @@ import Ratio from 'react-bootstrap/Ratio';
 import { getLogStyles } from '../../PuzzleWordle-helpers';
 import { useOverlay } from '../overlay/InfoOverlay';
 import EndGameOverlay from './components/endgame/EndGameOverlay';
+import EndSolverGame from './components/endsolvergame/EndSolverGame';
 import RobotHead, { DisplayPosition } from './components/head/RobotHead';
+import SelectGuessAndStartWordsForRobot from './components/selectsolverwords/SelectGuessAndStartWordsForRobot';
 import SelectWordForRobot from './components/selectword/SelectWordForRobot';
 import StartGameOverlay from './components/startgame/StartGameOverlay';
 
@@ -17,10 +19,14 @@ type IRobotProps = {
   showSelectWordOverlay?: boolean;
   showStartMatchOverlay?: boolean;
   showEndMatchOverlay?: boolean;
+  showSelectSolverWordsOverlay?: boolean;
+  showEndSolverGameOverlay?: boolean;
   onRobotClicked?: () => void;
   onSelectWordCallback?: (word: string) => void;
   onStartMatchCallback?: () => void;
   onEndMatchCallback?: (playAgain: boolean) => void;
+  onSelectSolverWordsCallback?: (guessWord: string, startWord: string) => void;
+  onEndSolverGameCallback?: () => void;
   overlayBodyRef?: any;
 } & React.HTMLAttributes<HTMLDivElement>;
 
@@ -34,10 +40,14 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
   showSelectWordOverlay = false,
   showStartMatchOverlay = false,
   showEndMatchOverlay = false,
+  showSelectSolverWordsOverlay = false,
+  showEndSolverGameOverlay = false,
   onRobotClicked = () => {},
   onStartMatchCallback = () => {},
   onSelectWordCallback = () => {},
   onEndMatchCallback = () => {},
+  onSelectSolverWordsCallback = () => {},
+  onEndSolverGameCallback = () => {},
   overlayBodyRef = document.body,
   isInit = false,
   ...props
@@ -46,13 +56,13 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
   const targetRef = useRef(null);
 
   const [headDisplayPosition, setHeadDisplayPosition] = useState<DisplayPosition>('none');
-  
+
   /** MEMO OVERLAYS THAT AVIALBLE TO BE RENDERED */
   const overlayProps = useMemo(() => {
     let titleString: string = '';
     let bodyEl: JSX.Element = <></>;
     let trigger: JSX.Element = <></>;
-    let canDismiss: boolean = showSelectWordOverlay || showStartMatchOverlay;
+    let canDismiss: boolean = showSelectWordOverlay || showStartMatchOverlay || showSelectSolverWordsOverlay;
     let visible: boolean = false;
 
     if (showSelectWordOverlay) {
@@ -91,6 +101,21 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
           newSession={false}
         />
       );
+    } else if (showSelectSolverWordsOverlay) {
+      titleString = 'Enter wordle for robot to solve';
+      visible = true;
+      bodyEl = (
+        <SelectGuessAndStartWordsForRobot
+          onGuessAndStartWordSelected={(guessWord, startWord) => {
+            setHeadDisplayPosition('halfWay');
+            onSelectSolverWordsCallback(guessWord, startWord);
+          }}
+        />
+      );
+    } else if (showEndSolverGameOverlay) {
+      titleString = 'Solution Analysis';
+      visible = true;
+      bodyEl = <EndSolverGame onEndGameHandler={onEndSolverGameCallback} />;
     }
 
     return {
@@ -102,17 +127,33 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
     };
   }, [
     onEndMatchCallback,
+    onEndSolverGameCallback,
+    onSelectSolverWordsCallback,
     onSelectWordCallback,
     onStartMatchCallback,
     showEndMatchOverlay,
+    showEndSolverGameOverlay,
+    showSelectSolverWordsOverlay,
     showSelectWordOverlay,
     showStartMatchOverlay,
   ]);
 
   /** MEMO RETURNS TRUE IF AN OVERLAY SHOULD BE RENDERED */
   const shouldRenderOverlay = useMemo(() => {
-    return showSelectWordOverlay || showStartMatchOverlay || showEndMatchOverlay;
-  }, [showEndMatchOverlay, showSelectWordOverlay, showStartMatchOverlay]);
+    return (
+      showSelectWordOverlay ||
+      showStartMatchOverlay ||
+      showEndMatchOverlay ||
+      showSelectSolverWordsOverlay ||
+      showEndSolverGameOverlay
+    );
+  }, [
+    showEndMatchOverlay,
+    showSelectWordOverlay,
+    showStartMatchOverlay,
+    showSelectSolverWordsOverlay,
+    showEndSolverGameOverlay,
+  ]);
 
   /** SINGLE OVRLAY COMPONENT WITH DYNAMIC INNER PROPS */
   const {
@@ -132,7 +173,10 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
 
   /** OVRLAY VISIBILITY CONTROL */
   useEffect(() => {
-    if (!isInit) return;
+    if (!isInit) {
+      setHeadDisplayPosition('hidden');
+      return;
+    }
 
     if (shouldRenderOverlay && showRobot) {
       console.log(...RobotLog.logData(`Should show overlay`));
@@ -144,8 +188,8 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
     } else {
       setOverlayVisible(false);
     }
-  // we don't want to listen for headDisplayPosition changes in this hook
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // we don't want to listen for headDisplayPosition changes in this hook
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInit, setOverlayVisible, shouldRenderOverlay, showRobot]);
 
   const onHeadSwipeDown = useCallback(() => {
@@ -160,7 +204,7 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
     }
   }, [headDisplayPosition, overlayVisible]);
 
-  const onHeadSwipeUp = () => {
+  const onHeadSwipeUp = useCallback(() => {
     if (headDisplayPosition === 'hidden') {
       setHeadDisplayPosition('fullyUp');
     } else if (headDisplayPosition === 'halfWay') {
@@ -168,7 +212,7 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
     } else if (headDisplayPosition === 'onlyAntenaUp') {
       setHeadDisplayPosition('halfWay');
     }
-  };
+  }, [headDisplayPosition]);
 
   const onHeadAnimationEnd = (displayPos: DisplayPosition) => {
     if (shouldRenderOverlay && !overlayVisible && displayPos === 'fullyUp') {

@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from "react";
-import useDeviceDetect from "../../../../app/hooks/useDeviceDetect";
-import { IWordleRowCellUI } from "../rowgroup/RowGroup.types";
+import React, { useEffect, useRef } from 'react';
+import useDeviceDetect from '../../../../app/hooks/useDeviceDetect';
+import { IWordleRowCellUI } from '../rowgroup/RowGroup.types';
 
-import styles from "./PuzzleWordleCell.module.scss";
+import styles from './PuzzleWordleCell.module.scss';
 
 export interface IWordleLetterCell {
   cellId: string;
@@ -46,7 +46,7 @@ const PuzzleWordleCell: React.FunctionComponent<IWordleLetterCell> = ({
     green: styles.ExactMatch,
     orange: styles.Match,
     grey: styles.Miss,
-    transparent: "",
+    transparent: '',
     success: styles.ExactMatch,
     warning: styles.Match,
     secondary: styles.Miss,
@@ -55,9 +55,9 @@ const PuzzleWordleCell: React.FunctionComponent<IWordleLetterCell> = ({
   const cellRef = useRef<HTMLInputElement>(null);
   const { isMobile } = useDeviceDetect();
 
-  const clsName =
-    styleMap[(cell?.color || "transparent") as keyof StyleMapType] || "";
-  const selectedCls = !!showSelected && !!selected ? styles.Selected : "";
+  const canSelectCell: boolean = !!showSelected;
+  const clsName = styleMap[(cell?.color || 'transparent') as keyof StyleMapType] || '';
+  const selectedCls = canSelectCell && (!!selected || cell?.selected) ? styles.Selected : '';
 
   useEffect(() => {
     if (selected) {
@@ -66,31 +66,31 @@ const PuzzleWordleCell: React.FunctionComponent<IWordleLetterCell> = ({
   }, [selected]);
 
   return (
-    <div className={`${styles.Cell} ${selectedCls} ${clsName} ${classStyle}`}>
+    <div
+      className={`${styles.Cell} ${selectedCls} ${clsName} ${classStyle}`}
+      onClick={() => onCellSelected(parseInt(cellId))}
+    >
       <input
         itemID={cellId}
         className={showEmptyValueStyle ? styles.showEmptyStyle : ''}
         ref={cellRef}
-        onSelect={() => onCellSelected(parseInt(cellId))}
         type="text"
         readOnly={isMobile}
-        disabled={disabled}
+        disabled={(disabled && cell?.disabled) || !canSelectCell}
         minLength={1}
         maxLength={1}
         pattern="[A-Z]{1}"
         onKeyUp={(event) => {
           event.stopPropagation();
           event.preventDefault();
-          if (event.key === "Backspace") {
+          if (event.key === 'Backspace') {
             onDeleteKeyPressed();
           }
         }}
         size={1}
-        value={cell?.letter || ""}
+        value={cell?.letter || ''}
         onChange={(event) => {
-          const isDeleteKey =
-            (event.nativeEvent as InputEvent).inputType ===
-            "deleteContentBackward";
+          const isDeleteKey = (event.nativeEvent as InputEvent).inputType === 'deleteContentBackward';
           if (!isDeleteKey) {
             onLetterChange(event.target.value.toUpperCase());
           }

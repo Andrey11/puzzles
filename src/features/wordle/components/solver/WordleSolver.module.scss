@@ -1,34 +1,3 @@
-.RelativePosition {
-  position: relative;
-}
-
-.InfoPosition {
-  position: absolute;
-  top: 0;
-  right: -21px;
-  line-height: 0;
-  z-index: 900;
-}
-
-.SelectStartingWordOverlay {
-  display: flex;
-  gap: 8px;
-  min-width: 242px;
-  [class*='WordleSelector'] {
-    margin-bottom: 0;
-    resize: none;
-    flex: 1;
-  }
-}
-
-.EditFirstWordPopup {
-  position: absolute;
-  top: 0;
-  right: -21px;
-  line-height: 0;
-  z-index: 1001;
-}
-
 .SolverDisplayWrapper {
   display: flex;
   flex-direction: column;
@@ -38,41 +7,37 @@
   position: relative;
 }
 
-.WordSelectorWrapper {
-  font-size: 22px;
-  position: relative;
-  flex: 1;
-  display: flex;
+.SolverDisplay {
   max-width: 270px;
-  width: 100%;
-
-  input {
-    width: 100%;
-    height: 40px;
-    text-align: center;
-    font-size: 32px;
-    font-weight: 700;
+  position: relative;
+  
+  .GuessRows {
+    &DisplayWrapper {
+      position: relative;
+      display: flex;
+      flex: 1;
+      gap: 8px;
+      flex-direction: column;
+      font-size: 22px;
+    }
+    &Display {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit;
+      background-color: transparent;
+      color: var(--mdc-theme-puzzle-primary, #091309);
+    }
+  }
+  
+  .RobotDisplay {
+    position: relative;
+    top: 255px;
+    z-index: 1;
   }
 }
 
-.GuessRows {
-  &DisplayWrapper {
-    position: relative;
-    display: flex;
-    flex: 1;
-    gap: 8px;
-    flex-direction: column;
-    font-size: 22px;
-  }
-  &Display {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    font-family: inherit;
-    background-color: transparent;
-    color: var(--mdc-theme-puzzle-primary, #091309);
-  }
-}
+
 

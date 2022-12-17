@@ -9,6 +9,7 @@
 
 .Card {
   &Wrapper {
+    width: 18rem;
     img {
       cursor: pointer;
     }
@@ -45,6 +46,14 @@
       justify-content: flex-end;
       line-height: 10px;
       align-items: center;
+    }
+  }
+}
+
+@media only screen and (max-width: 425px) {
+  .Card {
+    &Wrapper {
+      width: 11rem;
     }
   }
 }

@@ -1,22 +1,17 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
-import { NON_BREAKING_SPACE } from '../../../../../components/placeholder/Placeholder';
+import { NON_BREAKING_SPACE } from 'components/placeholder/Placeholder';
 
-import {
-  IWordleDictionary,
-  ISelectedLetters,
-  ISelectedLetter,
-  MATCH_TYPE_EXISTS,
-  MATCH_TYPE_EXACT,
-} from '../../../PuzzleWordle.types';
+import { IWordleDictionary, MATCH_TYPE_EXISTS, MATCH_TYPE_EXACT } from 'features/wordle/PuzzleWordle.types';
 
-import styles from '../PuzzleDetailsStats.module.scss';
+import styles from '../WordleStats.module.scss';
+import { ISelectedLetter } from '../wordleStatsSlice';
 
 export type MatchedWordsDialogProps = {
   dictionary?: IWordleDictionary;
   matchedWords: Array<number>;
   missingLetters: Array<string>;
-  letterSpots: ISelectedLetters;
+  letterSpots: Array<ISelectedLetter>;
   showDialog: boolean;
   onCloseDialog: () => void;
 };
@@ -30,7 +25,7 @@ const MatchedWordsDialog: React.FunctionComponent<MatchedWordsDialogProps> = ({
   onCloseDialog,
 }: MatchedWordsDialogProps) => {
   const getExistsInWord = (): Array<ISelectedLetter> => {
-    return letterSpots.spots.filter((spot: ISelectedLetter) => spot.matchType === MATCH_TYPE_EXISTS);
+    return letterSpots.filter((letter: ISelectedLetter) => letter.matchType === MATCH_TYPE_EXISTS);
   };
 
   const getWordsByIndexes = () => {
@@ -41,11 +36,13 @@ const MatchedWordsDialog: React.FunctionComponent<MatchedWordsDialogProps> = ({
 
       let letterClasses: Array<string> = [];
       letterClasses = matchedWord.split('').map((letter: string, index: number) => {
-        return letterSpots.spots[index].letter === letter && letterSpots.spots[index].matchType === MATCH_TYPE_EXACT
+        return letterSpots[index] &&
+          letterSpots[index].letter === letter &&
+          letterSpots[index].matchType === MATCH_TYPE_EXACT
           ? `${cellStyle} ${styles.ExactMatch}`
           : existsMatches.filter(
               (spot: ISelectedLetter) =>
-                spot.letter === letter && spot.matchType === MATCH_TYPE_EXISTS && spot.position !== index
+                spot.letter === letter && spot.matchType === MATCH_TYPE_EXISTS && spot.indexInWord !== index
             ).length > 0
           ? `${cellStyle} ${styles.Match}`
           : cellStyle;
@@ -92,7 +89,7 @@ const MatchedWordsDialog: React.FunctionComponent<MatchedWordsDialogProps> = ({
         </Modal.Body>
         <Modal.Footer className={styles.ModelFooterAlignCenter}>
           <div className={styles.ModalWordList}>
-            {letterSpots.spots.map((spot) => {
+            {letterSpots.map((spot) => {
               const hasLetter = spot.letter !== '';
               const letter = spot.letter || NON_BREAKING_SPACE;
               const letterCls =
@@ -102,7 +99,7 @@ const MatchedWordsDialog: React.FunctionComponent<MatchedWordsDialogProps> = ({
                   ? `${styles.CellLetter} ${styles.Match}`
                   : styles.CellLetter;
               return (
-                <span key={`key_${spot.position}_${letter}`} className={letterCls}>
+                <span key={`key_${spot.indexInWord}_${letter}`} className={letterCls}>
                   {letter}
                 </span>
               );

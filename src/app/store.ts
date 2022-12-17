@@ -9,6 +9,7 @@ import wordleVersusGameReducer from 'features/wordle/wordleversus/game/wordleVer
 import wordleDictionaryReducer from 'features/wordle/components/dictionary/wordleDictionarySlice';
 import robotSolutionReducer from 'features/wordle/components/robot/robotSolutionSlice';
 import wordleSolverReducer from 'features/wordle/components/solver/wordleSolverSlice';
+import wordleStatsReducer from 'features/wordle/components/stats/wordleStatsSlice';
 
 const uiReducers = combineReducers({
   keyboard: wordleKeyboardReducer,
@@ -23,6 +24,7 @@ const wordleReducers = combineReducers({
   wordledictionary: wordleDictionaryReducer, 
   wordlerobotsolution: robotSolutionReducer,
   wordlesolver: wordleSolverReducer,
+  wordlestats: wordleStatsReducer,
   ui: uiReducers,
 })
 

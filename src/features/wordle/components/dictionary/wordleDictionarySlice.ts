@@ -61,8 +61,7 @@ export async function initDictionary() {
 
   return wordsDictionary;
 };
-// We can also write thunks by hand, which may contain both sync and async logic.
-// Here's an example of conditionally dispatching actions based on current state.
+
 export const createDictionary =
   (listOfWords: Array<string> = allAvailableWords): AppThunk =>
   (dispatch, getState) => {
@@ -157,7 +156,7 @@ const initialDictionary: IWordleDictionary = {
 
 export interface IWordlewordleDictionaryState {
   dictionary: IWordleDictionary;
-  status: string;
+  status: WordleStatus;
 }
 
 const initialState: IWordlewordleDictionaryState = {
@@ -182,12 +181,9 @@ export const wordleDictionarySlice = createSlice({
 
 export const { setStatus, setDictionary } = wordleDictionarySlice.actions;
 
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const isDictionaryLoaded = (state: RootState) =>
+export const isDictionaryLoaded = (state: RootState): boolean =>
   state.puzzle.wordledictionary.status === 'loaded';
-export const getDictionaryStatus = (state: RootState) =>
+export const getDictionaryStatus = (state: RootState): WordleStatus =>
   state.puzzle.wordledictionary.status;
 export const getDictionary = (state: RootState) =>
   state.puzzle.wordledictionary.dictionary;

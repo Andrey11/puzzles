@@ -6,19 +6,27 @@ import Button from "react-bootstrap/Button";
 import { Backspace, BoxArrowRight } from "react-bootstrap-icons";
 
 import styles from './PuzzlesKeyboard.module.scss';
+import { useAppSelector } from "app/hooks/hooks";
+import { showClearKey, showDeleteKey, showEnterKey } from "./puzzlesKeyboardSlice";
 
 interface PuzzlesKeyboardProps {
   onKeyPressed: (letter: string) => void;
   onDeletePressed: (event?: Event) => void;
   onEnterPressed: () => void;
+  onClearPressed?: () => void;
 }
 
 const PuzzlesKeyboard: React.FC<PuzzlesKeyboardProps> = ({
   onKeyPressed,
   onDeletePressed,
   onEnterPressed,
+  onClearPressed = () => {},
 }: PuzzlesKeyboardProps) => {
   const { isMobile } = useDeviceDetect();
+
+  const displayClearButton = useAppSelector(showClearKey);
+  const displayDeleteButton = useAppSelector(showDeleteKey);
+  const displayEnterButton = useAppSelector(showEnterKey);
   
   const deleteButton = (
     <Button
@@ -45,11 +53,38 @@ const PuzzlesKeyboard: React.FC<PuzzlesKeyboardProps> = ({
       <Backspace size={18} />
     </Button>
   );
+
+  const clearButton = (
+    <Button
+      key="clear-btn"
+      variant="outline-info"
+      active={false}
+      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
+        if (!isMobile) {
+          event.currentTarget.blur();
+          
+          onClearPressed();
+          console.log("Click clear event");
+        }
+      }}
+      onTouchEnd={(event: React.TouchEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
+        if (isMobile) {
+          event.currentTarget.blur();
+          onClearPressed();
+        }
+      }}
+      className={styles.ClearButton}
+    >
+      <Backspace size={18} />
+    </Button>
+  );
   
   const enterButton = (
     <Button
       key="enter-btn"
-      variant="outline-success"
+      variant="outline-primary"
       active={false}
       value={1}
       onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
@@ -83,10 +118,18 @@ const PuzzlesKeyboard: React.FC<PuzzlesKeyboardProps> = ({
         onPressCallback={onKeyPressed} />
     ));
 
-    const keyboardKeys = letterElements.slice(0, letterElements.length - 2);
-    keyboardKeys.push(enterButton);
-    keyboardKeys.push(...letterElements.slice(letterElements.length - 2));
-    keyboardKeys.push(deleteButton);
+    let keyboardKeys: Array<JSX.Element> = [...letterElements];
+    if (displayEnterButton) {
+      keyboardKeys = letterElements.slice(0, letterElements.length - 2);
+      keyboardKeys.push(enterButton);
+      keyboardKeys.push(...letterElements.slice(letterElements.length - 2));
+    }
+    if (displayClearButton) {
+      keyboardKeys.push(clearButton);
+    }
+    if (displayDeleteButton) {
+      keyboardKeys.push(deleteButton);
+    }
 
     return keyboardKeys;
   };

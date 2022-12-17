@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { setShouldShowEndSolverGameOverlay, setShouldShowSelectSolverWordsOverlay } from 'features/wordle/wordlesolver/wordleSlice';
 import { AppThunk, RootState } from '../../../../app/store';
 import {
   generateColorsForUserGuess,
@@ -14,6 +15,7 @@ import {
   ROUND_IDS,
 } from '../../PuzzleWordle.types';
 import {
+  resetRobotSolution,
   setRobotGuessWordStatus,
   setRoundComplete,
 } from '../robot/robotSolutionSlice';
@@ -55,10 +57,12 @@ export const onSubmitRobotGuess = (): AppThunk => (dispatch, getState) => {
     if (isMatch) {
       // ----------------------------- winning scenario -----------------------------
       dispatch(setWonRound(true));
-      dispatch(setRoundComplete(true));
+      dispatch(setRoundComplete(true, false));
+      dispatch(setShouldShowEndSolverGameOverlay(true));
     } else if (isLastRound(getState())) {
       dispatch(setLostRound(true));
-      dispatch(setRoundComplete(false));
+      dispatch(setRoundComplete(false, false));
+      dispatch(setShouldShowEndSolverGameOverlay(true));
     } else {
       const nextRoundNumber = currentRoundNumber + 1;
       const newRoundId: RoundKey = numberToRoundKey(nextRoundNumber);
@@ -94,8 +98,10 @@ export const addRobotWord =
   };
 
 export const resetWordleSolverGame = (): AppThunk => (dispatch, getState) => {
-  dispatch(resetGame());
+  dispatch(resetSolverGame());
   dispatch(resetRowGroup());
+  dispatch(resetRobotSolution());
+  dispatch(setShouldShowSelectSolverWordsOverlay(true));
 };
 
 const initialState: IWordleGameState = {
@@ -149,8 +155,8 @@ export const wordleSolverSlice = createSlice({
     //   state.isUserGame = action.payload.isUserGame;
     //   state.gameNumber = action.payload.gameId;
     // },
-    resetGame: () => {
-      return initialState;
+    resetSolverGame: () => {
+      return {...initialState};
     },
   },
 });
@@ -162,7 +168,7 @@ export const {
   setGuessWordValidByRoundId,
   setWonRound,
   setLostRound,
-  resetGame,
+  resetSolverGame,
 } = wordleSolverSlice.actions;
 
 export const isWonGame = (state: RootState): boolean =>
@@ -191,7 +197,7 @@ export const getAllGuessWords = (state: RootState): Array<string> => {
     getCurrentGame(state).rounds;
   return Object.keys(rounds)
     .map((rd: string) => rounds[rd as RoundKey].guessWord.join(''))
-    .filter((word: string) => word.length === 0);
+    .filter((word: string) => word.length !== 0);
 };
 export const shouldRobotSolvePuzzle = (state: RootState) =>
   !isLostGame(state) && !isWonGame(state) && getWOD(state).length > 0;

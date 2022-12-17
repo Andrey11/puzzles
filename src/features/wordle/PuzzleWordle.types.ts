@@ -5,6 +5,13 @@ export const MATCH_TYPE_EXISTS = "exists";
 export const MATCH_TYPE_MISSING = "missing";
 export const MATCH_TYPE_NONE = "none";
 
+export const OMatchType = {
+  EXACT: 'exact',
+  EXISTS: 'exists',
+  MISSING: 'missing',
+  NONE: 'none',
+} as const;
+
 export declare type MatchType =
   | "exact"
   | "exists"
@@ -57,6 +64,8 @@ export interface IWordleState {
   activeScreen: WordleScreen;
   status: WordleStatus;
   shouldShowRobot: boolean;
+  shouldShowSelectSolverWordsOverlay: boolean;
+  shouldShowEndSolverGameOverlay: boolean;
 }
 
 export interface ILetterModel {

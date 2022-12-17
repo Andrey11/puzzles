@@ -12,15 +12,13 @@ import {
   ROW_IDS,
 } from './RowGroup.types';
 
-const createRowCellInitState = (
-  cellId: CELL_IDS,
-  rowId: ROW_IDS
-): IWordleRowCellUI => ({
+const createRowCellInitState = (cellId: CELL_IDS, rowId: ROW_IDS): IWordleRowCellUI => ({
   cellId: cellId,
   rowId: rowId,
   color: CELL_COLORS.GREY_OUTLINE,
   letter: '',
   disabled: false,
+  selected: false,
 });
 
 const createRowInitState = (rowId: ROW_IDS): IWordleRowUI => ({
@@ -34,15 +32,17 @@ const createRowInitState = (rowId: ROW_IDS): IWordleRowUI => ({
   },
 });
 
-export const setCell =
-  (payloadAction: {
-    rowKey: RowKey;
-    cellKey: CellKey;
-    letter: string;
-  }): AppThunk =>
+export const setCellProps =
+  (payloadAction: { rowKey: RowKey; cellKey: CellKey; letter: string; color?: string }): AppThunk =>
   (dispatch) => {
-    dispatch(updateLetterByRowAndCellId(payloadAction));
+    dispatch(updateLetterAndColorByRowAndCellId(payloadAction));
   };
+
+export const setCellSelected =
+  (payloadAction: { rowKey: RowKey; cellKey: CellKey; selected: boolean }): AppThunk =>
+  (dispatch) => {
+    dispatch(setCellSelectedByRowAndCellId(payloadAction));
+  };  
 
 export const setCellColor =
   (rowIndex: number, cellIndex: number, color: string): AppThunk =>
@@ -53,45 +53,6 @@ export const setCellColor =
   };
 
 export const resetRowGroup = (): AppThunk => (dispatch) => {
-  // const rowGroupState = getState().puzzle.ui.rowGroup;
-  // const resetLetterColor = { color: CELL_COLORS.GREY_OUTLINE, letter: '' };
-  // const payload: IWordleRowGroupUI = {
-  //   rows: {
-  //     ...rowGroupState.rows,
-  //     ROW_1: {
-  //       ...rowGroupState.rows.ROW_1,
-  //       cells: {
-  //         CELL_1: {
-  //           ...rowGroupState.rows.ROW_1.cells.CELL_1,
-  //           ...resetLetterColor
-  //         },
-  //         CELL_2: {
-  //           ...rowGroupState.rows.ROW_1.cells.CELL_2,
-  //           ...resetLetterColor
-  //         },
-  //         CELL_3: {
-  //           ...rowGroupState.rows.ROW_1.cells.CELL_3,
-  //           ...resetLetterColor
-  //         },
-  //         CELL_4: {
-  //           ...rowGroupState.rows.ROW_1.cells.CELL_4,
-  //           ...resetLetterColor
-  //         },
-  //         CELL_5: {
-  //           ...rowGroupState.rows.ROW_1.cells.CELL_5,
-  //           ...resetLetterColor
-  //         },
-  //       },
-  //     },
-  //   },
-  // };
-
-  // dispatch(resetCellsByRowId('ROW_1' as RowKey));
-  // dispatch(resetCellsByRowId('ROW_2' as RowKey));
-  // dispatch(resetCellsByRowId('ROW_3' as RowKey));
-  // dispatch(resetCellsByRowId('ROW_4' as RowKey));
-  // dispatch(resetCellsByRowId('ROW_5' as RowKey));
-  // dispatch(resetCellsByRowId('ROW_6' as RowKey));
   dispatch(resetCellsForAllRows());
 };
 
@@ -105,9 +66,11 @@ const initialState: IWordleRowGroupUI = {
     ROW_6: createRowInitState(ROW_IDS.ROW_6),
   },
 };
-
-type UpdateLetterPayload = { letter: string; rowKey: RowKey; cellKey: CellKey };
-type UpdateColorPayload = { color: string; rowKey: RowKey; cellKey: CellKey };
+type TCellAddres = { rowKey: RowKey; cellKey: CellKey };
+type TCellLetterPayload = { letter?: string; } & TCellAddres;
+type TCellColorPayload = { color?: string; } & TCellAddres;
+type TCellSelectedPayload = { selected?: boolean; } & TCellAddres;
+type UpdateCellPayload = TCellAddres & TCellLetterPayload & TCellColorPayload;
 type UpdateWordPayload = { word: Array<string>; rowKey: RowKey };
 type UpdateWordColorPayload = { color: Array<string>; rowKey: RowKey };
 
@@ -120,11 +83,12 @@ export const rowGroupSlice = createSlice({
     // },
     resetCellsForAllRows: (state) => {
       const allRows = state.rows;
-      Object.keys(allRows).forEach((row) => { 
-        const rowCells = allRows[row as RowKey].cells;  
+      Object.keys(allRows).forEach((row) => {
+        const rowCells = allRows[row as RowKey].cells;
         Object.keys(rowCells).forEach((cell) => {
           rowCells[cell as CellKey].letter = '';
           rowCells[cell as CellKey].color = CELL_COLORS.GREY_OUTLINE;
+          rowCells[cell as CellKey].selected = false;
         });
       });
     },
@@ -133,7 +97,13 @@ export const rowGroupSlice = createSlice({
       Object.keys(rowCells).forEach((cell) => {
         rowCells[cell as CellKey].letter = '';
         rowCells[cell as CellKey].color = CELL_COLORS.GREY_OUTLINE;
+        rowCells[cell as CellKey].selected = false;
       });
+    },
+    clearCellByRowIdAndCellId: (state, action: PayloadAction<TCellAddres>) => {
+      const { rowKey, cellKey } = action.payload;
+      state.rows[rowKey].cells[cellKey].letter = '';
+      state.rows[rowKey].cells[cellKey].color = CELL_COLORS.GREY_OUTLINE;  
     },
     updateWordByRowId: (state, action: PayloadAction<UpdateWordPayload>) => {
       const { rowKey, word } = action.payload;
@@ -143,10 +113,14 @@ export const rowGroupSlice = createSlice({
       state.rows[rowKey].cells['CELL_4'].letter = word[3];
       state.rows[rowKey].cells['CELL_5'].letter = word[4];
     },
-    updateWordColorsByRowId: (
-      state,
-      action: PayloadAction<UpdateWordColorPayload>
-    ) => {
+    updatePartialWordByRowId: (state, action: PayloadAction<Array<UpdateCellPayload>>) => {
+      action.payload.forEach((cellPayload: UpdateCellPayload) => {
+        const { rowKey, cellKey, color, letter } = cellPayload;
+        state.rows[rowKey].cells[cellKey].color = CELL_COLORS[color as KeyboardColor];
+        state.rows[rowKey].cells[cellKey].letter = letter || '';
+      });
+    },
+    updateWordColorsByRowId: (state, action: PayloadAction<UpdateWordColorPayload>) => {
       const { rowKey, color } = action.payload;
 
       state.rows[rowKey].cells = {
@@ -172,20 +146,27 @@ export const rowGroupSlice = createSlice({
         },
       };
     },
-    updateLetterByRowAndCellId: (
-      state,
-      action: PayloadAction<UpdateLetterPayload>
-    ) => {
+    updateLetterByRowAndCellId: (state, action: PayloadAction<TCellLetterPayload>) => {
       const { rowKey, cellKey, letter } = action.payload;
-      state.rows[rowKey].cells[cellKey].letter = letter;
+      state.rows[rowKey].cells[cellKey].letter = letter || '';
     },
-    updateColorByRowAndCellId: (
-      state,
-      action: PayloadAction<UpdateColorPayload>
-    ) => {
+    updateColorByRowAndCellId: (state, action: PayloadAction<TCellColorPayload>) => {
       const { rowKey, cellKey, color } = action.payload;
-      state.rows[rowKey].cells[cellKey].color =
-        CELL_COLORS[color as KeyboardColor];
+      state.rows[rowKey].cells[cellKey].color = CELL_COLORS[color as KeyboardColor];
+    },
+    updateLetterAndColorByRowAndCellId: (state, action: PayloadAction<UpdateCellPayload>) => {
+      const { rowKey, cellKey, color, letter } = action.payload;
+      state.rows[rowKey].cells[cellKey].color = CELL_COLORS[color as KeyboardColor];
+      state.rows[rowKey].cells[cellKey].letter = letter || '';
+    },
+    setCellSelectedByRowAndCellId: (state, action: PayloadAction<TCellSelectedPayload>) => {
+      const { rowKey, cellKey, selected } = action.payload;
+      const rowCells = state.rows[rowKey].cells;
+      Object.keys(rowCells).forEach((cell) => {
+        const currentCellKey = cell as CellKey;
+        const selectedState = currentCellKey === cellKey ? selected : false;
+        rowCells[currentCellKey].selected = selectedState;
+      });
     },
   },
 });
@@ -194,21 +175,20 @@ export const {
   // resetRowGroup,
   resetCellsForAllRows,
   resetCellsByRowId,
+  clearCellByRowIdAndCellId,
   updateLetterByRowAndCellId,
   updateColorByRowAndCellId,
   updateWordByRowId,
   updateWordColorsByRowId,
+  updateLetterAndColorByRowAndCellId,
+  setCellSelectedByRowAndCellId,
 } = rowGroupSlice.actions;
 
 export const getRowById = (state: RootState, rowId: RowKey): IWordleRowUI => {
   return state.puzzle.ui.rowGroup.rows[rowId];
 };
 
-export const getCellByRowAndCellIds = (
-  state: RootState,
-  rowId: RowKey,
-  cellId: CellKey
-): IWordleRowCellUI => {
+export const getCellByRowAndCellIds = (state: RootState, rowId: RowKey, cellId: CellKey): IWordleRowCellUI => {
   const rowCell = getRowById(state, rowId).cells;
   return rowCell[cellId];
 };

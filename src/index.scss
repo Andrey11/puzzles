@@ -2,23 +2,26 @@
 
 :root {
   --mdc-theme-puzzle-primary: #091309;
-  --mdc-theme-puzzle-secondary: #0c63e4;            // var(--mdc-theme-puzzle-secondary, #0c63e4);
+  --mdc-theme-puzzle-secondary: #0c63e4;              // var(--mdc-theme-puzzle-secondary, #0c63e4);
   --mdc-theme-puzzle-secondary-rgb: 12, 99, 228;
   --mdc-theme-puzzle-background: #f2f1f1;
-  --mdc-theme-puzzle-miss: #c2b9b9;
+  --mdc-theme-puzzle-miss: #c2b9b9;                   // var(--mdc-theme-puzzle-miss, #c2b9b9);
   --mdc-theme-puzzle-exact-match: #5fc405;
   --mdc-theme-puzzle-exists: #ffb003;
   --mdc-theme-puzzle-error-notification: #091309;
-  --mdc-theme-puzzle-error-on-notification: #f2f1f1;
+  --mdc-theme-puzzle-error-on-notification: #f2f1f1;  
   --mdc-theme-puzzle-win-notification: #5fc405;
   --mdc-theme-puzzle-win-on-notification: #f2f1f1;
   --mdc-theme-puzzle-loss-notification: #ffb003;
   --mdc-theme-puzzle-loss-on-notification: #f2f1f1;
   --mdc-theme-puzzle-empty-cell-border: #c8bfbf;
   --mdc-theme-puzzle-cell-border: #645a5a;
-  --mdc-theme-puzzle-cell-outline: #2684ff;
-  --mdc-theme-puzzle-game-turn-highlight: #5fc405;
-  --mdc-theme-puzzle-robot-primary: #557cb3;        // var(--mdc-theme-puzzle-robot-primary, #557cb3);
+  --mdc-theme-puzzle-cell-outline: #2684ff;           // var(--mdc-theme-puzzle-cell-outline, #2684ff);
+  --mdc-theme-puzzle-game-turn-highlight: #5fc405;    // var(--mdc-theme-puzzle-game-turn-highlight, #5fc405);
+  --mdc-theme-puzzle-robot-primary: #557cb3;          // var(--mdc-theme-puzzle-robot-primary, #557cb3);
+  --mdc-theme-puzzle-light-text: #645a5a;             // var(--mdc-theme-puzzle-light-text, #645a5a);
+  --mdc-theme-puzzle-light-border: #e9e9e9;           // var(--mdc-theme-puzzle-light-border, #e9e9e9);
+  
 }
 
 
@@ -32,8 +35,8 @@ body {
   color: var(--mdc-theme-puzzle-primary, #091309);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  max-height: calc(var(--vh, 1vh) * 100);
-  overflow: hidden;
+  // max-height: calc(var(--vh, 1vh) * 100);
+  // overflow: hidden;
 }
 
 code {

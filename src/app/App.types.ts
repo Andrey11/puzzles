@@ -1,11 +1,11 @@
-import { IHeaderItem, ItemAction } from "../components/header/PuzzleHeader";
+import { IHeaderItem, ItemAction } from '../components/header/PuzzleHeader';
 
 export enum PUZZLES {
   NONE = 'none',
   LOBBY = 'lobby',
   WORDLE = 'wordle',
   WORDLE_VERSUS = 'wordleversus',
-};
+}
 
 export declare type AppStatus = 'idle' | 'loading' | 'failed';
 
@@ -26,4 +26,3 @@ export interface IAppState {
   headerItemAction?: ItemAction;
   showHeaderDictionaryIcon?: boolean;
 }
-

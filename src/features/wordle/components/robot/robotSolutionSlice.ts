@@ -8,7 +8,7 @@ import {
 } from '../../PuzzleWordle-helpers';
 import { ILetterModel, IWordleDictionary } from '../../PuzzleWordle.types';
 import { allAvailableWords } from '../../PuzzleWords';
-import { setShouldRobotSolvePuzzle } from '../../wordleversus/wordleVersusSlice';
+import { getDictionary } from '../dictionary/wordleDictionarySlice';
 import {
   IRobotSolution,
   IWordStatus,
@@ -26,6 +26,7 @@ const initialState: IRobotSolution = {
   usedWordIndexes: [],
   usedWords: [],
   availableWordIndexes: Array.from(Array(allAvailableWords.length).keys()),
+  availableWordCount: [allAvailableWords.length],
   isFound: false,
   isCompleted: false,
   displayColors: [],
@@ -33,24 +34,14 @@ const initialState: IRobotSolution = {
   guessWords: [],
   guessWordsStatus: [],
   robotStatus: 'idle',
+  startingWord: '',
 };
 
-export const isLetterModelUnique = (
-  letterModels: Array<ILetterModel>,
-  lmToAdd: ILetterModel
-) =>
-  letterModels.findIndex(
-    (lm) =>
-      lm.letter === lmToAdd.letter && lm.indexInWord === lmToAdd.indexInWord
-  ) === -1;
+export const isLetterModelUnique = (letterModels: Array<ILetterModel>, lmToAdd: ILetterModel) =>
+  letterModels.findIndex((lm) => lm.letter === lmToAdd.letter && lm.indexInWord === lmToAdd.indexInWord) === -1;
 
-export const addUniqueLetterModel = (
-  letterModels: Array<ILetterModel>,
-  lmToAdd: ILetterModel
-) => {
-  return isLetterModelUnique(letterModels, lmToAdd)
-    ? [...letterModels, lmToAdd]
-    : letterModels;
+export const addUniqueLetterModel = (letterModels: Array<ILetterModel>, lmToAdd: ILetterModel) => {
+  return isLetterModelUnique(letterModels, lmToAdd) ? [...letterModels, lmToAdd] : letterModels;
 };
 
 export const addUniqueLetter = (letters: Array<string>, letter: string) => {
@@ -66,23 +57,13 @@ type ICalcAvailableProps = {
   dictionary: IWordleDictionary;
 };
 
-const isLetterInWordMoreThanOnce = (char: string, word: Array<string>) =>
-  word.indexOf(char) !== word.lastIndexOf(char);
+const isLetterInWordMoreThanOnce = (char: string, word: Array<string>) => word.indexOf(char) !== word.lastIndexOf(char);
 
-const isLetterHasMatchInWord = (
-  char: string,
-  word: Array<string>,
-  colors: Array<string>
-) =>
+const isLetterHasMatchInWord = (char: string, word: Array<string>, colors: Array<string>) =>
   word.findIndex((l, index) => l === char && colors[index] !== 'GREY') !== -1;
 
-const isLetterMissAtIndex = (
-  char: string,
-  word: Array<string>,
-  colors: Array<string>
-) =>
-  isLetterInWordMoreThanOnce(char, word) &&
-  isLetterHasMatchInWord(char, word, colors);
+const isLetterMissAtIndex = (char: string, word: Array<string>, colors: Array<string>) =>
+  isLetterInWordMoreThanOnce(char, word) && isLetterHasMatchInWord(char, word, colors);
 
 export const caclulateAvailableIndexes = ({
   exactMatchLetter: exact,
@@ -92,110 +73,104 @@ export const caclulateAvailableIndexes = ({
   availableWordIndexes: available,
   dictionary: dict,
 }: ICalcAvailableProps): Array<number> => {
-  // console.log(`Count before reducing... ${available.length}`);
+  console.log(`Count before reducing... ${available.length}`);
   let wordIndexes = getExactMatches(exact, [...available], dict);
-  // console.log(`Count after exact matches... ${wordIndexes.length}`);
+  console.log(`Count after exact matches... ${wordIndexes.length}`);
   wordIndexes = getExistsMatches(exist, exact, missAt, wordIndexes, dict);
-  // console.log(`Count after exists matches... ${wordIndexes.length}`);
+  console.log(`Count after exists matches... ${wordIndexes.length}`);
   wordIndexes = removeNonExistentLetterIndexes(miss, wordIndexes, dict);
-  // console.log(`Count after misses... ${wordIndexes.length}`);
-  wordIndexes = removeNonExistentLetterIndexesAtIndex(
-    missAt,
-    wordIndexes,
-    dict
-  );
-  // console.log(`Count after misses at index matches... ${wordIndexes.length}`);
+  console.log(`Count after misses... ${wordIndexes.length}`);
+  wordIndexes = removeNonExistentLetterIndexesAtIndex(missAt, wordIndexes, dict);
+  console.log(`Count after misses at index matches... ${wordIndexes.length}`);
   return wordIndexes;
 };
 
 export const setRoundComplete =
-  (isWon: boolean): AppThunk =>
+  (isWon: boolean, shouldResetRobotSolution: boolean = true): AppThunk =>
   (dispatch) => {
     console.log(`Robot ${isWon ? 'won' : 'lost'} this round`);
-    dispatch(resetRobotSolution());
-    dispatch(setShouldRobotSolvePuzzle(false));
-  };
-
-export const analyzeGuessWordStatus =
-  (dictionary: IWordleDictionary): AppThunk =>
-  (dispatch, getState) => {
-    const guessWordsStatus = getGuessWordsStatus(getState());
-    const totalCount = guessWordsStatus.length;
-    const availableWordIndexes = getAvailableWordIndexes(getState());
-    const lastGuessStatus = guessWordsStatus[totalCount - 1];
-    let exactLetters = getExactMatchedLetters(getState());
-    let existLetters = getExistMatchedLetters(getState());
-    let missLetters = getNonExistentLetters(getState());
-    let missLettersAtIndex = getNonExistentAtIndexLetters(getState());
-
-    if (!lastGuessStatus) {
-      return;
+    if (shouldResetRobotSolution) {
+      dispatch(resetRobotSolution());
     }
-
-    let exact: Array<ILetterModel> = [];
-    let exist: Array<ILetterModel> = [];
-    let miss: Array<string> = [];
-    let missAtIndex: Array<ILetterModel> = [];
-
-    const word = lastGuessStatus.word.split('');
-    const lastGuessColors = lastGuessStatus.colors;
-
-    console.log(`Last word: ${word}, colors: ${lastGuessStatus?.colors}`);
-
-    lastGuessColors?.forEach((color: string, index: number) => {
-      const letter = word[index];
-      const lmToAdd = { indexInWord: index, letter: letter };
-
-      if (color === 'GREEN') {
-        exact = isLetterModelUnique(exactLetters, lmToAdd)
-          ? [...exact, lmToAdd]
-          : [...exact];
-      } else if (color === 'ORANGE') {
-        exist = isLetterModelUnique(existLetters, lmToAdd)
-          ? [...exist, lmToAdd]
-          : [...exist];
-      } else if (isLetterMissAtIndex(letter, word, lastGuessColors)) {
-        missAtIndex = isLetterModelUnique(missLettersAtIndex, lmToAdd)
-          ? [...missAtIndex, lmToAdd]
-          : [...missAtIndex];
-      } else {
-        miss = !missLetters.includes(letter) ? [...miss, letter] : [...miss];
-      }
-    });
-
-    let currentWordIndexes = caclulateAvailableIndexes({
-      exactMatchLetter: exact,
-      existsMatchLetter: exist,
-      nonExistentLetters: miss,
-      nonExistentLetterAtIndex: missAtIndex,
-      availableWordIndexes: [...availableWordIndexes],
-      dictionary: dictionary,
-    });
-
-    console.log(`Count after reduction... ${currentWordIndexes.length}`);
-    dispatch(
-      setRobotGuess({
-        exactMatchLetter: [...exactLetters, ...exact],
-        existsMatchLetter: [...existLetters, ...exist],
-        nonExistentLetters: [...missLetters, ...miss],
-        nonExistentLetterAtIndex: [...missLettersAtIndex, ...missAtIndex],
-        availableWordIndexes: currentWordIndexes,
-        robotStatus: 'calculate-robot-guess',
-      })
-    );
   };
+
+export const analyzeGuessWordStatus = (): AppThunk => (dispatch, getState) => {
+  const dictionary: IWordleDictionary = getDictionary(getState());
+  const guessWordsStatus = getGuessWordsStatus(getState());
+  const totalCount = guessWordsStatus.length;
+  const availableWordIndexes = getAvailableWordIndexes(getState());
+  const availableWordCount = getAvailableWordCounts(getState());
+  const lastGuessStatus = guessWordsStatus[totalCount - 1];
+  let exactLetters = getExactMatchedLetters(getState());
+  let existLetters = getExistMatchedLetters(getState());
+  let missLetters = getNonExistentLetters(getState());
+  let missLettersAtIndex = getNonExistentAtIndexLetters(getState());
+
+  if (!lastGuessStatus) {
+    return;
+  }
+
+  let exact: Array<ILetterModel> = [];
+  let exist: Array<ILetterModel> = [];
+  let miss: Array<string> = [];
+  let missAtIndex: Array<ILetterModel> = [];
+
+  const word = lastGuessStatus.word.split('');
+  const lastGuessColors = lastGuessStatus.colors;
+
+  console.log(`Last word: ${word}, colors: ${lastGuessStatus?.colors}`);
+
+  lastGuessColors?.forEach((color: string, index: number) => {
+    const letter = word[index];
+    const lmToAdd = { indexInWord: index, letter: letter };
+
+    if (color === 'GREEN') {
+      exact = isLetterModelUnique(exactLetters, lmToAdd) ? [...exact, lmToAdd] : [...exact];
+    } else if (color === 'ORANGE') {
+      exist = isLetterModelUnique(existLetters, lmToAdd) ? [...exist, lmToAdd] : [...exist];
+    } else if (isLetterMissAtIndex(letter, word, lastGuessColors)) {
+      missAtIndex = isLetterModelUnique(missLettersAtIndex, lmToAdd) ? [...missAtIndex, lmToAdd] : [...missAtIndex];
+    } else {
+      miss = !missLetters.includes(letter) ? [...miss, letter] : [...miss];
+    }
+  });
+
+  let currentWordIndexes = caclulateAvailableIndexes({
+    exactMatchLetter: exact,
+    existsMatchLetter: exist,
+    nonExistentLetters: miss,
+    nonExistentLetterAtIndex: missAtIndex,
+    availableWordIndexes: [...availableWordIndexes],
+    dictionary: dictionary,
+  });
+
+  console.log(`Count after reduction... ${currentWordIndexes.length}`);
+  dispatch(
+    setRobotGuess({
+      exactMatchLetter: [...exactLetters, ...exact],
+      existsMatchLetter: [...existLetters, ...exist],
+      nonExistentLetters: [...missLetters, ...miss],
+      nonExistentLetterAtIndex: [...missLettersAtIndex, ...missAtIndex],
+      availableWordIndexes: currentWordIndexes,
+      availableWordCount: [...availableWordCount, currentWordIndexes.length],
+      robotStatus: 'calculate-robot-guess',
+    })
+  );
+};
 
 export const pickNextGuessWordAndStartSolvingPuzzle =
-  (
-    dictionary: IWordleDictionary,
-    onRobotPickedWord: OnRobotPickedWordType
-  ): AppThunk =>
+  (onRobotPickedWord: OnRobotPickedWordType): AppThunk =>
   (dispatch, getState) => {
     const availableWordIndexes = getAvailableWordIndexes(getState());
+    const dictionary: IWordleDictionary = getDictionary(getState());
     const wordCount = availableWordIndexes.length;
-    if (wordCount > 0) {
-      const randomIndex =
-        wordCount !== 1 ? Math.round(Math.random() * (wordCount - 1)) : 0;
+    const attemptNum: number = getRobotAttemptCount(getState());
+    const startingWord: string = getStartingWord(getState());
+    if (attemptNum === 0 && startingWord !== '') {
+      const wordIndex = dictionary.words.indexOf(startingWord);
+      dispatch(addRobotGuess(startingWord, wordIndex, onRobotPickedWord));
+    } else if (wordCount > 0) {
+      const randomIndex = wordCount !== 1 ? Math.round(Math.random() * (wordCount - 1)) : 0;
       const wordIndex = availableWordIndexes[randomIndex];
       const word = dictionary.words[wordIndex];
       dispatch(addRobotGuess(word, wordIndex, onRobotPickedWord));
@@ -203,11 +178,7 @@ export const pickNextGuessWordAndStartSolvingPuzzle =
   };
 
 export const addRobotGuess =
-  (
-    word: string,
-    wordIndex: number,
-    onRobotPickedWord: OnRobotPickedWordType
-  ): AppThunk =>
+  (word: string, wordIndex: number, onRobotPickedWord: OnRobotPickedWordType): AppThunk =>
   (dispatch, getState) => {
     const robotGuessPayload: Partial<IRobotSolution> = {
       robotStatus: 'submit-robot-guess',
@@ -275,17 +246,18 @@ export const robotSolutionSlice = createSlice({
       state.guessWordsStatus = [...state.guessWordsStatus, action.payload];
       state.robotStatus = 'analyze-robot-guess-result';
     },
-    setUpdatedSolution: (
-      state,
-      action: PayloadAction<Partial<IRobotSolution>>
-    ) => {
+    setUpdatedSolution: (state, action: PayloadAction<Partial<IRobotSolution>>) => {
       return { ...state, ...action.payload };
+    },
+    setRobotStartingWord: (state, action: PayloadAction<string>) => {
+      state.startingWord = action.payload;
     },
     setRobotGuess: (state, action: PayloadAction<Partial<IRobotSolution>>) => {
       return { ...state, ...action.payload };
     },
     setAvilableWordIndexes: (state, action: PayloadAction<Array<number>>) => {
       state.availableWordIndexes = action.payload;
+      state.availableWordCount = [...state.availableWordCount, action.payload.length];
     },
     resetRobotSolution: () => ({ ...initialState }),
   },
@@ -297,36 +269,32 @@ export const {
   setRobotGuess,
   setAvilableWordIndexes,
   setRobotGuessWordStatus,
+  setRobotStartingWord,
   resetRobotSolution,
 } = robotSolutionSlice.actions;
 
-export const getRobotStatus = (state: RootState): TRobotStatus =>
-  state.puzzle.wordlerobotsolution.robotStatus;
-export const isRobotPickingWord = (
-  state: RootState,
-  status: string = 'robot-picking-word'
-): boolean => state.puzzle.wordlerobotsolution.robotStatus === status;
+export const getRobotStatus = (state: RootState): TRobotStatus => state.puzzle.wordlerobotsolution.robotStatus;
+export const isRobotPickingWord = (state: RootState, status: string = 'robot-picking-word'): boolean =>
+  state.puzzle.wordlerobotsolution.robotStatus === status;
 export const getGuessWordsStatus = (state: RootState): Array<IWordStatus> =>
   state.puzzle.wordlerobotsolution.guessWordsStatus;
-export const getRobotAttemptCount = (state: RootState): number =>
-  state.puzzle.wordlerobotsolution.attempts;
-export const getRobotGuessWords = (state: RootState): Array<string> =>
-  state.puzzle.wordlerobotsolution.guessWords;
-export const getRobotUsedWords = (state: RootState): Array<string> =>
-  state.puzzle.wordlerobotsolution.usedWords;
+export const getRobotAttemptCount = (state: RootState): number => state.puzzle.wordlerobotsolution.attempts;
+export const getRobotGuessWords = (state: RootState): Array<string> => state.puzzle.wordlerobotsolution.guessWords;
+export const getRobotUsedWords = (state: RootState): Array<string> => state.puzzle.wordlerobotsolution.usedWords;
 export const getRobotUsedWordIndexes = (state: RootState): Array<number> =>
   state.puzzle.wordlerobotsolution.usedWordIndexes;
 export const getAvailableWordIndexes = (state: RootState): Array<number> =>
   state.puzzle.wordlerobotsolution.availableWordIndexes;
+export const getAvailableWordCounts = (state: RootState): Array<number> =>
+  state.puzzle.wordlerobotsolution.availableWordCount;
 export const getExactMatchedLetters = (state: RootState): Array<ILetterModel> =>
   state.puzzle.wordlerobotsolution.exactMatchLetter;
 export const getExistMatchedLetters = (state: RootState): Array<ILetterModel> =>
   state.puzzle.wordlerobotsolution.existsMatchLetter;
 export const getNonExistentLetters = (state: RootState): Array<string> =>
   state.puzzle.wordlerobotsolution.nonExistentLetters;
-export const getNonExistentAtIndexLetters = (
-  state: RootState
-): Array<ILetterModel> =>
+export const getNonExistentAtIndexLetters = (state: RootState): Array<ILetterModel> =>
   state.puzzle.wordlerobotsolution.nonExistentLetterAtIndex;
+export const getStartingWord = (state: RootState): string => state.puzzle.wordlerobotsolution.startingWord || '';
 
 export default robotSolutionSlice.reducer;

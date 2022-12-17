@@ -1,0 +1,66 @@
+@import 'src/scss/mixins.module.scss';
+
+.EndGameSolutionAnalysis {
+  &Wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+  &Display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 250px;
+  }
+}
+
+span.WordCount {
+  width: 70px;
+  text-indent: 4px;
+  display: inline-block;
+  border-bottom: thin solid var(--mdc-theme-puzzle-light-border, #e9e9e9);
+}
+
+span.InfoLabel {
+  font-size: medium;
+  width: 190px;
+}
+
+span.CountLabel {
+  width: 190px;
+  color: var(--mdc-theme-puzzle-light-text, #645a5a);
+}
+
+.ActionButtonsDisplay {
+  margin-top: 8px;
+  width: 100%;
+  button {
+    width: 100%;
+  }
+}
+
+span.CellLetter {
+  @include cellLetterSpan(35px, 35px, 2px, 700);
+  font-size: x-large;
+  line-height: 34px;
+}
+
+span.AnswerCellLetter {
+  @include cellLetterSpan(20px, 20px, 2px, 600);
+  line-height: 18px;
+
+  &.Match {
+    background-color: var(--mdc-theme-puzzle-exists, #ffb003);
+    border-color: var(--mdc-theme-puzzle-exists, #ffb003);
+  }
+  &.ExactMatch {
+    background-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
+    border-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
+  }
+  &.Miss {
+    background-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
+    border-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
+  }
+}

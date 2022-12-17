@@ -1,6 +1,5 @@
 import { binarySearch, findIndexOf, isWordInDictionary, processGuess } from './PuzzleWordle-helpers';
 import { allAvailableWords as allWords } from './PuzzleWords';
-// import { IGuessModel } from './PuzzleDetails.types';
 
 describe('PuzzleDetails-helpers tests', () => {
   

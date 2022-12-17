@@ -5,8 +5,19 @@ button.DeleteButton {
   padding: 0;
 }
 
+button.ClearButton {
+  width: 40px;
+  line-height: 0;
+  padding: 0;
+}
+
+button.ClearButton + button.DeleteButton {
+  width: 40px; 
+}
+
 @media only screen and (max-width: 425px) {
   button.EnterButton,
+  button.ClearButton,
   button.DeleteButton {
     &:active,
     &:hover,
@@ -29,7 +40,15 @@ label.LetterButton {
     outline: none;
     box-shadow: none;
   }
+  &[class*="btn-outline-success"] {
+    color: #4a9b02;
+  }
+  &[class*="btn-outline-warning"] {
+    color: #d59200;
+  }
 }
+
+
 /* Workaround for toggle style for letter buttons not in a word */
 .LetterButton[class*="btn-outline-secondary"] {
   &:active,

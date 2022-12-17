@@ -160,6 +160,13 @@ const RobotHead: React.FC<RobotHeadProps> = ({
         animationQueue.current.shift();
       }
     }
+
+    // TODO: Fix me, temp logic to reset head animations when it gets stuck
+    if(isAnimatingRef.current && animationQueue.current.length > 5) {
+      isAnimatingRef.current = false;
+      animationQueue.current = [];
+    }
+
   };
 
   return (

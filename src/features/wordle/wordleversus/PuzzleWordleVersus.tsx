@@ -41,6 +41,8 @@ import RobotSolver from '../components/robot/RobotSolver';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { IHeaderItem } from '../../../components/header/PuzzleHeader';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { resetKeyboard, setShowClearKey } from 'components/keyboard/puzzlesKeyboardSlice';
 
 type IPuzzleWordleVersusProps = {
   games?: number;
@@ -90,6 +92,7 @@ const WordleVsHeaderSettings: Array<IHeaderItem> = [
 const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
   games = 1,
 }: IPuzzleWordleVersusProps) => {
+  const navigate: NavigateFunction = useNavigate();
   const bodyContainerRef = useRef(null);
   const dispatch = useAppDispatch();
 
@@ -100,6 +103,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
 
   const isSettingsHeaderAction = useSelector((state: RootState) => isHeaderItemActionByType(state, 'ACTION_SETTINGS'));
   const isHelpHeaderAction = useSelector((state: RootState) => isHeaderItemActionByType(state, 'ACTION_HELP'));
+  const isBackHeaderAction = useSelector((state: RootState) => isHeaderItemActionByType(state, 'ACTION_BACK'));
 
   const [isInit, setIsInit] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -147,6 +151,8 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       dispatch(setActivePuzzle(PUZZLES.WORDLE_VERSUS));
       dispatch(setHeaderTitle('Wordle Versus'));
       dispatch(setHeaderItems(WordleVsHeaderSettings));
+      dispatch(resetKeyboard());
+      dispatch(setShowClearKey(false));
       console.log(...WordleVsLog.logAction('activating wordle versus'));
     }
   }, [isInit, activePuzzle, dispatch]);
@@ -158,8 +164,20 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       setVisibleGameSettingsDialog(true);
     } else if (isHelpHeaderAction) {
       console.log(...WordleVsLog.logAction('help button in header was pressed'));
+    } else if (isBackHeaderAction) {
+      console.log(...WordleVsLog.logAction('back button in header was pressed'));
+      dispatch(setHeaderItemAction(''));
+      navigate(-1);
     }
-  }, [dispatch, isHelpHeaderAction, isSettingsHeaderAction, isVisibleGameSettingsDialog, setVisibleGameSettingsDialog]);
+  }, [
+    dispatch,
+    isBackHeaderAction,
+    isHelpHeaderAction,
+    isSettingsHeaderAction,
+    isVisibleGameSettingsDialog,
+    navigate,
+    setVisibleGameSettingsDialog,
+  ]);
 
   /** LOAD DICTIONARY AND SHOW ON HEADER EFFECT */
   useEffect(() => {
@@ -197,7 +215,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
   /** END MATCH EFFECT */
   useEffect(() => {
     if (!isReady) return;
-    
+
     let timeoutId: NodeJS.Timeout;
     if (matchFinished) {
       console.log(...WordleVsLog.logSuccess('match finished, show EoG dialog'));
@@ -233,7 +251,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       </section>
 
       <section itemID="GameBoardWithKeyboardDisplay">
-        <WordleVersusGame isInit={isReady}/>
+        <WordleVersusGame isInit={isReady} />
       </section>
     </div>
   );

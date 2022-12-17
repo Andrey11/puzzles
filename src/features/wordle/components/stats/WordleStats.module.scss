@@ -1,47 +1,22 @@
 @import 'src/scss/mixins.module.scss';
 
-.StatsContainer {
+.DisplayWrapper {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: space-between;
-
-  input {
-    width: 25px;
-    height: 25px;
-  }
-  label {
-    // padding-left: 8px;
-    outline: none;
-    width: 120px;
-    font-size: 16px;
-    font-weight: 300;
-    vertical-align: top;
-  }
+  width: 100%;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
 }
 
-.Spacer {
-  flex: 1;
-  max-width: 90px;
-}
-
-.Totals {
+.Display {
+  max-width: 270px;
   margin-bottom: 10px;
   display: flex;
   flex-direction: column;
-  align-items: center;
 
   input {
     width: 25px;
     height: 25px;
-  }
-  label {
-    // padding-left: 8px;
-    // width: 120px;
-    font-size: 16px;
-    font-weight: 300;
-    vertical-align: top;
   }
 }
 .TotalLetterLabel {
@@ -53,21 +28,8 @@
   font-weight: 600;
 }
 
-.letterLabel {
-  font-weight: 500;
-}
-.countLabel {
-  font-weight: 600;
-}
-
-.ButtonContainer {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.StatsLetterContainer {
-  max-width: 300px;
+.WordleStatsRowCellsDisplay {
+  max-width: 270px;
   flex: 1;
   display: flex;
   gap: 8px;
@@ -102,26 +64,23 @@
   }
 }
 
-.WordCountBadge {
-  position: relative;
-  left: -15px;
-  top: -20px;
-}
-
 .LetterCount {
   display: inline-block;
 }
 
 .TotalCountStats {
-  line-height: 45px;
+  // margin-bottom: 8px;
+  svg {
+    vertical-align: top;
+  }
 }
 
-label.LetterButton {
-  outline: none;
-  font-weight: 700;
-  // width: 90px;
-  width: 40px;
-}
+// label.LetterButton {
+//   outline: none;
+//   font-weight: 700;
+//   // width: 90px;
+//   width: 40px;
+// }
 
 button.DeleteButton {
   line-height: 0;
@@ -130,107 +89,58 @@ button.DeleteButton {
 }
 
 @media only screen and (max-width: 480px) {
-  .StatsContainer {
-    label.LetterButton {
-      width: 40px;
-      font-weight: 700;
-      &:active,
-      &:hover,
-      &:focus &:focus-visible {
-        outline: none;
-        box-shadow: none;
-      }
-    }
-    /* Workaround for toggle style for letter buttons not in a word */
-    .LetterButton[class*="btn-outline-secondary"] {
-      &:active,
-      &:hover,
-      &:focus {
-        color: #6c757d;
-        background-color: transparent;
-      }
-    }
-    
-    button.DeleteButton {
-      width: 40px;
-      svg {
-        width: 14px;
-      }
-    }
-
-    .LetterCount {
-      display: none;
+  button.DeleteButton {
+    width: 40px;
+    svg {
+      width: 14px;
     }
   }
-  .TotalLetterLabel + .TotalCountLabel {
+
+  .LetterCount {
     display: none;
   }
-  .Spacer {
-    max-width: 40px;
+
+  .TotalLetterLabel + .TotalCountLabel {
+    display: none;
   }
 }
 
 @media only screen and (max-width: 320px) {
-  .StatsContainer {
-    label.LetterButton {
-      width: 40px;
-      font-weight: 700;
-      &:active,
-      &:hover,
-      &:focus &:focus-visible {
-        outline: none;
-        box-shadow: none;
-      }
-    }
-    /* Workaround for toggle style for letter buttons not in a word */
-    .LetterButton[class*="btn-outline-secondary"] {
-      &:active,
-      &:hover,
-      &:focus {
-        color: #6c757d;
-        background-color: transparent;
-      }
-    }
-    
-    button.DeleteButton {
-      width: 40px;
-      svg {
-        width: 14px;
-      }
-    }
-
-    .LetterCount {
-      display: none;
+  button.DeleteButton {
+    width: 40px;
+    svg {
+      width: 14px;
     }
   }
+
+  .LetterCount {
+    display: none;
+  }
+
   .TotalLetterLabel + .TotalCountLabel {
     display: none;
   }
-  .Spacer {
-    max-width: 40px;
-  }
 }
 
-
-.MatchSpotCheckbox {
-  padding-top: 24px;
-}
+// .MatchSpotCheckbox {
+//   padding-top: 24px;
+// }
 
 span.CellLetter {
   @include cellLetterSpan(25px, 25px, 3px, 600);
 }
 
-span.MissLetter {
-  border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
-  margin: 1px;
-  width: 15px;
-  height: 15px;
-  display: inline-block;
-  text-align: center;
-  font-weight: 300;
-  font-size: small;
-  color: var(--mdc-theme-puzzle-primary, #091309);
-}
+// span.MissLetter {
+//   border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
+//   margin: 1px;
+//   width: 15px;
+//   height: 15px;
+//   display: inline-block;
+//   text-align: center;
+//   font-weight: 300;
+//   font-size: small;
+//   color: var(--mdc-theme-puzzle-primary, #091309);
+// }
 
 .ModalStats {
   font-family: 'Dosis', sans-serif;
@@ -279,16 +189,37 @@ span.Miss {
 }
 
 .MatchTypeSelectionLabel {
-  margin-top: 8px;
+  margin-top: 0;
 }
 
-
-.StatsInfoOverlay[class*="popover"] {
-  font-family: 'Dosis', sans-serif;
-  font-weight: 500;
-
-  [class*="popover-header"] {
-    background-color: #0dcaf0;
-    margin: 2px;
+.Keyboard {
+  &Wrapper {
+    position: relative;
+    background-color: white;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
   }
+  &Display {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    max-width: 270px;
+
+    input {
+      width: 25px;
+      height: 25px;
+    }
+    label {
+      vertical-align: top;
+    }
+  }
+}
+
+.ResetButton {
+  height: 30px;
+  width: 30px;
+  background-color: #0c63e4;
 }

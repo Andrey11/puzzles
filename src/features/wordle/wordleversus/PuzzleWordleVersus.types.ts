@@ -73,6 +73,7 @@ export interface IWordleVsState extends IRobotControls, IWordleVsMatchState {
 export interface ISolutionModel {
   currentWordIndex: number;
   availableWordIndexes: Array<number>;
+  availableWordCount: Array<number>;
   attempts: number;
   matchedLetters?: Array<ILetterModel>;
   exactMatchLetter: Array<ILetterModel>;

@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
-import { getLogStyles, getRandomWord } from '../../PuzzleWordle-helpers';
-import { getDictionary } from '../dictionary/wordleDictionarySlice';
-import {
-  robotPickedWod,
-  shouldRobotPickWod,
-} from '../../wordleversus/wordleVersusSlice';
+import { getLogStyles, getRandomWord } from 'features/wordle/PuzzleWordle-helpers';
+import { robotPickedWod, shouldRobotPickWod } from 'features/wordle/wordleversus/wordleVersusSlice';
 import {
   analyzeGuessWordStatus,
   getRobotStatus,
   pickNextGuessWordAndStartSolvingPuzzle,
   setRobotStatus,
 } from './robotSolutionSlice';
-// import {
-//   isLostGame,
-//   isWonGame,
-//   onSubmitGuess,
-// } from '../../wordleversus/game/wordleVersusGameSlice';
 import { OnRobotPickedWord, OnSubmitRobotWord } from './RobotSolver.types';
 
 const RobotSolverLog = getLogStyles({
@@ -32,7 +23,7 @@ type RobotSolverProps = {
   shouldSolvePuzzle: boolean;
   isWon: boolean;
   isLost: boolean;
-  onSubmitGuess: OnSubmitRobotWord
+  onSubmitGuess: OnSubmitRobotWord;
 };
 
 const RobotSolver: React.FC<RobotSolverProps> = ({
@@ -41,15 +32,12 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
   isWon,
   isLost,
   onSubmitGuess,
-
 }: RobotSolverProps) => {
   const [isInit, setIsInit] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const robotStatus = useAppSelector(getRobotStatus);
-  const dictionary = useAppSelector(getDictionary);
   const shouldPickWod = useAppSelector(shouldRobotPickWod);
-  
 
   useEffect(() => {
     if (!isInit) {
@@ -89,9 +77,7 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
     if (robotStatus === 'idle') {
       setTimeout(() => {
         // console.log(...RobotSolverLog.logAction(`Starting first round`));
-        dispatch(
-          pickNextGuessWordAndStartSolvingPuzzle(dictionary, onRobotGuessWord)
-        );
+        dispatch(pickNextGuessWordAndStartSolvingPuzzle(onRobotGuessWord));
       }, ROBOT_SLEEP_TIME);
       // console.log(
       //   ...RobotSolverLog.logData(
@@ -100,7 +86,7 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
       // );
     } else if (robotStatus === 'calculate-robot-guess') {
       setTimeout(
-        () => dispatch(pickNextGuessWordAndStartSolvingPuzzle(dictionary, onRobotGuessWord)),
+        () => dispatch(pickNextGuessWordAndStartSolvingPuzzle(onRobotGuessWord)),
         ROBOT_SLEEP_TIME
       );
       // console.log(
@@ -116,17 +102,14 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
       //   )
       // );
     } else if (robotStatus === 'analyze-robot-guess-result') {
-      setTimeout(
-        () => dispatch(analyzeGuessWordStatus(dictionary)),
-        ROBOT_SLEEP_TIME
-      );
+      setTimeout(() => dispatch(analyzeGuessWordStatus()), ROBOT_SLEEP_TIME);
       // console.log(
       //   ...RobotSolverLog.logData(
       //     `Sleeping for ${ROBOT_SLEEP_TIME / 1000}s before analysis`
       //   )
       // );
     }
-  }, [dispatch, robotStatus, dictionary, isInit, isWon, isLost, shouldSolvePuzzle, onRobotGuessWord, onSubmitGuess]);
+  }, [dispatch, robotStatus, isInit, isWon, isLost, shouldSolvePuzzle, onRobotGuessWord, onSubmitGuess]);
 
   return <>Robot Is {robotStatus}</>;
 };

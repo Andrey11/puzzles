@@ -42,7 +42,7 @@ const PuzzleCard: React.FC<IPuzzleCardProps> = ({
     <Card
       bg="light"
       text="secondary"
-      style={{ width: "18rem" }}
+      // style={{ width: "18rem" }}
       className={`${styles.CardWrapper} mb-2 shadow`}
     >
       <Card.Img
