@@ -5,7 +5,9 @@ function useAddEventListener(
   eventListener: (event: Event) => void,
   targetElement = window
 ) {
-  const savedEventCallback = useRef<(event: Event) => void>();
+  const savedEventCallback = useRef<((event: Event) => void) | undefined>(
+    undefined
+  );
   // Update ref.current value if handler changes.
   // This allows our effect below to always get latest handler ...
   // ... without us needing to pass it in effect deps array ...

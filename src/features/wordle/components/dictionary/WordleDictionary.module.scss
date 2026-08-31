@@ -1,4 +1,4 @@
-@import 'src/scss/mixins.module.scss';
+@use 'src/scss/mixins.module.scss' as *;
 
 $tooltip-bg: #2684ff;
 
@@ -64,8 +64,10 @@ $tooltip-bg: #2684ff;
   flex-direction: row;
   align-items: center;
   gap: 8px;
-  padding: 1px; /* accomodate overlay due to overflow hidden is set on a parent */
+  padding: 1px;
+  /* accomodate overlay due to overflow hidden is set on a parent */
   width: 70vw;
+
   &Icon {
     color: var(--mdc-theme-puzzle-secondary, #0c63e4);
   }
@@ -94,6 +96,7 @@ $tooltip-bg: #2684ff;
   &:last-child {
     border-bottom: 1px solid rgba(#2684ff, 0.2);
   }
+
   &Name {
     text-align: center;
     font-weight: 500;
@@ -116,6 +119,7 @@ $tooltip-bg: #2684ff;
       text-decoration: line-through;
     }
   }
+
   &Expanded {
     padding: 2px 4px;
     background-color: rgba(#2684ff, 0.04);
@@ -163,6 +167,7 @@ $tooltip-bg: #2684ff;
 
   ol {
     padding-left: 1rem;
+
     li {
       padding-left: 0.5rem;
       padding-bottom: 0.25rem;
@@ -181,6 +186,7 @@ $tooltip-bg: #2684ff;
   font-weight: 300;
   font-size: 12px;
   text-align: center;
+
   svg {
     vertical-align: text-bottom;
   }

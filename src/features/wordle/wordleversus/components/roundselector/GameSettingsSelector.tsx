@@ -19,7 +19,12 @@ const GameSettingsSelector: React.FC<RoundSelectorProps> = (props) => {
   return (
     <div className={styles.RoundSelectorComponent}>
       <Form
-        onChange={(event) => onRoundsSelected(event.target as HTMLInputElement)}
+        onChange={(event) => {
+          const target = event.target;
+          if (target instanceof HTMLInputElement) {
+            onRoundsSelected(target);
+          }
+        }}
       >
         <div key={`inline-radio`} className={styles.SettingsDisplay}>
           <Form.Check

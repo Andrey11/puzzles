@@ -1,4 +1,4 @@
-@import '/src/scss/mixins.module.scss';
+@use 'src/scss/mixins.module.scss' as *;
 
 .InteractiveRobotDisplay {
   width: 100px;
@@ -43,7 +43,7 @@
     width: 100px;
     height: 100px;
     position: absolute;
-    top: 0px;
+    top: 0;
     z-index: 0;
     opacity: 0;
   }

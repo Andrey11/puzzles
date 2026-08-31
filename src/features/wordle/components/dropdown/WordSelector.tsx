@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useState } from 'react';
+import React, { RefObject, useState } from 'react';
 import Select, { SelectInstance } from 'react-select';
 
 import styles from './WordSelector.module.scss';
@@ -13,8 +13,8 @@ type WordSelectorProps = {
   onWordSelected: (word: string) => void;
   onFocus?: () => void;
   placeholder?: React.ReactNode;
-  refContainer?: MutableRefObject<HTMLDivElement> | MutableRefObject<null>;
-  refSelector?: React.MutableRefObject<SelectInstance | null | undefined>;
+  refContainer?: RefObject<HTMLDivElement> | RefObject<null>;
+  refSelector?: RefObject<SelectInstance<SelectableOption> | null>;
   autoFocus?: boolean;
 };
 
@@ -45,9 +45,10 @@ const WordSelector: React.FunctionComponent<WordSelectorProps> = ({
           if (refSelector) {
             refSelector.current = ref;
           }
+          return undefined;
         }}
         onFocus={onFocus}
-        components={{ DropdownIndicator:() => null, IndicatorSeparator:() => null }}
+        components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
         menuIsOpen={menuOpen}
         filterOption={filterOptions}
         isClearable={true}
@@ -55,7 +56,7 @@ const WordSelector: React.FunctionComponent<WordSelectorProps> = ({
           setMenuOpen(newVal.length > 1);
           return newVal.toLocaleUpperCase();
         }}
-        onChange={(newValue: SelectableOption) => onWordSelected(newValue?.value || '')}
+        onChange={(newValue) => onWordSelected(newValue?.value || '')}
         options={words}
         placeholder={placeholder}
       />

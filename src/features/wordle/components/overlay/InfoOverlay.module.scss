@@ -7,9 +7,11 @@ $overlay-border-rgba: rgba($overlay-border-color-rgb, 0.7);
   font-weight: 500;
   border-color: $overlay-border-rgba;
   color: $secondary-color;
+  z-index: 100000;
 
   [class*="popover-arrow"] {
     color: $secondary-color;
+
     &::before {
       border-bottom-color: gba($overlay-border-color-rgb, 0.9);
       border-top-color: gba($overlay-border-color-rgb, 0.9);

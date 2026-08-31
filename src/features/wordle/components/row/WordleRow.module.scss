@@ -1,4 +1,4 @@
-@import 'src/scss/mixins.module.scss';
+@use 'src/scss/mixins.module.scss' as *;
 
 .cellCls {
   text-decoration: none;

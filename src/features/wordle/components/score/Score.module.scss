@@ -42,7 +42,7 @@
 
   &GameCounter {
     font-size: smaller;
-    line-height: 0px;
+    line-height: 0;
     text-align: center;
     text-transform: uppercase;
     max-width: 50px;
@@ -60,14 +60,17 @@ div.ScoreDisplay.UserTurn {
   div.ScoreElement:first-child {
     border-bottom-color: var(--mdc-theme-puzzle-game-turn-highlight, #5fc405);
   }
+
   div.ScoreElement:last-child {
     opacity: 0.7;
   }
 }
+
 div.ScoreDisplay.RobotTurn {
   div.ScoreElement:first-child {
     opacity: 0.7;
   }
+
   div.ScoreElement:last-child {
     border-bottom-color: var(--mdc-theme-puzzle-game-turn-highlight, #5fc405);
   }

@@ -1,15 +1,12 @@
-import React, { PointerEvent, TouchEvent, useRef, useState, useEffect } from 'react';
-
 import useDeviceDetect from 'app/hooks/useDeviceDetect';
+import { RobotHeadSwipeDirection } from 'features/wordle/components/robot/RobotSolver.types';
 import { getLogStyles } from 'features/wordle/PuzzleWordle-helpers';
-// import { isAnimatedToVisible, OAnimationCls } from '../../RobotAnimations';
-import { RobotHeadSwipeDirection } from '../../RobotSolver.types';
-
-import styles from './RobotHead.module.scss';
+import React, { PointerEvent, TouchEvent, useEffect, useRef, useState } from 'react';
 import { isAnimatedToVisible, OAnimationCls } from '../../RobotAnimations';
+import styles from './RobotHead.module.scss';
 
 type EyesVariant = 'open' | 'closed' | 'squint' | 'happy' | 'sad' | 'none';
-export type DisplayPosition = 'hidden' | 'onlyAntenaUp' | 'halfWay' | 'fullyUp' | 'none';
+export type DisplayPosition = 'hidden' | 'onlyAntennaUp' | 'halfWay' | 'fullyUp' | 'none';
 type EmotionVariant = 'none' | 'sad' | 'happy' | 'thinking' | 'neutral';
 
 type RobotHeadProps = {
@@ -137,8 +134,8 @@ const RobotHead: React.FC<RobotHeadProps> = ({
         case 'hidden':
           animation = 'robot--off';
           break;
-        case 'onlyAntenaUp':
-          animation = 'robot--antena';
+        case 'onlyAntennaUp':
+          animation = 'robot--antenna';
           break;
         case 'halfWay':
           animation =
@@ -163,9 +160,10 @@ const RobotHead: React.FC<RobotHeadProps> = ({
   };
 
   return (
-    <div 
-      itemID="RobotHeadWrapper" 
-      className={`${styles.RobotHead} ${animationCls} ${robotInitCls} ${props.className || ''}`}>
+    <div
+      itemID="RobotHeadWrapper"
+      className={`${styles.RobotHead} ${animationCls} ${robotInitCls} ${props.className || ''}`}
+    >
       <div
         itemID="RobotHeadDisplay"
         className={styles.RobotImage}

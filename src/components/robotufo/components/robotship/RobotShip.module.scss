@@ -1,0 +1,19 @@
+@use 'src/scss/index.module.scss' as *;
+
+
+.RobotShip {
+  &Container {
+    @include flexBase();
+    width: 299px;
+    height: auto;
+    aspect-ratio: 299 / 72;
+    user-select: none;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &Image {
+    width: 100%;
+    height: auto;
+  }
+}

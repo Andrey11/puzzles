@@ -36,8 +36,8 @@ type WordleVersusGameProps = {
 };
 
 const WordleVersusGame: React.FC<WordleVersusGameProps> = ({isInit}: WordleVersusGameProps) => {
-  const guessRowTargetRef: React.RefObject<any> = useRef(null);
-  const overlayRef: React.RefObject<any> = useRef(null);
+  const guessRowTargetRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLElement>(null);
 
   const dispatch = useAppDispatch();
 

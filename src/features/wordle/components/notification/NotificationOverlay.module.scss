@@ -12,7 +12,7 @@
   transform: translate(-50%, -50%) !important;
   line-height: 28px;
   border-color: rgba(9, 19, 9, 0.5);
-  box-shadow:  0px 0px 5px 1px rgb(9 19 9 / 50%);
+  box-shadow: 0 0 5px 1px rgb(9 19 9 / 50%);
   padding: 2px;
 }
 
@@ -23,30 +23,35 @@
 }
 
 .NotificationWrapper {
+
   &.InvalidWord,
   &.UserWonRound,
   &.UserLostRound,
   &.RobotPickingWord {
     opacity: 1;
   }
+
   &.InvalidWord {
     > .NotificationComponent {
       background-color: var(--mdc-theme-puzzle-error-notification, #091309);
       color: var(--mdc-theme-puzzle-error-on-notification, #f2f1f1);
     }
   }
+
   &.UserWonRound {
     > .NotificationComponent {
       background-color: var(--mdc-theme-puzzle-win-notification, #5fc405);
       color: var(--mdc-theme-puzzle-win-on-notification, #f2f1f1);
     }
   }
+
   &.UserLostRound {
     > .NotificationComponent {
       background-color: var(--mdc-theme-puzzle-loss-notification, #ffb003);
       color: var(--mdc-theme-puzzle-loss-on-notification, #f2f1f1);
     }
   }
+
   &.RobotPickingWord {
     > .NotificationComponent {
       background-color: var(--mdc-theme-puzzle-secondary, #0c63e4);
@@ -54,8 +59,3 @@
     }
   }
 }
-
-
-  
-  
-  

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk, RootState } from '../../../../app/store';
 import {
   generateColorsForUserGuess,
@@ -7,22 +7,10 @@ import {
   numberToRowKey,
   roundKeyToNumber,
 } from '../../PuzzleWordle-helpers';
-import {
-  IGameRoundState,
-  IWordleGameState,
-  RoundKey,
-  ROUND_IDS,
-} from '../../PuzzleWordle.types';
-import {
-  setRobotGuessWordStatus,
-  setRoundComplete,
-} from '../robot/robotSolutionSlice';
+import { IGameRoundState, IWordleGameState, ROUND_IDS, RoundKey } from '../../PuzzleWordle.types';
+import { setRobotGuessWordStatus, setRoundComplete } from '../robot/robotSolutionSlice';
 
-import {
-  resetRowGroup,
-  updateWordByRowId,
-  updateWordColorsByRowId,
-} from '../rowgroup/rowGroupSlice';
+import { resetRowGroup, updateWordByRowId, updateWordColorsByRowId } from '../rowgroup/rowGroupSlice';
 
 export const onSubmitRobotGuess = (): AppThunk => (dispatch, getState) => {
   const currentGameState: IWordleGameState = getCurrentGame(getState());
@@ -47,9 +35,7 @@ export const onSubmitRobotGuess = (): AppThunk => (dispatch, getState) => {
 
     dispatch(updateWordColorsByRowId(updateWordLetterColorsPayload));
     if (!isUserGame) {
-      dispatch(
-        setRobotGuessWordStatus({ word: guessWord.join(''), colors: colors })
-      );
+      dispatch(setRobotGuessWordStatus({ word: guessWord.join(''), colors: colors }));
     }
 
     if (isMatch) {
@@ -165,34 +151,23 @@ export const {
   resetGame,
 } = wordleSolverSlice.actions;
 
-export const isWonGame = (state: RootState): boolean =>
-  state.puzzle.wordlesolver.isWon === true;
-export const isLostGame = (state: RootState): boolean =>
-  state.puzzle.wordlesolver.isLost === true;
+export const isWonGame = (state: RootState): boolean => state.puzzle.wordlesolver.isWon === true;
+export const isLostGame = (state: RootState): boolean => state.puzzle.wordlesolver.isLost === true;
 
-export const getCurrentRoundKey = (state: RootState): RoundKey =>
-  state.puzzle.wordlesolver.currentRound;
-export const getCurrentRoundAsNumber = (state: RootState): number =>
-  roundKeyToNumber(getCurrentRoundKey(state));
-export const getWOD = (state: RootState): string =>
-  state.puzzle.wordlesolver.wod;
-export const getCurrentGame = (state: RootState): IWordleGameState =>
-  state.puzzle.wordlesolver;
-export const getGameRoundStateByRoundKey = (
-  state: RootState,
-  roundKey: RoundKey
-): IGameRoundState => state.puzzle.wordlesolver.rounds[roundKey];
+export const getCurrentRoundKey = (state: RootState): RoundKey => state.puzzle.wordlesolver.currentRound;
+export const getCurrentRoundAsNumber = (state: RootState): number => roundKeyToNumber(getCurrentRoundKey(state));
+export const getWOD = (state: RootState): string => state.puzzle.wordlesolver.wod;
+export const getCurrentGame = (state: RootState): IWordleGameState => state.puzzle.wordlesolver;
+export const getGameRoundStateByRoundKey = (state: RootState, roundKey: RoundKey): IGameRoundState =>
+  state.puzzle.wordlesolver.rounds[roundKey];
 export const getCurrentGameRoundState = (state: RootState): IGameRoundState =>
   getGameRoundStateByRoundKey(state, getCurrentRoundKey(state));
-export const isLastRound = (state: RootState): boolean =>
-  getCurrentRoundAsNumber(state) === ROUND_IDS.ROUND_6;
-export const getAllGuessWords = (state: RootState): Array<string> => {
-  const rounds: Record<RoundKey, IGameRoundState> =
-    getCurrentGame(state).rounds;
-  return Object.keys(rounds)
-    .map((rd: string) => rounds[rd as RoundKey].guessWord.join(''))
-    .filter((word: string) => word.length === 0);
-};
+export const isLastRound = (state: RootState): boolean => getCurrentRoundAsNumber(state) === ROUND_IDS.ROUND_6;
+export const getAllGuessWords = createSelector([getCurrentGame], (game) =>
+  Object.values(game.rounds)
+    .map((round) => round.guessWord.join(''))
+    .filter((word) => word.length > 0)
+);
 export const shouldRobotSolvePuzzle = (state: RootState) =>
   !isLostGame(state) && !isWonGame(state) && getWOD(state).length > 0;
 

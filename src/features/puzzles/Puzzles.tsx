@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { IPuzzleCardProps, PUZZLES } from 'app/App.types';
+import { IPuzzleCardProps, PuzzleType } from 'app/App.types';
 import {
   getActivePuzzle,
   getPuzzleCards,
@@ -13,7 +11,6 @@ import {
 } from 'app/appSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
 import { RootState } from 'app/store';
-
 import PuzzleCard from 'components/card/PuzzleCard';
 import { IHeaderItem } from 'components/header/PuzzleHeader';
 import {
@@ -22,6 +19,8 @@ import {
   isDictionaryLoaded,
 } from 'features/wordle/components/dictionary/wordleDictionarySlice';
 import { getLogStyles } from 'features/wordle/PuzzleWordle-helpers';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import styles from './Puzzles.module.scss';
 
@@ -54,16 +53,14 @@ const Puzzles: React.FC = () => {
   const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
   const dictionaryStatus = useAppSelector(getDictionaryStatus);
 
-  const isHelpHeaderAction = useSelector((state: RootState) =>
-    isHeaderItemActionByType(state, 'ACTION_HELP')
-  );
+  const isHelpHeaderAction = useSelector((state: RootState) => isHeaderItemActionByType(state, 'ACTION_HELP'));
 
   useEffect(() => {
     if (!isInit) {
       setIsInit(true);
       // console.log(...PuzzleLog.logSuccess('initializing'));
-    } else if (isInit && activePuzzle !== PUZZLES.LOBBY) {
-      dispatch(setActivePuzzle(PUZZLES.LOBBY));
+    } else if (isInit && activePuzzle !== PuzzleType.LOBBY) {
+      dispatch(setActivePuzzle(PuzzleType.LOBBY));
       dispatch(setHeaderTitle('PUZZLES!!!'));
       dispatch(setHeaderItems(PuzzlesHeaderSettings));
       dispatch(setShowHeaderDictionaryIcon(false));
@@ -83,21 +80,15 @@ const Puzzles: React.FC = () => {
   /** HEADER ACTION HANDLERS EFFECT */
   useEffect(() => {
     if (isHelpHeaderAction) {
-      console.log(
-        ...PuzzlesLog.logAction('help button in header was pressed')
-      );
+      console.log(...PuzzlesLog.logAction('help button in header was pressed'));
       dispatch(setHeaderItemAction(''));
     }
   }, [dispatch, isHelpHeaderAction]);
 
   const renderPuzzleCards = () =>
-    puzzleCards.map((cardProps: IPuzzleCardProps) => (
-      <PuzzleCard key={cardProps.puzzleName} {...cardProps} />
-    ));
+    puzzleCards.map((cardProps: IPuzzleCardProps) => <PuzzleCard key={cardProps.puzzleName} {...cardProps} />);
 
-  return (
-    <div className={styles.PuzzlesCardContainer}>{renderPuzzleCards()}</div>
-  );
+  return <div className={styles.PuzzlesCardContainer}>{renderPuzzleCards()}</div>;
 };
 
 export default Puzzles;

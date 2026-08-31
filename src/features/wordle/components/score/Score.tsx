@@ -27,7 +27,7 @@ const Score: React.FC = () => {
       ? styles.UserTurn
       : styles.RobotTurn;
   }, [isUserTurn, matchFinished, matchStarted]);
-  const renderScoreElement = (DisplayIcon: Icon, score: number): JSX.Element => {
+  const renderScoreElement = (DisplayIcon: Icon, score: number): React.JSX.Element => {
     return (
       <div className={styles.ScoreElement}>
         <div className={styles.ScoreLabel}><DisplayIcon /></div>

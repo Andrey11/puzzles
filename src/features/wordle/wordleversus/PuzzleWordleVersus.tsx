@@ -4,8 +4,9 @@ import { getLogStyles } from '../PuzzleWordle-helpers';
 
 import styles from './PuzzleWordleVersus.module.scss';
 
+import { PuzzleType } from 'app/App.types';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
-import { PUZZLES } from 'app/App.types';
+import { useSelector } from 'react-redux';
 import {
   getActivePuzzle,
   isHeaderItemActionByType,
@@ -15,7 +16,17 @@ import {
   setHeaderTitle,
   setShowHeaderDictionaryIcon,
 } from '../../../app/appSlice';
+import { RootState } from '../../../app/store';
+import { IHeaderItem } from '../../../components/header/PuzzleHeader';
+import {
+  createDictionary,
+  getDictionaryStatus,
+  isDictionaryLoaded,
+} from '../components/dictionary/wordleDictionarySlice';
 import { useDialog } from '../components/modal/Dialog';
+import RobotSolver from '../components/robot/RobotSolver';
+import Score from '../components/score/Score';
+import WordleVersusGameSettings from './components/roundselector/GameSettingsSelector';
 import WordleVersusGame from './game/WordleVersusGame';
 import { addWord, isLostGame, isUserGame, isWonGame, onSubmitGuess } from './game/wordleVersusGameSlice';
 import {
@@ -30,17 +41,6 @@ import {
   shouldRobotSolvePuzzle,
   startWordleVersusMatch,
 } from './wordleVersusSlice';
-import Score from '../components/score/Score';
-import {
-  createDictionary,
-  getDictionaryStatus,
-  isDictionaryLoaded,
-} from '../components/dictionary/wordleDictionarySlice';
-import WordleVersusGameSettings from './components/roundselector/GameSettingsSelector';
-import RobotSolver from '../components/robot/RobotSolver';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../app/store';
-import { IHeaderItem } from '../../../components/header/PuzzleHeader';
 
 type IPuzzleWordleVersusProps = {
   games?: number;
@@ -90,7 +90,7 @@ const WordleVsHeaderSettings: Array<IHeaderItem> = [
 const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
   games = 1,
 }: IPuzzleWordleVersusProps) => {
-  const bodyContainerRef = useRef(null);
+  const bodyContainerRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
 
   const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
@@ -143,8 +143,8 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
     if (!isInit) {
       setIsInit(true);
       // console.log(...WordleVsLog.logSuccess('initializing'));
-    } else if (isInit && activePuzzle !== PUZZLES.WORDLE_VERSUS) {
-      dispatch(setActivePuzzle(PUZZLES.WORDLE_VERSUS));
+    } else if (isInit && activePuzzle !== PuzzleType.WORDLE_VERSUS) {
+      dispatch(setActivePuzzle(PuzzleType.WORDLE_VERSUS));
       dispatch(setHeaderTitle('Wordle Versus'));
       dispatch(setHeaderItems(WordleVsHeaderSettings));
       console.log(...WordleVsLog.logAction('activating wordle versus'));
@@ -197,7 +197,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
   /** END MATCH EFFECT */
   useEffect(() => {
     if (!isReady) return;
-    
+
     let timeoutId: NodeJS.Timeout;
     if (matchFinished) {
       console.log(...WordleVsLog.logSuccess('match finished, show EoG dialog'));
@@ -233,7 +233,7 @@ const PuzzleWordleVersus: React.FunctionComponent<IPuzzleWordleVersusProps> = ({
       </section>
 
       <section itemID="GameBoardWithKeyboardDisplay">
-        <WordleVersusGame isInit={isReady}/>
+        <WordleVersusGame isInit={isReady} />
       </section>
     </div>
   );

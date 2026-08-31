@@ -1,11 +1,10 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../app/store";
-import ToggleButton from "react-bootstrap/ToggleButton";
-import { KeyboardLetter, LETTER_COLORS } from "./PuzzlesKeyboard.types";
-import { getKeyboardLetter } from "./puzzlesKeyboardSlice";
-
-import styles from "./PuzzlesKeyboard.module.scss";
+import { RootState } from 'app/store';
+import React from 'react';
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import { useSelector } from 'react-redux';
+import styles from './PuzzlesKeyboard.module.scss';
+import { KeyboardLetter, LETTER_COLORS } from './PuzzlesKeyboard.types';
+import { getKeyboardLetter } from './puzzlesKeyboardSlice';
 
 interface LetterKeyProps {
   letterString: string;
@@ -24,8 +23,8 @@ const LetterKey: React.FC<LetterKeyProps> = ({
   // checked = false,
   onPressCallback = () => {},
 }: LetterKeyProps) => {
-  const { letter, letterColor, disabled, checked } = useSelector(
-    (state: RootState) => getKeyboardLetter(state, letterString)
+  const { letter, letterColor, disabled, checked } = useSelector((state: RootState) =>
+    getKeyboardLetter(state, letterString)
   );
 
   const letterId = `letter_${letter}`;
@@ -33,6 +32,7 @@ const LetterKey: React.FC<LetterKeyProps> = ({
   return (
     <section key={`key_${letterId}`}>
       <ToggleButton
+        id={letterId}
         className={styles.LetterButton}
         checked={checked}
         variant={LETTER_COLORS[letterColor]}

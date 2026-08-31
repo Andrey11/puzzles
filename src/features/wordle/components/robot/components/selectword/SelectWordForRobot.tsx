@@ -17,8 +17,8 @@ const SelectWordForRobot: React.FC<SelectWordForRobotProps> = (props) => {
 
   const selectableWords = useAppSelector(getSelectableWords);
 
-  const renderSelectedWord = (): Array<JSX.Element> => {
-    let chars: Array<JSX.Element> = [];
+  const renderSelectedWord = (): Array<React.JSX.Element> => {
+    let chars: Array<React.JSX.Element> = [];
     for (let i = 0; i < MAX_CHARS; i++) {
       let char: string = '';
       char = selectedWord.at(i) || '';

@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { Backspace, FileDiff, FileEarmarkCheck, FileX } from 'react-bootstrap-icons';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import ToggleButton from 'react-bootstrap/ToggleButton';
-import { Backspace, FileEarmarkCheck, FileDiff, FileX } from 'react-bootstrap-icons';
 
 import {
+  getIndexByLetterCode,
+  getLetterByIndexCode,
   getVariantBySelectedMatchType,
   intersectionArray,
   removeNonExistentLetterIndexes,
-  getIndexByLetterCode,
-  getLetterByIndexCode,
 } from '../../PuzzleWordle-helpers';
 import {
   IAnalyzerData,
@@ -22,16 +22,16 @@ import {
   MATCH_TYPE_NONE,
 } from '../../PuzzleWordle.types';
 
-import { allAvailableWords } from '../../PuzzleWords';
-import MatchTypeRadioGroup from '../radiogroup/MatchTypeRadioGroup';
-import PuzzleWordleCell from '../cell/PuzzleWordleCell';
-import MatchedWordsDialog from './dialog/MatchedWordsDialog';
 import useAddEventListener from '../../../../app/hooks/useAddEventListener';
 import useDeviceDetect from '../../../../app/hooks/useDeviceDetect';
+import { allAvailableWords } from '../../PuzzleWords';
+import PuzzleWordleCell from '../cell/PuzzleWordleCell';
+import MatchTypeRadioGroup from '../radiogroup/MatchTypeRadioGroup';
+import MatchedWordsDialog from './dialog/MatchedWordsDialog';
 
-import styles from './PuzzleDetailsStats.module.scss';
 import { useAppSelector } from 'app/hooks/hooks';
 import { getDictionary, isDictionaryLoaded } from '../dictionary/wordleDictionarySlice';
+import styles from './PuzzleDetailsStats.module.scss';
 
 type IPuzzleDetailStatsProps = {
   analyzeSolution?: IAnalyzerData;
@@ -53,9 +53,8 @@ const getInitLetterSpots = (): ISelectedLetters => {
 const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
   analyzeSolution,
 }: IPuzzleDetailStatsProps) => {
-
-  const statsOverlayRef = useRef(null);
-  const overlayRef = useRef(null);
+  const statsOverlayRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   /** Dictionary redux props */
   const dictionary = useAppSelector(getDictionary);
   const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
@@ -118,7 +117,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
       doCalculateStats();
       setCalculate(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calculate, disableButton]);
 
   const hasSelectedLetters = () => {
@@ -127,7 +126,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
 
   const handleLetterChange = useCallback(
     (letter: string, positionNum?: number) => {
-      console.log(`handling letter change: letter = (${letter}) in position ${positionNum}, and ${letterSpots.spots}`);
+      // console.log(`handling letter change: letter = (${letter}) in position ${positionNum}, and ${letterSpots.spots}`);
       const missingLetterIndex = missingLetters.indexOf(letter);
       if (missingLetterIndex !== -1) {
         const copyMissingLettersArray = [...missingLetters];
@@ -163,7 +162,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
     }
     const cellIndex = selectedCell.position;
     const spotsCopy = [...letterSpots.spots];
-    console.log(`onDeletePressed: cell:${cellIndex} letter: ${spotsCopy[cellIndex].letter}`);
+    // console.log(`onDeletePressed: cell:${cellIndex} letter: ${spotsCopy[cellIndex].letter}`);
     if (spotsCopy[cellIndex].letter !== '') {
       spotsCopy[cellIndex].letter = '';
       spotsCopy[cellIndex].matchType = MATCH_TYPE_NONE;
@@ -217,11 +216,11 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
           if (spot.letter !== '' && spot.matchType === MATCH_TYPE_EXISTS) {
             const letterCode = getIndexByLetterCode(spot.letter);
             let letterIndexes = dictionary.letters[letterCode];
-  
+
             letterIndexes = letterIndexes.filter(
               (wIndex: number) => dictionary.words[wIndex].charAt(spot.position) !== spot.letter
             );
-  
+
             if (wordIndexes.length === 0) {
               wordIndexes = letterIndexes;
             } else {
@@ -229,7 +228,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
             }
           }
         });
-        
+
         if (wordIndexes.length === 0) {
           shouldReturnEmpty = true;
         }
@@ -239,7 +238,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
         return [];
       }
 
-      if (wordIndexes.length === 0 ) {
+      if (wordIndexes.length === 0) {
         wordIndexes = Array.from(Array(allAvailableWords.length).keys());
       }
 
@@ -251,7 +250,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
 
   const doCalculateStats = () => {
     if (dictionary && (hasSelectedLetters() || missingLetters.length > 0)) {
-      console.log('do calculate');
+      // console.log('do calculate');
       const availableWords: Array<number> = getAvailableWordIndexes();
       const wordCount: number = availableWords.length;
       setStatResult(`${wordCount} WORD${wordCount !== 1 ? 'S' : ''}`);
@@ -273,7 +272,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
     const stateVariant = getVariantBySelectedMatchType(selectedMatchType);
     const selectedMissingLetterVariant = 'secondary';
 
-    const letterElements: Array<JSX.Element> = dictionaryLetters.map((liw: any, index: number) => {
+    const letterElements: Array<React.JSX.Element> = dictionaryLetters.map((liw: any, index: number) => {
       const letter: string = getLetterByIndexCode(index);
       const letterId = `letter_${letter}`;
       const isSelectedMissingLetter = missingLetters.includes(letter);
@@ -281,11 +280,12 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
       const currentBadgeVariant = isSelectedMissingLetter
         ? `outline-${selectedMissingLetterVariant}`
         : selectedMatchType !== 'missing'
-        ? currentVariant
-        : selectedMissingLetterVariant;
+          ? currentVariant
+          : selectedMissingLetterVariant;
       return (
         <section key={`key_${letterId}`}>
           <ToggleButton
+            id={letterId}
             className={styles.LetterButton}
             checked={isSelectedMissingLetter}
             variant={currentVariant}
@@ -295,7 +295,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
               if (!isMobile) {
                 event.currentTarget.blur();
                 handleLetterChange(letter);
-                console.log('Click event');
+                // console.log('Click event');
               }
             }}
             onTouchEnd={(event: React.TouchEvent<HTMLButtonElement>) => {
@@ -303,7 +303,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
               if (isMobile) {
                 event.currentTarget.blur();
                 handleLetterChange(letter);
-                console.log('Touch event');
+                // console.log('Touch event');
               }
             }}
             value={letter}
@@ -317,9 +317,9 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
         </section>
       );
     });
-    const spacers: Array<JSX.Element> = [<div key="letter_spacer1" className={styles.Spacer}></div>];
+    const spacers: Array<React.JSX.Element> = [<div key="letter_spacer1" className={styles.Spacer}></div>];
     const actualWidth = window.document.body.getBoundingClientRect().width;
-    const smallestWidths = (isDeviceWidthXXS() || isDeviceWidthXS() || actualWidth < 410);
+    const smallestWidths = isDeviceWidthXXS() || isDeviceWidthXS() || actualWidth < 410;
     const biggestWidths = actualWidth > 830;
     if (smallestWidths || (isMobile && smallestWidths)) {
       spacers.push(<div key="letter_spacer2" className={styles.Spacer}></div>);
@@ -340,7 +340,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
           if (!isMobile) {
             event.currentTarget.blur();
             onDeletePressed();
-            console.log('Click Delete event');
+            // console.log('Click Delete event');
           }
         }}
         onTouchEnd={(event: React.TouchEvent<HTMLButtonElement>) => {
@@ -348,7 +348,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
           if (isMobile) {
             event.currentTarget.blur();
             onDeletePressed();
-            console.log('Touch Delete event');
+            // console.log('Touch Delete event');
           }
         }}
         className={styles.DeleteButton}
@@ -367,7 +367,7 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
     return spot.matchType === MATCH_TYPE_EXACT ? 'green' : 'orange';
   };
 
-  const getCounts = (): JSX.Element => {
+  const getCounts = (): React.JSX.Element => {
     const totalBadge = <Badge bg="primary">{dictionary?.words.length} WORDS</Badge>;
     return (
       <div ref={statsOverlayRef} className={styles.TotalCountStats}>
@@ -383,18 +383,22 @@ const PuzzleDetailsStats: React.FunctionComponent<IPuzzleDetailStatsProps> = ({
       </div>
     );
   };
-  
-  const getMatchTypeLabel = (icon: JSX.Element, labelShortText: string, labelText: string): JSX.Element => {
+
+  const getMatchTypeLabel = (icon: React.JSX.Element, labelShortText: string, labelText: string): React.JSX.Element => {
     const lessThanLaptopWidth = deviceWidth === 's' || deviceWidth === 'm';
     if (isDeviceWidthXXS() || isDeviceWidthXS()) {
       return icon;
     } else if (isMobile || lessThanLaptopWidth) {
       return <>{labelShortText}</>;
     }
-    return <>{icon}{' '}{labelText}</>;
+    return (
+      <>
+        {icon} {labelText}
+      </>
+    );
   };
 
-  useAddEventListener('keyup' , onDeletePressed);
+  useAddEventListener('keyup', onDeletePressed);
 
   return (
     <>

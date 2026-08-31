@@ -1,4 +1,4 @@
-@import 'src/scss/mixins.module.scss';
+@use 'src/scss/mixins.module.scss' as *;
 
 $flip-degree: 180deg;
 
@@ -11,9 +11,11 @@ div.Cell {
   transform-style: preserve-3d;
   perspective: 2000px;
   border-color: var(--mdc-theme-puzzle-cell-border, #645a5a);
+  background-color: white;
 
   &.Selected {
     box-sizing: border-box;
+
     > input {
       outline: var(--mdc-theme-puzzle-cell-outline, #2684ff) auto 1px;
       border-radius: 3px;
@@ -25,10 +27,12 @@ div.Cell {
     background-color: var(--mdc-theme-puzzle-exists, #ffb003);
     border-color: var(--mdc-theme-puzzle-exists, #ffb003);
   }
+
   &.ExactMatch {
     background-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
     border-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
   }
+
   &.Miss {
     background-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
     border-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
@@ -39,6 +43,7 @@ div.Cell {
   &.ExactMatch,
   &.Miss {
     transform: rotateY($flip-degree);
+
     > input {
       transform: rotateY($flip-degree);
       transition-delay: inherit;
@@ -59,12 +64,14 @@ div.Cell {
     border-style: solid;
     border-color: inherit;
   }
-  
+
   input.showEmptyStyle {
+
     // make border ligher when cell is empty
     &:is([value=""]) {
       border-color: var(--mdc-theme-puzzle-empty-cell-border, #c8bfbf);
     }
+
     &:not([value=""]) {
       @include scale-animation(0.2s, 1);
     }

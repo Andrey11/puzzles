@@ -1,49 +1,35 @@
-import React, { useEffect, useState } from "react";
-import {
-  LOG_CLS_DATA,
-  LOG_CLS_FAILURE,
-  LOG_CLS_INFO,
-  LOG_CLS_SUCCESS,
-} from "../../PuzzleWordle-helpers";
-import { Letters } from "../../PuzzleWordle.types";
-
-import WordleDictionaryWord from "../dictionary/WordleDictionaryWord";
-
-import styles from "./AlphabetScrollList.module.scss";
+import { useAppSelector } from 'app/hooks/hooks';
+import React, { useEffect, useState } from 'react';
+import { LOG_CLS_DATA, LOG_CLS_FAILURE, LOG_CLS_INFO, LOG_CLS_SUCCESS } from '../../PuzzleWordle-helpers';
+import { Letters } from '../../PuzzleWordle.types';
+import { getDictionary } from '../dictionary/wordleDictionarySlice';
+import WordleDictionaryWord from '../dictionary/WordleDictionaryWord';
+import styles from './AlphabetScrollList.module.scss';
 // import { useAppSelector } from "app/hooks/hooks";
 // import { isScreenDictionaryActive } from "../../wordlesolver/wordleSlice";
-import { useAppSelector } from "app/hooks/hooks";
-import { getDictionary } from "../dictionary/wordleDictionarySlice";
 
 type IAlphabetScrollWordsByLetterProps = {
   letter: string;
   isActiveLetter: boolean;
 };
 
-const AlphabetScrollWordsByLetter: React.FunctionComponent<
-  IAlphabetScrollWordsByLetterProps
-> = ({ letter, isActiveLetter }: IAlphabetScrollWordsByLetterProps) => {
+const AlphabetScrollWordsByLetter: React.FunctionComponent<IAlphabetScrollWordsByLetterProps> = ({
+  letter,
+  isActiveLetter,
+}: IAlphabetScrollWordsByLetterProps) => {
   const dictionary = useAppSelector(getDictionary);
   const wordsStartingWithLetter = dictionary.wordsBy[letter as Letters];
   const isActiveScreen = true; // useAppSelector(isScreenDictionaryActive);
-  const [wordElements, setWordElements] = useState<Array<JSX.Element>>();
+  const [wordElements, setWordElements] = useState<Array<React.JSX.Element>>();
 
   useEffect(() => {
     if (!wordElements) {
-      console.log(
-        `%cRendering words for letter %c${letter}`,
-        LOG_CLS_INFO,
-        LOG_CLS_DATA
-      );
-      const puzzleWords = wordsStartingWithLetter.map(
-        (wd: string, index: number) => {
-          const wordKey = `words_by_${letter}_${wd}`;
-          const wordId = index === 0 ? `words_by_${letter}` : wordKey;
-          return (
-            <WordleDictionaryWord wordId={wordId} key={wordKey} word={wd} />
-          );
-        }
-      );
+      console.log(`%cRendering words for letter %c${letter}`, LOG_CLS_INFO, LOG_CLS_DATA);
+      const puzzleWords = wordsStartingWithLetter.map((wd: string, index: number) => {
+        const wordKey = `words_by_${letter}_${wd}`;
+        const wordId = index === 0 ? `words_by_${letter}` : wordKey;
+        return <WordleDictionaryWord wordId={wordId} key={wordKey} word={wd} />;
+      });
 
       // Add letter header row
       puzzleWords.unshift(renderLetterTitleRow(letter));
@@ -52,7 +38,7 @@ const AlphabetScrollWordsByLetter: React.FunctionComponent<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderLetterTitleRow = (startingLetter: string): JSX.Element => {
+  const renderLetterTitleRow = (startingLetter: string): React.JSX.Element => {
     const rowKey = `l_${startingLetter}`;
     const headerId = `letter_header_row_${startingLetter}`;
     return (
@@ -62,7 +48,7 @@ const AlphabetScrollWordsByLetter: React.FunctionComponent<
     );
   };
 
-  const displayedWords = (maxWords: boolean): ReadonlyArray<JSX.Element> => {
+  const displayedWords = (maxWords: boolean): ReadonlyArray<React.JSX.Element> => {
     if (wordElements && isActiveScreen) {
       const puzzleWords = [...wordElements];
       if (wordsStartingWithLetter.length > 20 && maxWords) {
@@ -75,16 +61,14 @@ const AlphabetScrollWordsByLetter: React.FunctionComponent<
           LOG_CLS_INFO,
           maxWords ? LOG_CLS_SUCCESS : LOG_CLS_FAILURE
         );
-      }      
+      }
       return puzzleWords.slice(0, maxWords ? puzzleWords.length - 1 : 20);
     }
 
     return [<></>];
   };
 
-  return (
-    <div key={`wd_start_by_${letter}`}>{displayedWords(isActiveLetter)}</div>
-  );
+  return <div key={`wd_start_by_${letter}`}>{displayedWords(isActiveLetter)}</div>;
 };
 
 export default AlphabetScrollWordsByLetter;

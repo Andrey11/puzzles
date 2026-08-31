@@ -1,23 +1,18 @@
-import React from "react";
+import React from 'react';
 
-export const MATCH_TYPE_EXACT = "exact";
-export const MATCH_TYPE_EXISTS = "exists";
-export const MATCH_TYPE_MISSING = "missing";
-export const MATCH_TYPE_NONE = "none";
+export const MATCH_TYPE_EXACT = 'exact';
+export const MATCH_TYPE_EXISTS = 'exists';
+export const MATCH_TYPE_MISSING = 'missing';
+export const MATCH_TYPE_NONE = 'none';
 
-export declare type MatchType =
-  | "exact"
-  | "exists"
-  | "missing"
-  | "none"
-  | string;
+export declare type MatchType = 'exact' | 'exists' | 'missing' | 'none' | string;
 
-export declare type WordleStatus = "idle" | "loading" | "failed" | "loaded";
+export declare type WordleStatus = 'idle' | 'loading' | 'failed' | 'loaded';
 
 export enum WordleScreen {
-  SOLVER = "0",
-  ANALYZER = "1",
-  DICTIONARY = "2",
+  SOLVER = '0',
+  ANALYZER = '1',
+  DICTIONARY = '2',
 }
 
 export enum ROUND_IDS {
@@ -30,7 +25,6 @@ export enum ROUND_IDS {
 }
 
 export type RoundKey = keyof typeof ROUND_IDS;
-
 
 export interface IGameRoundState {
   roundId: ROUND_IDS;
@@ -47,8 +41,34 @@ export interface IWordleGameState {
   isLost?: boolean;
 }
 
-export type Letters =|"A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z";
-  
+export type Letters =
+  | 'A'
+  | 'B'
+  | 'C'
+  | 'D'
+  | 'E'
+  | 'F'
+  | 'G'
+  | 'H'
+  | 'I'
+  | 'J'
+  | 'K'
+  | 'L'
+  | 'M'
+  | 'N'
+  | 'O'
+  | 'P'
+  | 'Q'
+  | 'R'
+  | 'S'
+  | 'T'
+  | 'U'
+  | 'V'
+  | 'W'
+  | 'X'
+  | 'Y'
+  | 'Z';
+
 export interface IWordleDictionaryState {
   activeLetter: string;
 }
@@ -157,7 +177,7 @@ export interface IStat {
 
 export interface IMatchType {
   type: string;
-  label: JSX.Element | React.ReactNode;
+  label: React.JSX.Element | React.ReactNode;
   variant: string;
 }
 
@@ -191,12 +211,12 @@ export interface ISelectedLetters {
  * l:   768 <= width <= 1024
  * xl  1024 < width <= ...
  */
-export const DEVICE_WIDTH_XXS = "xxs";
-export const DEVICE_WIDTH_XS = "xs";
-export const DEVICE_WIDTH_S = "s";
-export const DEVICE_WIDTH_M = "m";
-export const DEVICE_WIDTH_L = "l";
-export const DEVICE_WIDTH_XL = "xl";
+export const DEVICE_WIDTH_XXS = 'xxs';
+export const DEVICE_WIDTH_XS = 'xs';
+export const DEVICE_WIDTH_S = 's';
+export const DEVICE_WIDTH_M = 'm';
+export const DEVICE_WIDTH_L = 'l';
+export const DEVICE_WIDTH_XL = 'xl';
 
 export type DeviceWidthSize =
   | typeof DEVICE_WIDTH_XXS
@@ -207,7 +227,7 @@ export type DeviceWidthSize =
   | typeof DEVICE_WIDTH_XL;
 
 /**
-   * 
+   *
    * [
   {
     "word": "tesla",
@@ -287,3 +307,12 @@ export interface IWordsDefinitions {
 }
 
 export type WordDefinitionCallback = (lookup: IWordDefinition) => void;
+
+export const RobotState = {
+  Enter: 'Enter',
+  Won: 'Won',
+  Lost: 'Lost',
+  Exit: 'Exit',
+} as const;
+
+export type RobotStateT = (typeof RobotState)[keyof typeof RobotState];

@@ -1,22 +1,14 @@
-import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
-import { getLogStyles, getRandomWord } from '../../PuzzleWordle-helpers';
+import { getLogStyles, getRandomWord } from 'features/wordle/PuzzleWordle-helpers';
+import { robotPickedWod, shouldRobotPickWod } from 'features/wordle/wordleversus/wordleVersusSlice';
+import React, { useEffect, useState } from 'react';
 import { getDictionary } from '../dictionary/wordleDictionarySlice';
-import {
-  robotPickedWod,
-  shouldRobotPickWod,
-} from '../../wordleversus/wordleVersusSlice';
 import {
   analyzeGuessWordStatus,
   getRobotStatus,
   pickNextGuessWordAndStartSolvingPuzzle,
   setRobotStatus,
 } from './robotSolutionSlice';
-// import {
-//   isLostGame,
-//   isWonGame,
-//   onSubmitGuess,
-// } from '../../wordleversus/game/wordleVersusGameSlice';
 import { OnRobotPickedWord, OnSubmitRobotWord } from './RobotSolver.types';
 
 const RobotSolverLog = getLogStyles({
@@ -28,20 +20,21 @@ const ROBOT_SLEEP_TIME: number = 1000;
 const ROBOT_PICK_WORD_TIME: number = 2000;
 
 type RobotSolverProps = {
-  onRobotGuessWord: OnRobotPickedWord;
-  shouldSolvePuzzle: boolean;
-  isWon: boolean;
   isLost: boolean;
-  onSubmitGuess: OnSubmitRobotWord
+  isWon: boolean;
+  shouldSolvePuzzle: boolean;
+  firstGuessWord?: string;
+  onRobotGuessWord: OnRobotPickedWord;
+  onSubmitGuess: OnSubmitRobotWord;
 };
 
 const RobotSolver: React.FC<RobotSolverProps> = ({
-  onRobotGuessWord,
-  shouldSolvePuzzle,
-  isWon,
   isLost,
+  isWon,
+  shouldSolvePuzzle,
+  firstGuessWord,
+  onRobotGuessWord,
   onSubmitGuess,
-
 }: RobotSolverProps) => {
   const [isInit, setIsInit] = useState<boolean>(false);
 
@@ -49,7 +42,6 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
   const robotStatus = useAppSelector(getRobotStatus);
   const dictionary = useAppSelector(getDictionary);
   const shouldPickWod = useAppSelector(shouldRobotPickWod);
-  
 
   useEffect(() => {
     if (!isInit) {
@@ -68,14 +60,14 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
       dispatch(setRobotStatus('robot-picking-word'));
       timeoutId = setTimeout(() => {
         console.log(...RobotSolverLog.logAction(`Starting first round`));
-        const word = getRandomWord();
+        const word = firstGuessWord ?? getRandomWord();
         dispatch(robotPickedWod(word));
         dispatch(setRobotStatus('idle'));
       }, ROBOT_PICK_WORD_TIME);
     }
 
     return () => clearTimeout(timeoutId);
-  }, [dispatch, isInit, shouldPickWod]);
+  }, [dispatch, firstGuessWord, isInit, shouldPickWod]);
 
   useEffect(() => {
     if (isWon || isLost) {
@@ -89,9 +81,7 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
     if (robotStatus === 'idle') {
       setTimeout(() => {
         // console.log(...RobotSolverLog.logAction(`Starting first round`));
-        dispatch(
-          pickNextGuessWordAndStartSolvingPuzzle(dictionary, onRobotGuessWord)
-        );
+        dispatch(pickNextGuessWordAndStartSolvingPuzzle(dictionary, onRobotGuessWord, firstGuessWord));
       }, ROBOT_SLEEP_TIME);
       // console.log(
       //   ...RobotSolverLog.logData(
@@ -116,19 +106,27 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
       //   )
       // );
     } else if (robotStatus === 'analyze-robot-guess-result') {
-      setTimeout(
-        () => dispatch(analyzeGuessWordStatus(dictionary)),
-        ROBOT_SLEEP_TIME
-      );
+      setTimeout(() => dispatch(analyzeGuessWordStatus(dictionary)), ROBOT_SLEEP_TIME);
       // console.log(
       //   ...RobotSolverLog.logData(
       //     `Sleeping for ${ROBOT_SLEEP_TIME / 1000}s before analysis`
       //   )
       // );
     }
-  }, [dispatch, robotStatus, dictionary, isInit, isWon, isLost, shouldSolvePuzzle, onRobotGuessWord, onSubmitGuess]);
+  }, [
+    dispatch,
+    robotStatus,
+    dictionary,
+    isInit,
+    isWon,
+    isLost,
+    shouldSolvePuzzle,
+    firstGuessWord,
+    onRobotGuessWord,
+    onSubmitGuess,
+  ]);
 
-  return <>Robot Is {robotStatus}</>;
+  return <span>Robot Is {robotStatus}</span>;
 };
 
 export default RobotSolver;

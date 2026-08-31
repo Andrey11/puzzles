@@ -1,26 +1,19 @@
 import React, { Suspense } from 'react';
-import { store } from './app/store';
-import { Provider } from 'react-redux';
 import { CCircle } from 'react-bootstrap-icons';
+import { Provider } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
-
 import styles from './App.module.scss';
-import {
-  PuzzlesLoader,
-  WordleSolverLoader,
-  WordleVersusLoader,
-} from './components/puzzleloader/PuzzleLoader';
+import { store } from './app/store';
 import PuzzleHeader from './components/header/PuzzleHeader';
+import { PuzzlesLoader, WordleSolverLoader, WordleVersusLoader } from './components/puzzleloader/PuzzleLoader';
 
-const PuzzleWordleVersus = React.lazy(
-  () => import('./features/wordle/wordleversus/PuzzleWordleVersus')
-);
-const PuzzleWordleSolver = React.lazy(
-  () => import('./features/wordle/wordlesolver/PuzzleWordleSolver')
-);
+const PuzzleWordleVersus = React.lazy(() => import('./features/wordle/wordleversus/PuzzleWordleVersus'));
+const PuzzleWordleSolver = React.lazy(() => import('./features/wordle/wordlesolver/PuzzleWordleSolver'));
 const Puzzles = React.lazy(() => import('./features/puzzles/Puzzles'));
 
 const App: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
     <Provider store={store}>
       <div className={styles.App}>
@@ -35,11 +28,7 @@ const App: React.FC = () => {
                 </Suspense>
               }
             />
-            <Route
-              key="wordle"
-              path="/wordle"
-              errorElement={<div className={styles.PuzzleWordle}>HELLO</div>}
-            >
+            <Route key="wordle" path="/wordle" errorElement={<div className={styles.PuzzleWordle}>HELLO</div>}>
               <Route
                 key="wordle-solver"
                 path="/wordle/solver"
@@ -67,7 +56,7 @@ const App: React.FC = () => {
         </div>
         <footer className={`${styles.AppFooter} text-muted`}>
           <CCircle />
-          &nbsp;2010-2022 Eleventheye
+          &nbsp;2010-{currentYear} Eleventheye
         </footer>
       </div>
     </Provider>

@@ -9,8 +9,8 @@ type WordSelectorCallback = (word: string) => void;
 type WordSelectorProps = { onWordSelected: WordSelectorCallback };
 
 const UserWordSelector: React.FC<WordSelectorProps> = (props) => {
-  const selectRef = useRef<SelectInstance | null>();
-  const targetRef = useRef(null);
+  const selectRef = useRef<SelectInstance<{ value: string; label: string }> | null>(null);
+  const targetRef = useRef<HTMLDivElement>(null);
 
   const dictionary = useAppSelector(getDictionary);
 

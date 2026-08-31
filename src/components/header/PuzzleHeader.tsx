@@ -1,12 +1,12 @@
-import React from 'react';
+import { getHeaderItems, getHeaderTitle, isShowHeaderDictionaryIcon, setHeaderItemAction } from 'app/appSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
 import useDeviceDetect from 'app/hooks/useDeviceDetect';
+import Logo from 'components/logo/Logo';
+import WordleDictionaryOffcanvas from 'features/wordle/components/dictionary/WordleDictionaryOffcanvas';
+import React from 'react';
 import * as Icon from 'react-bootstrap-icons';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { getHeaderItems, getHeaderTitle, isShowHeaderDictionaryIcon, setHeaderItemAction } from 'app/appSlice';
-import WordleDictionaryOffcanvas from 'features/wordle/components/dictionary/WordleDictionaryOffcanvas';
-
 import styles from './PuzzleHeader.module.scss';
 
 export type ItemAction = 'ACTION_BACK' | 'ACTION_SETTINGS' | 'ACTION_HELP' | '';
@@ -38,10 +38,15 @@ const getIconByName = (name: string | undefined): Icon.Icon => {
       icon = Icon.Back;
       break;
     case 'PuzzleFill':
-      icon = Icon.PuzzleFill;
+      icon = Logo as Icon.Icon;
+      // icon = Icon.PuzzleFill;
+      break;
+    case 'Logo':
+      icon = Logo;
       break;
     default:
-      icon = Icon['Puzzle'] as Icon.Icon;
+      // icon = Icon['Puzzle'] as Icon.Icon;
+      icon = Logo as Icon.Icon;
   }
   return icon;
 };
@@ -56,7 +61,7 @@ const PuzzleHeader: React.FC = () => {
 
   const onCallback = (ia: ItemAction) => dispatch(setHeaderItemAction(ia));
 
-  const renderHeaderItems = (position: TPosition): JSX.Element => {
+  const renderHeaderItems = (position: TPosition): React.JSX.Element => {
     return (
       <>
         {headerItems
@@ -66,13 +71,10 @@ const PuzzleHeader: React.FC = () => {
             const action = item.itemAction || 'ACTION_HELP';
             return (
               <section key={item.itemId}>
-                <OverlayTrigger placement='auto' overlay={<Tooltip id={`tooltip-${item.itemId}`}>Tooltip!</Tooltip>}>
-                <span className="d-inline-block">
-                <ItemIcon
-                    className={styles.Item}
-                    onClick={() => onCallback(action)}
-                  />
-                </span>
+                <OverlayTrigger placement="auto" overlay={<Tooltip id={`tooltip-${item.itemId}`}>Tooltip!</Tooltip>}>
+                  <span className="d-inline-block">
+                    <ItemIcon className={styles.Item} onClick={() => onCallback(action)} />
+                  </span>
                 </OverlayTrigger>
               </section>
             );
@@ -81,9 +83,13 @@ const PuzzleHeader: React.FC = () => {
     );
   };
 
-  const getLettersForWord = (word: string, letterCls: string, prefix: string): Array<JSX.Element> => {
+  const getLettersForWord = (word: string, letterCls: string, prefix: string): Array<React.JSX.Element> => {
     if (isMobile) {
-      return [<span key={`${prefix}`} className={letterCls}>{word}</span>];
+      return [
+        <span key={`${prefix}`} className={letterCls}>
+          {word}
+        </span>,
+      ];
     }
 
     return word.split('').map((letter: string, index: number) => {
@@ -95,9 +101,9 @@ const PuzzleHeader: React.FC = () => {
     });
   };
 
-  const renderHeaderTitle = (title: string): Array<JSX.Element> => {
+  const renderHeaderTitle = (title: string): Array<React.JSX.Element> => {
     const titleArray = title.split(' ');
-    let headerTitle: Array<JSX.Element> = [];
+    let headerTitle: Array<React.JSX.Element> = [];
 
     titleArray.forEach((word: string, index: number) => {
       let fillCls = index === 0 ? styles.Match : styles.ExactMatch;

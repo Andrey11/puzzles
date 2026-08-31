@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../app/store';
-import { IHeaderItem, ItemAction } from '../components/header/PuzzleHeader';
-import { AppStatus, IAppState, IPuzzleCardProps, PUZZLES } from './App.types';
+import { RootState } from 'app/store';
+import { IHeaderItem, ItemAction } from 'components/header/PuzzleHeader';
+import { AppStatus, IAppState, IPuzzleCardProps, PuzzleType } from './App.types';
 
 const wordleCardProps: IPuzzleCardProps = {
-  puzzleName: PUZZLES.WORDLE,
+  puzzleName: PuzzleType.WORDLE,
   codeUrl: 'https://github.com/Andrey11/puzzles',
   navigateUrl: 'wordle/solver',
   puzzleDescription:
@@ -13,7 +13,7 @@ const wordleCardProps: IPuzzleCardProps = {
 };
 
 const wordleVersusCardProps: IPuzzleCardProps = {
-  puzzleName: PUZZLES.WORDLE_VERSUS,
+  puzzleName: PuzzleType.WORDLE_VERSUS,
   codeUrl: 'https://github.com/Andrey11/puzzles',
   navigateUrl: 'wordle/versus',
   puzzleDescription:
@@ -22,7 +22,7 @@ const wordleVersusCardProps: IPuzzleCardProps = {
 };
 
 const initialState: IAppState = {
-  activePuzzle: PUZZLES.NONE,
+  activePuzzle: PuzzleType.NONE,
   status: 'idle',
   puzzleCardProps: [wordleCardProps, wordleVersusCardProps],
   headerItems: [],
@@ -35,7 +35,7 @@ export const appSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setActivePuzzle: (state, action: PayloadAction<PUZZLES>) => {
+    setActivePuzzle: (state, action: PayloadAction<PuzzleType>) => {
       state.activePuzzle = action.payload;
     },
     setHeaderTitle: (state, action: PayloadAction<string>) => {
@@ -76,21 +76,13 @@ export const {
   addPuzzleCards,
 } = appSlice.actions;
 
-export const getActivePuzzle = (state: RootState): PUZZLES =>
-  state.app.activePuzzle;
+export const getActivePuzzle = (state: RootState): PuzzleType => state.app.activePuzzle;
 export const getAppStatus = (state: RootState): AppStatus => state.app.status;
-export const getPuzzleCards = (state: RootState): Array<IPuzzleCardProps> =>
-  state.app.puzzleCardProps;
-export const getHeaderItems = (state: RootState): Array<IHeaderItem> =>
-  state.app.headerItems || [];
-export const getHeaderTitle = (state: RootState): string =>
-  state.app.headerTitle || 'PUZZLES';
-export const isHeaderItemActionByType = (
-  state: RootState,
-  itemActionType: ItemAction
-) => state.app.headerItemAction === itemActionType;
-export const isShowHeaderDictionaryIcon = (state: RootState): boolean => 
-  state.app.showHeaderDictionaryIcon === true;
-
+export const getPuzzleCards = (state: RootState): Array<IPuzzleCardProps> => state.app.puzzleCardProps;
+export const getHeaderItems = (state: RootState): Array<IHeaderItem> => state.app.headerItems || [];
+export const getHeaderTitle = (state: RootState): string => state.app.headerTitle || 'PUZZLES';
+export const isHeaderItemActionByType = (state: RootState, itemActionType: ItemAction) =>
+  state.app.headerItemAction === itemActionType;
+export const isShowHeaderDictionaryIcon = (state: RootState): boolean => state.app.showHeaderDictionaryIcon === true;
 
 export default appSlice.reducer;
