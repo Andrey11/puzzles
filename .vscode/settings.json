@@ -1,0 +1,6 @@
+{
+  "markdown-mermaid.lightModeTheme": "forest",
+  "markdown-mermaid.darkModeTheme": "forest",
+  "markdown-mermaid.controls.show": "onHoverOrFocus",
+  "markdown-mermaid.resizable": true
+}

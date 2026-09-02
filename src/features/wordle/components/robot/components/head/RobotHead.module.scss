@@ -1,4 +1,4 @@
-@import '/src/scss/mixins.module.scss';
+@use 'src/scss/mixins.module.scss' as *;
 
 .RobotHead {
   width: 100px;
@@ -31,9 +31,11 @@
     height: 12px;
     @include robot-blink(3s, 0.1s);
   }
+
   .RobotLeftEye {
     left: 30px;
   }
+
   .RobotRightEye {
     left: 60px;
   }
@@ -55,12 +57,14 @@
   &[class*='robot--halfDown'] {
     .RobotImage {
       @include robot-lurk(1s, 0.1s);
+
       ellipse.RobotEye {
         ry: 5;
         rx: 10;
       }
     }
   }
+
   &[class*='robot--halfUp'] {
     .RobotImage {
       @include robot-stop-lurk(0.5s, 0s);
@@ -68,17 +72,17 @@
   }
 }
 
-.RobotHead[class*='robot--antena'] {
+.RobotHead[class*='robot--antenna'] {
   .RobotImage {
     transform-origin: bottom;
-    @include robot-disappear-to-antena(1s, 0s);
+    @include robot-disappear-to-antenna(1s, 0s);
   }
 }
 
 .RobotHead[class*='robot--toHalf'] {
   .RobotImage {
     transform-origin: top;
-    @include robot-appear-to-antena(1s, 0s);
+    @include robot-appear-to-antenna(1s, 0s);
   }
 }
 

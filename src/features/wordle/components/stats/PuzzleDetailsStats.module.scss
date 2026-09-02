@@ -1,4 +1,4 @@
-@import 'src/scss/mixins.module.scss';
+@use 'src/scss/mixins.module.scss' as *;
 
 .StatsContainer {
   display: flex;
@@ -11,6 +11,7 @@
     width: 25px;
     height: 25px;
   }
+
   label {
     // padding-left: 8px;
     outline: none;
@@ -36,6 +37,7 @@
     width: 25px;
     height: 25px;
   }
+
   label {
     // padding-left: 8px;
     // width: 120px;
@@ -44,10 +46,12 @@
     vertical-align: top;
   }
 }
+
 .TotalLetterLabel {
   font-size: 24px;
   font-weight: 500;
 }
+
 .TotalCountLabel {
   font-size: 24px;
   font-weight: 600;
@@ -56,6 +60,7 @@
 .letterLabel {
   font-weight: 500;
 }
+
 .countLabel {
   font-weight: 600;
 }
@@ -73,6 +78,7 @@
   gap: 8px;
   flex-direction: row;
   font-size: 22px;
+
   input,
   textarea {
     width: 50px;
@@ -82,18 +88,21 @@
     font-weight: 700;
     outline-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
   }
+
   &.Match {
     background-color: var(--mdc-theme-puzzle-exists, #ffb003);
     border: thin solid var(--mdc-theme-puzzle-exists, #ffb003);
     outline-color: var(--mdc-theme-puzzle-exists, #ffb003);
     // color: white;
   }
+
   &.ExactMatch {
     background-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
     border: thin solid var(--mdc-theme-puzzle-exact-match, #5fc405);
     outline-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
     // color: white;
   }
+
   &.Miss {
     background-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
     border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
@@ -134,6 +143,7 @@ button.DeleteButton {
     label.LetterButton {
       width: 40px;
       font-weight: 700;
+
       &:active,
       &:hover,
       &:focus &:focus-visible {
@@ -141,8 +151,10 @@ button.DeleteButton {
         box-shadow: none;
       }
     }
+
     /* Workaround for toggle style for letter buttons not in a word */
     .LetterButton[class*="btn-outline-secondary"] {
+
       &:active,
       &:hover,
       &:focus {
@@ -150,9 +162,10 @@ button.DeleteButton {
         background-color: transparent;
       }
     }
-    
+
     button.DeleteButton {
       width: 40px;
+
       svg {
         width: 14px;
       }
@@ -162,9 +175,11 @@ button.DeleteButton {
       display: none;
     }
   }
+
   .TotalLetterLabel + .TotalCountLabel {
     display: none;
   }
+
   .Spacer {
     max-width: 40px;
   }
@@ -175,6 +190,7 @@ button.DeleteButton {
     label.LetterButton {
       width: 40px;
       font-weight: 700;
+
       &:active,
       &:hover,
       &:focus &:focus-visible {
@@ -182,8 +198,10 @@ button.DeleteButton {
         box-shadow: none;
       }
     }
+
     /* Workaround for toggle style for letter buttons not in a word */
     .LetterButton[class*="btn-outline-secondary"] {
+
       &:active,
       &:hover,
       &:focus {
@@ -191,9 +209,10 @@ button.DeleteButton {
         background-color: transparent;
       }
     }
-    
+
     button.DeleteButton {
       width: 40px;
+
       svg {
         width: 14px;
       }
@@ -203,9 +222,11 @@ button.DeleteButton {
       display: none;
     }
   }
+
   .TotalLetterLabel + .TotalCountLabel {
     display: none;
   }
+
   .Spacer {
     max-width: 40px;
   }
@@ -265,12 +286,14 @@ span.Match {
   outline-color: var(--mdc-theme-puzzle-exists, #ffb003);
   // color: white;
 }
+
 span.ExactMatch {
   background-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
   border: thin solid var(--mdc-theme-puzzle-exact-match, #5fc405);
   outline-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
   // color: white;
 }
+
 span.Miss {
   background-color: var(--mdc-theme-puzzle-miss, #c2b9b9);
   border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);

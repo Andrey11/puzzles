@@ -1,0 +1,47 @@
+@use 'src/scss/index.module.scss' as *;
+
+@keyframes lid-open {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(-180deg);
+  }
+}
+
+@keyframes lid-close {
+  0% {
+    transform: rotate(-180deg);
+  }
+
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+.RobotShipLid {
+  &Container {
+    @include flexBase();
+    width: 98px;
+    height: auto;
+    aspect-ratio: 93 / 46;
+    transform-origin: center bottom;
+    user-select: none;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  &Image {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.Open {
+  animation: lid-open 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+.Close {
+  animation: lid-close 0.7s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}

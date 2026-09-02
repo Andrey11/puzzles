@@ -1,16 +1,16 @@
-import { IHeaderItem, ItemAction } from "../components/header/PuzzleHeader";
+import { IHeaderItem, ItemAction } from 'components/header/PuzzleHeader';
 
-export enum PUZZLES {
+export enum PuzzleType {
   NONE = 'none',
   LOBBY = 'lobby',
   WORDLE = 'wordle',
   WORDLE_VERSUS = 'wordleversus',
-};
+}
 
 export declare type AppStatus = 'idle' | 'loading' | 'failed';
 
 export interface IPuzzleCardProps {
-  puzzleName: PUZZLES.WORDLE | PUZZLES.WORDLE_VERSUS;
+  puzzleName: PuzzleType.WORDLE | PuzzleType.WORDLE_VERSUS;
   codeUrl: string;
   navigateUrl: string;
   puzzleImageUrl: string;
@@ -18,7 +18,7 @@ export interface IPuzzleCardProps {
 }
 
 export interface IAppState {
-  activePuzzle: PUZZLES;
+  activePuzzle: PuzzleType;
   status: AppStatus;
   puzzleCardProps: Array<IPuzzleCardProps>;
   headerItems?: Array<IHeaderItem>;
@@ -26,4 +26,3 @@ export interface IAppState {
   headerItemAction?: ItemAction;
   showHeaderDictionaryIcon?: boolean;
 }
-

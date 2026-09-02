@@ -1,33 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { useAppSelector } from "app/hooks/hooks";
-import { RootState } from "../../../../app/store";
-import PuzzleWordleCell from "../cell/PuzzleWordleCell";
-import { RowKey, ROW_IDS } from "../rowgroup/RowGroup.types";
-import { getRowById } from "../rowgroup/rowGroupSlice";
-import { getCurrentRoundAsNumber } from "../../wordleversus/game/wordleVersusGameSlice";
-import { showInvalidWordAnimation } from "../../wordleversus/wordleVersusSlice";
-import styles from "./WordleRow.module.scss";
+import { useAppSelector } from 'app/hooks/hooks';
+import { toRowId } from 'features/wordle/components/row/WordleRow.helpers';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../app/store';
+import { getCurrentRoundAsNumber } from '../../wordleversus/game/wordleVersusGameSlice';
+import { showInvalidWordAnimation } from '../../wordleversus/wordleVersusSlice';
+import PuzzleWordleCell from '../cell/PuzzleWordleCell';
+import { ROW_IDS } from '../rowgroup/RowGroup.types';
+import { getRowById } from '../rowgroup/rowGroupSlice';
+import styles from './WordleRow.module.scss';
 
 interface IRowProps {
   rowId: ROW_IDS;
   rowNumber?: number;
   onAnimationEnd?: () => void;
-  animatonDuration?: number;
+  animationDuration?: number;
 }
-
-export const toRowId = (rowId: ROW_IDS) => ROW_IDS[rowId as number] as RowKey;
 
 const WordleRow: React.FunctionComponent<IRowProps> = ({
   rowId,
   onAnimationEnd = () => {},
-  animatonDuration = 2100,
+  animationDuration = 2100,
 }: IRowProps) => {
-  const notificationRef = useRef(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
-  const guessRow = useSelector((state: RootState) =>
-    getRowById(state, toRowId(rowId))
-  );
+  const guessRow = useSelector((state: RootState) => getRowById(state, toRowId(rowId)));
   const { cells } = guessRow;
 
   const currentGuessNum = useAppSelector(getCurrentRoundAsNumber);
@@ -37,30 +34,22 @@ const WordleRow: React.FunctionComponent<IRowProps> = ({
   //   animateInvalidWord && currentGuessNum === rowId;
   // console.log(`Should animate invalid in ${guessRow} and rowId ${rowId} and currentGuessNum is ${currentGuessNum}`);
 
-  const [notificationCls, setNotificationCls] = useState(
-    styles.ComponentWrapper
-  );
+  const [notificationCls, setNotificationCls] = useState(styles.ComponentWrapper);
 
   useEffect(() => {
-    let invalidClass = "";
+    let invalidClass = '';
     if (animateInvalidWord && currentGuessNum === rowId) {
       invalidClass = styles.InvalidWord;
       console.log('Should play error animation');
 
       setTimeout(() => {
-        console.log("Calling on invalid animation end");
+        console.log('Calling on invalid animation end');
         onAnimationEnd();
-      }, animatonDuration);
+      }, animationDuration);
     }
 
     setNotificationCls(`${styles.ComponentWrapper} ${invalidClass}`);
-  }, [
-    animatonDuration,
-    onAnimationEnd,
-    animateInvalidWord,
-    currentGuessNum,
-    rowId,
-  ]);
+  }, [animationDuration, onAnimationEnd, animateInvalidWord, currentGuessNum, rowId]);
 
   return (
     <div className={notificationCls}>

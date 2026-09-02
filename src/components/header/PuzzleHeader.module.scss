@@ -1,4 +1,4 @@
-@import 'src/scss/mixins.module.scss';
+@use 'src/scss/mixins.module.scss' as *;
 
 .PuzzleHeader {
   min-height: 48px;
@@ -6,11 +6,10 @@
   height: 100%;
   width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   justify-content: center;
   border-bottom: thin solid rgb(200 191 191 / 30%);
-  box-shadow: 0px 2px 6px -6px #000000ad;
+  box-shadow: 0 2px 6px -6px #000000ad;
   position: sticky;
 
   span.CellLetter {
@@ -30,6 +29,7 @@
   span.GreenText {
     color: var(--mdc-theme-puzzle-exact-match, #5fc405);
   }
+
   span.OrangeText {
     color: var(--mdc-theme-puzzle-exists, #ffb003);
   }
@@ -38,6 +38,7 @@
     background-color: var(--mdc-theme-puzzle-exists, #ffb003);
     outline-color: var(--mdc-theme-puzzle-exists, #ffb003);
   }
+
   span.ExactMatch {
     background-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
     outline-color: var(--mdc-theme-puzzle-exact-match, #5fc405);
@@ -46,6 +47,7 @@
   .CellLetter.Match {
     border: thin solid var(--mdc-theme-puzzle-exists, #ffb003);
   }
+
   .CellLetter.ExactMatch {
     border: thin solid var(--mdc-theme-puzzle-exact-match, #5fc405);
   }
@@ -62,9 +64,11 @@
   &.Left {
     justify-content: flex-start;
   }
+
   &.Middle {
     justify-content: center;
   }
+
   &.Right {
     justify-content: flex-end;
     gap: 16px;

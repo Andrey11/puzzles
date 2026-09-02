@@ -1,26 +1,36 @@
 import React, { useEffect, useRef, useState } from 'react';
-// import Accordion from 'react-bootstrap/Accordion';
-import Tabs from 'react-bootstrap/Tabs';
+import { Diagram3, Robot } from 'react-bootstrap-icons';
 import Tab from 'react-bootstrap/Tab';
-import { Robot, Diagram3 } from 'react-bootstrap-icons';
-import { IAnalyzerData, WordleScreen } from '../PuzzleWordle.types';
-import PuzzleDetailsStats from '../components/stats/PuzzleDetailsStats';
+import Tabs from 'react-bootstrap/Tabs';
 import PuzzleDetailsSolver from '../components/solver/WordleSolver';
+import PuzzleDetailsStats from '../components/stats/PuzzleDetailsStats';
+import { IAnalyzerData, WordleScreen } from '../PuzzleWordle.types';
 
 // import useDeviceDetect from '../../app/hooks/useDeviceDetect';
 
-import styles from './PuzzleWordleSolver.module.scss';
-import { getActiveScreen, setActiveScreen } from './wordleSlice';
+import { PuzzleType } from 'app/App.types';
+import {
+  getActivePuzzle,
+  isHeaderItemActionByType,
+  setActivePuzzle,
+  setHeaderItemAction,
+  setHeaderItems,
+  setHeaderTitle,
+  setShowHeaderDictionaryIcon,
+} from 'app/appSlice';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
-import { getActivePuzzle, isHeaderItemActionByType, setActivePuzzle, setHeaderItemAction, setHeaderItems, setHeaderTitle, setShowHeaderDictionaryIcon } from '../../../app/appSlice';
-import { PUZZLES } from '../../../app/App.types';
-
-import { createDictionary, getDictionaryStatus, isDictionaryLoaded } from '../components/dictionary/wordleDictionarySlice';
-import { getLogStyles } from '../PuzzleWordle-helpers';
+import { RootState } from 'app/store';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../app/store';
 import { IHeaderItem } from '../../../components/header/PuzzleHeader';
 import { NON_BREAKING_SPACE } from '../../../components/placeholder/Placeholder';
+import {
+  createDictionary,
+  getDictionaryStatus,
+  isDictionaryLoaded,
+} from '../components/dictionary/wordleDictionarySlice';
+import { getLogStyles } from '../PuzzleWordle-helpers';
+import styles from './PuzzleWordleSolver.module.scss';
+import { getActiveScreen, setActiveScreen } from './wordleSlice';
 
 const WordleSolverLog = getLogStyles({
   cmpName: 'PuzzleWordleSolver',
@@ -42,7 +52,7 @@ const WordleSolverHeaderSettings: Array<IHeaderItem> = [
 ];
 
 const PuzzleWordleSolver: React.FunctionComponent = () => {
-  const bodyContainerRef = useRef(null);
+  const bodyContainerRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useAppDispatch();
   const dictionaryLoaded = useAppSelector(isDictionaryLoaded);
@@ -51,9 +61,7 @@ const PuzzleWordleSolver: React.FunctionComponent = () => {
   const activeScreen = useAppSelector(getActiveScreen);
   const activePuzzle = useAppSelector(getActivePuzzle);
 
-  const isHelpHeaderAction = useSelector((state: RootState) =>
-    isHeaderItemActionByType(state, 'ACTION_HELP')
-  );
+  const isHelpHeaderAction = useSelector((state: RootState) => isHeaderItemActionByType(state, 'ACTION_HELP'));
 
   const [isInit, setIsInit] = useState<boolean>(false);
   // const [loaded, setLoaded] = useState<boolean>(dictionaryLoaded);
@@ -71,8 +79,8 @@ const PuzzleWordleSolver: React.FunctionComponent = () => {
     if (!isInit) {
       setIsInit(true);
       // console.log(...WordleSolverLog.logSuccess('initializing'));
-    } else if (isInit && activePuzzle !== PUZZLES.WORDLE) {
-      dispatch(setActivePuzzle(PUZZLES.WORDLE));
+    } else if (isInit && activePuzzle !== PuzzleType.WORDLE) {
+      dispatch(setActivePuzzle(PuzzleType.WORDLE));
       dispatch(setHeaderTitle('Wordle Solver'));
       dispatch(setHeaderItems(WordleSolverHeaderSettings));
       console.log(...WordleSolverLog.logAction('activating wordle solver'));
@@ -83,9 +91,7 @@ const PuzzleWordleSolver: React.FunctionComponent = () => {
   useEffect(() => {
     if (isHelpHeaderAction) {
       dispatch(setHeaderItemAction(''));
-      console.log(
-        ...WordleSolverLog.logAction('help button in header was pressed')
-      );
+      console.log(...WordleSolverLog.logAction('help button in header was pressed'));
     }
   }, [dispatch, isHelpHeaderAction]);
 
@@ -121,15 +127,9 @@ const PuzzleWordleSolver: React.FunctionComponent = () => {
     </span>
   );
 
-  const renderPuzzleSolver = () => (
-    <PuzzleDetailsSolver
-      analyzeSolutionHandler={analyzerHandler}
-    />
-  );
+  const renderPuzzleSolver = () => <PuzzleDetailsSolver analyzeSolutionHandler={analyzerHandler} />;
 
-  const renderPuzzleStats = () => (
-    <PuzzleDetailsStats analyzeSolution={analyzerData} />
-  );
+  const renderPuzzleStats = () => <PuzzleDetailsStats analyzeSolution={analyzerData} />;
 
   const renderTabDisplayContainer = () => {
     return (

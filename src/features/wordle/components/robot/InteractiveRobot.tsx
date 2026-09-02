@@ -6,7 +6,6 @@ import EndGameOverlay from './components/endgame/EndGameOverlay';
 import RobotHead, { DisplayPosition } from './components/head/RobotHead';
 import SelectWordForRobot from './components/selectword/SelectWordForRobot';
 import StartGameOverlay from './components/startgame/StartGameOverlay';
-
 import styles from './InteractiveRobot.module.scss';
 // import { OAnimationCls, getDownCls, getUpCls, isAnimatedToVisible, isHidden, isVisible } from './RobotAnimations';
 // import { RobotHeadSwipeDirection } from './RobotSolver.types';
@@ -42,16 +41,16 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
   isInit = false,
   ...props
 }: IRobotProps) => {
-  const bodyContainerRef = useRef(null);
-  const targetRef = useRef(null);
+  const bodyContainerRef = useRef<HTMLDivElement>(null);
+  const targetRef = useRef<HTMLDivElement>(null);
 
   const [headDisplayPosition, setHeadDisplayPosition] = useState<DisplayPosition>('none');
-  
-  /** MEMO OVERLAYS THAT AVIALBLE TO BE RENDERED */
+
+  /** MEMO OVERLAYS THAT ARE AVAILABLE TO BE RENDERED */
   const overlayProps = useMemo(() => {
     let titleString: string = '';
-    let bodyEl: JSX.Element = <></>;
-    let trigger: JSX.Element = <></>;
+    let bodyEl: React.JSX.Element = <></>;
+    let trigger: React.JSX.Element = <></>;
     let canDismiss: boolean = showSelectWordOverlay || showStartMatchOverlay;
     let visible: boolean = false;
 
@@ -114,7 +113,7 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
     return showSelectWordOverlay || showStartMatchOverlay || showEndMatchOverlay;
   }, [showEndMatchOverlay, showSelectWordOverlay, showStartMatchOverlay]);
 
-  /** SINGLE OVRLAY COMPONENT WITH DYNAMIC INNER PROPS */
+  /** SINGLE OVERLAY COMPONENT WITH DYNAMIC INNER PROPS */
   const {
     OverlayComponent: InteractiveRobotOverlay,
     setOverlayVisible,
@@ -130,7 +129,7 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
     visible: overlayProps.visible,
   });
 
-  /** OVRLAY VISIBILITY CONTROL */
+  /** OVERLAY VISIBILITY CONTROL */
   useEffect(() => {
     if (!isInit) return;
 
@@ -144,8 +143,8 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
     } else {
       setOverlayVisible(false);
     }
-  // we don't want to listen for headDisplayPosition changes in this hook
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // we don't want to listen for headDisplayPosition changes in this hook
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInit, setOverlayVisible, shouldRenderOverlay, showRobot]);
 
   const onHeadSwipeDown = useCallback(() => {
@@ -153,8 +152,8 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
       if (headDisplayPosition === 'fullyUp') {
         setHeadDisplayPosition('halfWay');
       } else if (headDisplayPosition === 'halfWay') {
-        setHeadDisplayPosition('onlyAntenaUp');
-      } else if (headDisplayPosition === 'onlyAntenaUp') {
+        setHeadDisplayPosition('onlyAntennaUp');
+      } else if (headDisplayPosition === 'onlyAntennaUp') {
         setHeadDisplayPosition('hidden');
       }
     }
@@ -165,7 +164,7 @@ const InteractiveRobot: React.FC<IRobotProps> = ({
       setHeadDisplayPosition('fullyUp');
     } else if (headDisplayPosition === 'halfWay') {
       setHeadDisplayPosition('fullyUp');
-    } else if (headDisplayPosition === 'onlyAntenaUp') {
+    } else if (headDisplayPosition === 'onlyAntennaUp') {
       setHeadDisplayPosition('halfWay');
     }
   };

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks/hooks';
-import { Search, BookHalf } from 'react-bootstrap-icons';
+import React, { useState } from 'react';
+import { BookHalf, Search } from 'react-bootstrap-icons';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';

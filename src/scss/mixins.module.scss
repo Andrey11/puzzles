@@ -6,6 +6,23 @@
   animation-play-state: running;
 }
 
+// #region General Mixins
+@mixin flexBase($direction: column, $align: center, $justify: center, $wrap: nowrap) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  flex-wrap: $wrap;
+}
+
+@mixin getMaxWidth {
+  width: 100%;
+
+  @supports (width: -webkit-fill-available) {
+    width: -webkit-fill-available;
+  }
+}
+
 @mixin cellLetterSpan($width, $height, $margin, $fontWeight) {
   border: thin solid var(--mdc-theme-puzzle-miss, #c2b9b9);
   margin: $margin;
@@ -45,8 +62,8 @@
 }
 
 /**
- * Creates an incremental transition delay for each child <div> elevment
- * first element  
+ * Creates an incremental transition delay for each child <div> element
+ * first element
  */
 @mixin createTransitionDelays($startIndex, $endIndex, $delayByMs) {
   @for $i from $startIndex through $endIndex {
@@ -80,22 +97,22 @@
   @extend %robotBaseAnimationProps;
 }
 
-@mixin robot-disappear-to-antena($duration, $delay) {
-  animation-name: robotDisappearToAntena;
+@mixin robot-disappear-to-antenna($duration, $delay) {
+  animation-name: robotDisappearToAntenna;
   animation-duration: $duration;
   animation-delay: $delay;
   @extend %robotBaseAnimationProps;
 }
 
-@mixin robot-appear-to-antena($duration, $delay) {
-  animation-name: robotAppearToAntena;
+@mixin robot-appear-to-antenna($duration, $delay) {
+  animation-name: robotAppearToAntenna;
   animation-duration: $duration;
   animation-delay: $delay;
   @extend %robotBaseAnimationProps;
 }
 
 @mixin robot-poof($duration, $delay) {
-  animation-name: robotAppearToAntena;
+  animation-name: robotAppearToAntenna;
   animation-duration: $duration;
   animation-delay: $delay;
   @extend %robotBaseAnimationProps;
@@ -121,39 +138,50 @@
   animation: robotBlink $duration ease-in-out $delay infinite;
 }
 
+// #region KEYFRAMES **********************************************************
 @keyframes shake {
   0% {
-    transform: translate(1px, 0px) rotate(0deg);
+    transform: translate(1px, 0) rotate(0deg);
   }
+
   10% {
-    transform: translate(-1px, 0px) rotate(0deg);
+    transform: translate(-1px, 0) rotate(0deg);
   }
+
   20% {
-    transform: translate(-3px, 0px) rotate(0deg);
+    transform: translate(-3px, 0) rotate(0deg);
   }
+
   30% {
-    transform: translate(1px, 0px) rotate(0deg);
+    transform: translate(1px, 0) rotate(0deg);
   }
+
   40% {
-    transform: translate(3px, 0px) rotate(0deg);
+    transform: translate(3px, 0) rotate(0deg);
   }
+
   50% {
-    transform: translate(-1px, 0px) rotate(-0deg);
+    transform: translate(-1px, 0) rotate(-0deg);
   }
+
   60% {
-    transform: translate(-3px, 0px) rotate(0deg);
+    transform: translate(-3px, 0) rotate(0deg);
   }
+
   70% {
-    transform: translate(3px, 0px) rotate(-0deg);
+    transform: translate(3px, 0) rotate(-0deg);
   }
+
   80% {
-    transform: translate(-1px, 0px) rotate(0deg);
+    transform: translate(-1px, 0) rotate(0deg);
   }
+
   90% {
-    transform: translate(1px, 0px) rotate(0deg);
+    transform: translate(1px, 0) rotate(0deg);
   }
+
   100% {
-    transform: translate(1px, 0px) rotate(-0deg);
+    transform: translate(1px, 0) rotate(-0deg);
   }
 }
 
@@ -161,33 +189,43 @@
   0% {
     transform: scale(1);
   }
+
   10% {
     transform: scale(1.05);
   }
+
   20% {
     transform: scale(1.05);
   }
+
   30% {
     transform: scale(1.1);
   }
+
   40% {
     transform: scale(1.1);
   }
+
   50% {
     transform: scale(1.2);
   }
+
   60% {
     transform: scale(1.1);
   }
+
   70% {
     transform: scale(1.1);
   }
+
   80% {
     transform: scale(1.05);
   }
+
   90% {
     transform: scale(1.05);
   }
+
   100% {
     transform: scale(1);
   }
@@ -197,6 +235,7 @@
   40% {
     transform: translateY(30px);
   }
+
   100% {
     transform: translateY(30px);
   }
@@ -206,12 +245,15 @@
   0% {
     transform: translateY(30px);
   }
+
   70% {
     transform: translateY(0);
   }
+
   90% {
     transform: translateY(-5px);
-  } 
+  }
+
   100% {
     transform: translateY(0);
   }
@@ -221,30 +263,34 @@
   0% {
     transform: translate(0, 70px);
   }
+
   75%,
   80% {
     transform: translate(0, 30px);
   }
+
   90%,
   100% {
     transform: translate(0, 0);
   }
 }
 
-@keyframes robotDisappearToAntena {
+@keyframes robotDisappearToAntenna {
   0% {
     transform: translateY(30px);
   }
+
   60%,
   100% {
     transform: translateY(65px);
   }
 }
 
-@keyframes robotAppearToAntena {
+@keyframes robotAppearToAntenna {
   0% {
     transform: translate(0, 65px);
   }
+
   60%,
   100% {
     transform: translate(0, 30px);
@@ -255,6 +301,7 @@
   0% {
     top: 65px;
   }
+
   90%,
   100% {
     transform: translate(0, 70px);
@@ -266,17 +313,21 @@
     transform: scale(0.1);
     opacity: 1;
   }
+
   30% {
     transform: scale(1.05);
   }
+
   40%,
   70% {
     transform: scale(1);
   }
+
   90% {
     transform: scale(0.5);
     opacity: 1;
   }
+
   100% {
     transform: scale(0.1);
     opacity: 0;
@@ -284,12 +335,16 @@
 }
 
 @keyframes robotBlink {
+
   0%,
   100% {
     transform: scale(1, 0.05);
   }
+
   5%,
   95% {
     transform: scale(1, 1);
   }
 }
+
+// #endregion

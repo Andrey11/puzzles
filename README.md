@@ -1,49 +1,110 @@
-# puzzles
-Puzzles, mini-games, and analyzers
+# Puzzles
 
-# Getting Started with Create React App
+Puzzles, mini-games, and analyzers.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
+Live site: [https://puzzles.eleventheye.com/](https://puzzles.eleventheye.com/)
 
-## Available Scripts
+This app used to be a Create React App project. It now runs on **Vite 8**, **React 19**, **Redux Toolkit 2**, **React Router 6**, **Firebase 12**, **TypeScript 5.9**, and **Vitest**.
 
-In the project directory, you can run:
+## Stack
 
-### `npm start`
+| Area              | Package                                           |
+| ----------------- | ------------------------------------------------- |
+| App               | React 19, React DOM 19                            |
+| State             | Redux Toolkit 2, react-redux 9                    |
+| Routing           | react-router-dom 6                                |
+| UI                | Bootstrap 5.3, react-bootstrap 2.10, react-select |
+| Backend / hosting | Firebase JS SDK 12, Firebase Hosting              |
+| Tooling           | Vite 8, TypeScript 5.9, ESLint 9, Sass            |
+| Tests             | Vitest 4, Testing Library, jsdom                  |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Upgrade notes and remaining work live in [docs/milestones/Project-Revival-Milestone.md](docs/milestones/Project-Revival-Milestone.md).
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Prerequisites
 
-### `npm test`
+- Node.js 22 LTS is the safest target. Node 26 works for Vite, but `firebase-tools` still prefers 20 / 22 / 24.
+- npm 10+
+- A local Firebase web-app config (see below)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## First-time setup
 
-### `npm run build`
+```bash
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Copy the example Firebase config and fill in your project values:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+cp src/config/FirebaseConfig.example.ts src/config/FirebaseConfig.ts
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+`src/config/FirebaseConfig.ts` must export `firebaseConfig` and is gitignored. Do not commit it.
 
-### `npm run eject`
+## Scripts
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+| Command                      | What it does                                                             |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| `npm start` or `npm run dev` | Vite dev server (default [http://localhost:5173](http://localhost:5173)) |
+| `npm test`                   | Vitest in watch mode                                                     |
+| `npm run test:run`           | Vitest once (CI / pre-deploy)                                            |
+| `npm run typescript:check`   | `tsc --noEmit`                                                           |
+| `npm run lint`               | ESLint flat config                                                       |
+| `npm run build`              | Typecheck, then production build to `dist/`                              |
+| `npm run preview`            | Serve the production `dist/` locally                                     |
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+There is no `eject`. Vite config is in [vite.config.ts](vite.config.ts).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## App routes
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- `/` — puzzle picker
+- `/wordle/solver` — Wordle solver
+- `/wordle/versus` — Wordle versus
 
-## Learn More
+## Path aliases
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+TypeScript and Vite both resolve these from `src/`:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- `app/*`
+- `features/*`
+- `components/*`
+- `config/*`
+
+Example: `import { useAppSelector } from 'app/hooks/hooks'`.
+
+## Firebase hosting
+
+Hosting serves **`dist/`**, not `public/`.
+
+Vite copies everything in [public](public) into `dist/` during `npm run build` (`favicon.ico`, `images/`, logos, `manifest.json`, `robots.txt`). [firebase.json](firebase.json) already points Hosting at `dist/` and rewrites unknown paths to `/index.html` for the SPA.
+
+Deploy:
+
+```bash
+npm run build
+npx firebase deploy --only hosting
+```
+
+Preview the production bundle first with `npm run preview` if you want a local check.
+
+## Project layout
+
+```
+index.html          Vite HTML entry (loads /src/index.tsx)
+vite.config.ts      Vite + Vitest + SCSS load paths
+eslint.config.mjs   ESLint 9 flat config
+firebase.json       Hosting public = dist
+public/             Static assets copied into dist/
+src/
+  app/              Redux store and shared hooks
+  components/       Header, keyboard, cards, loaders
+  config/           FirebaseConfig (local) + example
+  features/         Puzzle picker, Wordle solver / versus
+  firebase/         Firebase app + analytics init
+  scss/             Shared mixins and Bootstrap import
+```
+
+## Notes
+
+- Analytics is initialized only in the browser so Vitest does not call `getAnalytics` in Node.
+- Sass still emits `@import` deprecation warnings (app mixins + Bootstrap). They do not fail the build.
+- Do not commit `src/config/FirebaseConfig.ts`.

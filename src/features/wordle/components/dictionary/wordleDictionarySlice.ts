@@ -1,15 +1,10 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../../../app/store';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AppThunk, RootState } from '../../../../app/store';
 import { getIndexByLetterCode } from '../../PuzzleWordle-helpers';
-import {
-  IWordleDictionary,
-  Letters,
-  WordleStatus,
-} from '../../PuzzleWordle.types';
+import { IWordleDictionary, Letters, WordleStatus } from '../../PuzzleWordle.types';
 import { allAvailableWords } from '../../PuzzleWords';
 
 export async function initDictionary() {
-
   console.log(`[wordleDictionarySlice] initDictionary`);
 
   const wordsDictionary: IWordleDictionary = {
@@ -44,7 +39,7 @@ export async function initDictionary() {
       Z: [],
     },
   };
-  
+
   allAvailableWords.forEach((word: string) => {
     const startingLetter = word.charAt(0) as Letters;
     wordsDictionary.wordsBy[startingLetter].push(word);
@@ -60,13 +55,12 @@ export async function initDictionary() {
   });
 
   return wordsDictionary;
-};
+}
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
 export const createDictionary =
   (listOfWords: Array<string> = allAvailableWords): AppThunk =>
   (dispatch, getState) => {
-
     if (getDictionaryStatus(getState()) !== 'idle') {
       return;
     }
@@ -104,7 +98,7 @@ export const createDictionary =
         Z: [],
       },
     };
-    
+
     listOfWords.forEach((word: string) => {
       const startingLetter = word.charAt(0) as Letters;
       wordsDictionary.wordsBy[startingLetter].push(word);
@@ -119,7 +113,7 @@ export const createDictionary =
       });
     });
 
-    dispatch(setDictionary({dictionary: wordsDictionary, status: 'loaded'}));
+    dispatch(setDictionary({ dictionary: wordsDictionary, status: 'loaded' }));
   };
 
 const initialDictionary: IWordleDictionary = {
@@ -185,20 +179,17 @@ export const { setStatus, setDictionary } = wordleDictionarySlice.actions;
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const isDictionaryLoaded = (state: RootState) =>
-  state.puzzle.wordledictionary.status === 'loaded';
-export const getDictionaryStatus = (state: RootState) =>
-  state.puzzle.wordledictionary.status;
-export const getDictionary = (state: RootState) =>
-  state.puzzle.wordledictionary.dictionary;
+export const isDictionaryLoaded = (state: RootState) => state.puzzle.wordledictionary.status === 'loaded';
+export const getDictionaryStatus = (state: RootState) => state.puzzle.wordledictionary.status;
+export const getDictionary = (state: RootState) => state.puzzle.wordledictionary.dictionary;
 export const isValidWord = (state: RootState, word: string | string[]): boolean =>
-  getDictionary(state).words.indexOf((typeof word === 'string') ? word : word.join('')) !== -1;
+  getDictionary(state).words.indexOf(typeof word === 'string' ? word : word.join('')) !== -1;
 
-export const getSelectableWords = (state: RootState) => {
-  return getDictionary(state).words.map((word: string) => ({
+export const getSelectableWords = createSelector([getDictionary], (dictionary) =>
+  dictionary.words.map((word: string) => ({
     value: word,
     label: word,
-  }));
-};
+  }))
+);
 
 export default wordleDictionarySlice.reducer;

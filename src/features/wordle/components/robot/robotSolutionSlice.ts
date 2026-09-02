@@ -35,22 +35,11 @@ const initialState: IRobotSolution = {
   robotStatus: 'idle',
 };
 
-export const isLetterModelUnique = (
-  letterModels: Array<ILetterModel>,
-  lmToAdd: ILetterModel
-) =>
-  letterModels.findIndex(
-    (lm) =>
-      lm.letter === lmToAdd.letter && lm.indexInWord === lmToAdd.indexInWord
-  ) === -1;
+export const isLetterModelUnique = (letterModels: Array<ILetterModel>, lmToAdd: ILetterModel) =>
+  letterModels.findIndex((lm) => lm.letter === lmToAdd.letter && lm.indexInWord === lmToAdd.indexInWord) === -1;
 
-export const addUniqueLetterModel = (
-  letterModels: Array<ILetterModel>,
-  lmToAdd: ILetterModel
-) => {
-  return isLetterModelUnique(letterModels, lmToAdd)
-    ? [...letterModels, lmToAdd]
-    : letterModels;
+export const addUniqueLetterModel = (letterModels: Array<ILetterModel>, lmToAdd: ILetterModel) => {
+  return isLetterModelUnique(letterModels, lmToAdd) ? [...letterModels, lmToAdd] : letterModels;
 };
 
 export const addUniqueLetter = (letters: Array<string>, letter: string) => {
@@ -66,25 +55,15 @@ type ICalcAvailableProps = {
   dictionary: IWordleDictionary;
 };
 
-const isLetterInWordMoreThanOnce = (char: string, word: Array<string>) =>
-  word.indexOf(char) !== word.lastIndexOf(char);
+const isLetterInWordMoreThanOnce = (char: string, word: Array<string>) => word.indexOf(char) !== word.lastIndexOf(char);
 
-const isLetterHasMatchInWord = (
-  char: string,
-  word: Array<string>,
-  colors: Array<string>
-) =>
+const isLetterHasMatchInWord = (char: string, word: Array<string>, colors: Array<string>) =>
   word.findIndex((l, index) => l === char && colors[index] !== 'GREY') !== -1;
 
-const isLetterMissAtIndex = (
-  char: string,
-  word: Array<string>,
-  colors: Array<string>
-) =>
-  isLetterInWordMoreThanOnce(char, word) &&
-  isLetterHasMatchInWord(char, word, colors);
+const isLetterMissAtIndex = (char: string, word: Array<string>, colors: Array<string>) =>
+  isLetterInWordMoreThanOnce(char, word) && isLetterHasMatchInWord(char, word, colors);
 
-export const caclulateAvailableIndexes = ({
+export const calculateAvailableIndexes = ({
   exactMatchLetter: exact,
   existsMatchLetter: exist,
   nonExistentLetters: miss,
@@ -99,11 +78,7 @@ export const caclulateAvailableIndexes = ({
   // console.log(`Count after exists matches... ${wordIndexes.length}`);
   wordIndexes = removeNonExistentLetterIndexes(miss, wordIndexes, dict);
   // console.log(`Count after misses... ${wordIndexes.length}`);
-  wordIndexes = removeNonExistentLetterIndexesAtIndex(
-    missAt,
-    wordIndexes,
-    dict
-  );
+  wordIndexes = removeNonExistentLetterIndexesAtIndex(missAt, wordIndexes, dict);
   // console.log(`Count after misses at index matches... ${wordIndexes.length}`);
   return wordIndexes;
 };
@@ -147,23 +122,17 @@ export const analyzeGuessWordStatus =
       const lmToAdd = { indexInWord: index, letter: letter };
 
       if (color === 'GREEN') {
-        exact = isLetterModelUnique(exactLetters, lmToAdd)
-          ? [...exact, lmToAdd]
-          : [...exact];
+        exact = isLetterModelUnique(exactLetters, lmToAdd) ? [...exact, lmToAdd] : [...exact];
       } else if (color === 'ORANGE') {
-        exist = isLetterModelUnique(existLetters, lmToAdd)
-          ? [...exist, lmToAdd]
-          : [...exist];
+        exist = isLetterModelUnique(existLetters, lmToAdd) ? [...exist, lmToAdd] : [...exist];
       } else if (isLetterMissAtIndex(letter, word, lastGuessColors)) {
-        missAtIndex = isLetterModelUnique(missLettersAtIndex, lmToAdd)
-          ? [...missAtIndex, lmToAdd]
-          : [...missAtIndex];
+        missAtIndex = isLetterModelUnique(missLettersAtIndex, lmToAdd) ? [...missAtIndex, lmToAdd] : [...missAtIndex];
       } else {
         miss = !missLetters.includes(letter) ? [...miss, letter] : [...miss];
       }
     });
 
-    let currentWordIndexes = caclulateAvailableIndexes({
+    let currentWordIndexes = calculateAvailableIndexes({
       exactMatchLetter: exact,
       existsMatchLetter: exist,
       nonExistentLetters: miss,
@@ -186,16 +155,22 @@ export const analyzeGuessWordStatus =
   };
 
 export const pickNextGuessWordAndStartSolvingPuzzle =
-  (
-    dictionary: IWordleDictionary,
-    onRobotPickedWord: OnRobotPickedWordType
-  ): AppThunk =>
+  (dictionary: IWordleDictionary, onRobotPickedWord: OnRobotPickedWordType, firstGuessWord?: string): AppThunk =>
   (dispatch, getState) => {
     const availableWordIndexes = getAvailableWordIndexes(getState());
+    const attemptCount = getRobotAttemptCount(getState());
     const wordCount = availableWordIndexes.length;
+
+    if (attemptCount === 0 && firstGuessWord) {
+      const firstGuessWordIndex = dictionary.words.indexOf(firstGuessWord);
+      if (firstGuessWordIndex !== -1) {
+        dispatch(addRobotGuess(firstGuessWord, firstGuessWordIndex, onRobotPickedWord));
+        return;
+      }
+    }
+
     if (wordCount > 0) {
-      const randomIndex =
-        wordCount !== 1 ? Math.round(Math.random() * (wordCount - 1)) : 0;
+      const randomIndex = wordCount !== 1 ? Math.round(Math.random() * (wordCount - 1)) : 0;
       const wordIndex = availableWordIndexes[randomIndex];
       const word = dictionary.words[wordIndex];
       dispatch(addRobotGuess(word, wordIndex, onRobotPickedWord));
@@ -203,11 +178,7 @@ export const pickNextGuessWordAndStartSolvingPuzzle =
   };
 
 export const addRobotGuess =
-  (
-    word: string,
-    wordIndex: number,
-    onRobotPickedWord: OnRobotPickedWordType
-  ): AppThunk =>
+  (word: string, wordIndex: number, onRobotPickedWord: OnRobotPickedWordType): AppThunk =>
   (dispatch, getState) => {
     const robotGuessPayload: Partial<IRobotSolution> = {
       robotStatus: 'submit-robot-guess',
@@ -223,7 +194,7 @@ export const addRobotGuess =
     dispatch(onRobotPickedWord(word));
   };
 
-// export const findNextBextGuess =
+// export const findNextBestGuess =
 //   (dictionary: IWordleDictionary): AppThunk =>
 //   (dispatch, getState) => {
 //     const guessWordsStatus = getGuessWordsStatus(getState());
@@ -275,16 +246,13 @@ export const robotSolutionSlice = createSlice({
       state.guessWordsStatus = [...state.guessWordsStatus, action.payload];
       state.robotStatus = 'analyze-robot-guess-result';
     },
-    setUpdatedSolution: (
-      state,
-      action: PayloadAction<Partial<IRobotSolution>>
-    ) => {
+    setUpdatedSolution: (state, action: PayloadAction<Partial<IRobotSolution>>) => {
       return { ...state, ...action.payload };
     },
     setRobotGuess: (state, action: PayloadAction<Partial<IRobotSolution>>) => {
       return { ...state, ...action.payload };
     },
-    setAvilableWordIndexes: (state, action: PayloadAction<Array<number>>) => {
+    setAvailableWordIndexes: (state, action: PayloadAction<Array<number>>) => {
       state.availableWordIndexes = action.payload;
     },
     resetRobotSolution: () => ({ ...initialState }),
@@ -295,25 +263,19 @@ export const {
   setCurrentWordIndex,
   setRobotStatus,
   setRobotGuess,
-  setAvilableWordIndexes,
+  setAvailableWordIndexes,
   setRobotGuessWordStatus,
   resetRobotSolution,
 } = robotSolutionSlice.actions;
 
-export const getRobotStatus = (state: RootState): TRobotStatus =>
-  state.puzzle.wordlerobotsolution.robotStatus;
-export const isRobotPickingWord = (
-  state: RootState,
-  status: string = 'robot-picking-word'
-): boolean => state.puzzle.wordlerobotsolution.robotStatus === status;
+export const getRobotStatus = (state: RootState): TRobotStatus => state.puzzle.wordlerobotsolution.robotStatus;
+export const isRobotPickingWord = (state: RootState, status: string = 'robot-picking-word'): boolean =>
+  state.puzzle.wordlerobotsolution.robotStatus === status;
 export const getGuessWordsStatus = (state: RootState): Array<IWordStatus> =>
   state.puzzle.wordlerobotsolution.guessWordsStatus;
-export const getRobotAttemptCount = (state: RootState): number =>
-  state.puzzle.wordlerobotsolution.attempts;
-export const getRobotGuessWords = (state: RootState): Array<string> =>
-  state.puzzle.wordlerobotsolution.guessWords;
-export const getRobotUsedWords = (state: RootState): Array<string> =>
-  state.puzzle.wordlerobotsolution.usedWords;
+export const getRobotAttemptCount = (state: RootState): number => state.puzzle.wordlerobotsolution.attempts;
+export const getRobotGuessWords = (state: RootState): Array<string> => state.puzzle.wordlerobotsolution.guessWords;
+export const getRobotUsedWords = (state: RootState): Array<string> => state.puzzle.wordlerobotsolution.usedWords;
 export const getRobotUsedWordIndexes = (state: RootState): Array<number> =>
   state.puzzle.wordlerobotsolution.usedWordIndexes;
 export const getAvailableWordIndexes = (state: RootState): Array<number> =>
@@ -324,9 +286,7 @@ export const getExistMatchedLetters = (state: RootState): Array<ILetterModel> =>
   state.puzzle.wordlerobotsolution.existsMatchLetter;
 export const getNonExistentLetters = (state: RootState): Array<string> =>
   state.puzzle.wordlerobotsolution.nonExistentLetters;
-export const getNonExistentAtIndexLetters = (
-  state: RootState
-): Array<ILetterModel> =>
+export const getNonExistentAtIndexLetters = (state: RootState): Array<ILetterModel> =>
   state.puzzle.wordlerobotsolution.nonExistentLetterAtIndex;
 
 export default robotSolutionSlice.reducer;

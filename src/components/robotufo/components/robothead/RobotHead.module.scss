@@ -1,0 +1,266 @@
+// #region KEYFRAMES ************************************************
+@keyframes head-visible {
+  from {
+    opacity: 0.9;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes head-hidden {
+  to {
+    opacity: 0.75;
+    transform: translateY(45px);
+  }
+}
+
+@keyframes head-peeking {
+  from {
+    opacity: 0.75;
+    transform: translateY(45px);
+  }
+
+  to {
+    opacity: 0.9;
+    transform: translateY(20px);
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  5% {
+    transform: scaleY(0.1);
+  }
+
+  10% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes robot-mouth-talk {
+  0% {
+    d: path("M 38 66 Q 50 66 62 66");
+  }
+
+  9% {
+    d: path("M 36 63 Q 50 78 64 63");
+  }
+
+  17% {
+    d: path("M 38 64 Q 50 70 62 64");
+  }
+
+  28% {
+    d: path("M 35 62 Q 50 82 65 62");
+  }
+
+  37% {
+    d: path("M 39 66 Q 50 67 61 66");
+  }
+
+  51% {
+    d: path("M 36 64 Q 50 76 64 64");
+  }
+
+  61% {
+    d: path("M 38 66 Q 50 66 62 66");
+  }
+
+  74% {
+    d: path("M 34 63 Q 50 80 66 63");
+  }
+
+  86% {
+    d: path("M 37 64 Q 50 72 63 64");
+  }
+
+  100% {
+    d: path("M 38 66 Q 50 66 62 66");
+  }
+}
+
+@keyframes eyes-scanning-area {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  15% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  30% {
+    transform: translate3d(-4px, 4px, 0);
+  }
+
+  45% {
+    transform: translate3d(4px, 4px, 0);
+  }
+
+  60% {
+    transform: translate3d(4px, -4px, 0);
+  }
+
+  75% {
+    transform: translate3d(-4px, -4px, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+// #endregion
+
+.Robot {
+  &Head {
+    transform: translateY(var(--head-y, 45px));
+    transition: transform 500ms ease;
+
+    &Visible {
+      // animation: head-visible 0.5s forwards;
+      --head-y: 0;
+    }
+
+    &Hidden {
+      // animation: head-hidden 0.5s forwards;
+      --head-y: 45px;
+    }
+
+    &Peeking {
+      // animation: head-peeking 0.5s forwards;
+      --head-y: 20px;
+    }
+  }
+}
+
+.Robot {
+  &Head {
+    &Container {
+      position: absolute;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      top: 0;
+    }
+
+    &Wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  &EyesWrapper {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    top: 30px;
+    width: 38px;
+    height: 12px;
+    z-index: 1;
+    margin: auto;
+    left: 0;
+    right: 0;
+
+    &.SurprisedEyes {
+      transform: scaleY(1.3) scaleX(0.9) !important;
+    }
+
+    &.Blink {
+      transform-origin: center;
+      animation: blink 5s infinite;
+    }
+  }
+
+  &Eye {
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    position: absolute;
+
+    &Ball {
+      position: absolute;
+      display: block;
+      top: 5px;
+      left: 4px;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background-color: #3078c4ff;
+
+      &.Scanning {
+        animation: 4s eyes-scanning-area 1 both;
+      }
+    }
+
+    &Left {
+      @extend .RobotEye;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    &Right {
+      @extend .RobotEye;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
+
+}
+
+.RobotMouth {
+  fill: none;
+  stroke: #f8fbff;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: d 180ms ease;
+
+  &Group {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  &Wrapper {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  &Container {
+    height: 50px;
+    width: 50px;
+    position: absolute;
+    left: 20px;
+    top: 18px;
+  }
+}
+
+.MouthTalking {
+  animation: robot-mouth-talk 1180ms linear infinite;
+}
+
+.MouthSurprised {
+  fill: #f8fbff;
+  stroke-width: 0;
+}

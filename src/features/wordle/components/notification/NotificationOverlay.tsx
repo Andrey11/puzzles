@@ -12,7 +12,7 @@ import { showInvalidWordAnimation } from '../../wordleversus/wordleVersusSlice';
 import styles from './NotificationOverlay.module.scss';
 
 type NotificationProps = {
-  targetRef: RefObject<any>;
+  targetRef: RefObject<HTMLElement | null>;
 };
 
 const NotificationOverlay: React.FunctionComponent<NotificationProps> = ({
@@ -26,7 +26,7 @@ const NotificationOverlay: React.FunctionComponent<NotificationProps> = ({
 
   const [showOverlay, setShowOverlay] = useState<boolean>(false);
 
-  const getNotificationElement = (): JSX.Element => {
+  const getNotificationElement = (): React.JSX.Element => {
     let statusCls = '';
     let message = '';
     if (showErrorNotification) {

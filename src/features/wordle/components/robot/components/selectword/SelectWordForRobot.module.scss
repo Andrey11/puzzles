@@ -1,4 +1,4 @@
-@import 'src/scss/mixins.module.scss';
+@use 'src/scss/mixins.module.scss' as *;
 
 .SelectWordForRobotWrapper {
   display: flex;
@@ -10,16 +10,18 @@
   display: flex;
   gap: 8px;
   min-width: 242px;
+
   [class*="WordleSelector"] {
     margin-bottom: 0;
     resize: none;
     flex: 1;
   }
+
   button.RandomButton {
+
     &:active,
     &:hover,
-    &:focus
-     {
+    &:focus {
       background-color: white;
       color: var(--bs-btn-color);
     }
@@ -32,7 +34,8 @@
 
 .ActionButtonsDisplay {
   margin-top: 8px;
-  button { 
+
+  button {
     width: 100%;
   }
 }
