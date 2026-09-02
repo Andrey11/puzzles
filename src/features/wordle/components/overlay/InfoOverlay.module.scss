@@ -13,8 +13,8 @@ $overlay-border-rgba: rgba($overlay-border-color-rgb, 0.7);
     color: $secondary-color;
 
     &::before {
-      border-bottom-color: gba($overlay-border-color-rgb, 0.9);
-      border-top-color: gba($overlay-border-color-rgb, 0.9);
+      border-bottom-color: rgba($overlay-border-color-rgb, 0.9);
+      border-top-color: rgba($overlay-border-color-rgb, 0.9);
     }
   }
 

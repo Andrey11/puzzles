@@ -68,6 +68,7 @@ TypeScript and Vite both resolve these from `src/`:
 - `features/*`
 - `components/*`
 - `config/*`
+- `helpers/*`
 
 Example: `import { useAppSelector } from 'app/hooks/hooks'`.
 
@@ -106,5 +107,5 @@ src/
 ## Notes
 
 - Analytics is initialized only in the browser so Vitest does not call `getAnalytics` in Node.
-- Sass still emits `@import` deprecation warnings (app mixins + Bootstrap). They do not fail the build.
+- Sass still emits `@import` deprecation warnings (Bootstrap). They do not fail the build.
 - Do not commit `src/config/FirebaseConfig.ts`.

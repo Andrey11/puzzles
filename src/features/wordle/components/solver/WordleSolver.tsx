@@ -119,9 +119,6 @@ const WordleSolver: React.FunctionComponent<IPuzzleWordleSolverProps> = ({
   // }, [guessingInProgress]);
 
   useEffect(() => {
-    console.log('robotStateShadowRef.current: ', robotStateShadowRef.current);
-    console.log(`isWon=${isWon}, isLost=${isLost}`);
-
     if (robotStateShadowRef.current === undefined) {
       robotStateShadowRef.current = RobotState.Enter;
       setRobotState(RobotState.Enter);

@@ -9,8 +9,8 @@ type RobotOverlayProps = {
   body: React.ReactNode;
   visible: boolean;
   rootClose: boolean;
-  containerRef: HTMLElement;
-  targetRef: HTMLElement;
+  containerRef: HTMLElement | null;
+  targetRef: HTMLElement | null;
   placement?: Placement | undefined;
   onClose?: () => void;
 };

@@ -70,6 +70,7 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
   }, [dispatch, firstGuessWord, isInit, shouldPickWod]);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
     if (isWon || isLost) {
       return;
     }
@@ -79,7 +80,7 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
     }
 
     if (robotStatus === 'idle') {
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         // console.log(...RobotSolverLog.logAction(`Starting first round`));
         dispatch(pickNextGuessWordAndStartSolvingPuzzle(dictionary, onRobotGuessWord, firstGuessWord));
       }, ROBOT_SLEEP_TIME);
@@ -89,7 +90,7 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
       //   )
       // );
     } else if (robotStatus === 'calculate-robot-guess') {
-      setTimeout(
+      timeoutId = setTimeout(
         () => dispatch(pickNextGuessWordAndStartSolvingPuzzle(dictionary, onRobotGuessWord)),
         ROBOT_SLEEP_TIME
       );
@@ -99,20 +100,24 @@ const RobotSolver: React.FC<RobotSolverProps> = ({
       //   )
       // );
     } else if (robotStatus === 'submit-robot-guess') {
-      setTimeout(() => dispatch(onSubmitGuess()), ROBOT_SLEEP_TIME);
+      timeoutId = setTimeout(() => dispatch(onSubmitGuess()), ROBOT_SLEEP_TIME);
       // console.log(
       //   ...RobotSolverLog.logData(
       //     `Sleeping for ${ROBOT_SLEEP_TIME / 1000}s before submitting guess`
       //   )
       // );
     } else if (robotStatus === 'analyze-robot-guess-result') {
-      setTimeout(() => dispatch(analyzeGuessWordStatus(dictionary)), ROBOT_SLEEP_TIME);
+      timeoutId = setTimeout(() => dispatch(analyzeGuessWordStatus(dictionary)), ROBOT_SLEEP_TIME);
       // console.log(
       //   ...RobotSolverLog.logData(
       //     `Sleeping for ${ROBOT_SLEEP_TIME / 1000}s before analysis`
       //   )
       // );
     }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [
     dispatch,
     robotStatus,
