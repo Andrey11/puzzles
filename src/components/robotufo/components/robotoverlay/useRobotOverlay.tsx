@@ -148,7 +148,7 @@ const useRobotOverlay = (props: UseRobotOverlayProps) => {
         rootClose={props.rootClose}
         placement={props.placement}
         containerRef={props.componentRef.current}
-        targetRef={props.targetRef}
+        targetRef={props.targetRef.current}
         onClose={closeOverlay}
       />
     </>
