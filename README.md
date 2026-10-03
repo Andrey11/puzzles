@@ -96,12 +96,12 @@ eslint.config.mjs   ESLint 9 flat config
 firebase.json       Hosting public = dist
 public/             Static assets copied into dist/
 src/
-  app/              Redux store and shared hooks
-  components/       Header, keyboard, cards, loaders
-  config/           FirebaseConfig (local) + example
-  features/         Puzzle picker, Wordle solver / versus
-  firebase/         Firebase app + analytics init
-  scss/             Shared mixins and Bootstrap import
+┣━ app/              Redux store and shared hooks
+┣━ components/       Header, keyboard, cards, loaders
+┣━ config/           FirebaseConfig (local) + example
+┣━ features/         Puzzle picker, Wordle solver / versus
+┣━ firebase/         Firebase app + analytics init
+┗━ scss/             Shared mixins and Bootstrap import
 ```
 
 ## Notes

@@ -128,8 +128,11 @@
 label.LetterButton {
   outline: none;
   font-weight: 700;
-  // width: 90px;
   width: 40px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 button.DeleteButton {
